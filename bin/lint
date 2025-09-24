@@ -1,0 +1,1 @@
+pylint -d C,R,W,E0402 tob bin/tinder
