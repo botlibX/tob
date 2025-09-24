@@ -223,7 +223,7 @@ your own written python3 code, see the tob/modules directory for examples.
 **AUTHOR**
 
 |
-| ``Bart Thate`` <``nixtniet@gmail.com``>
+| ``Bart Thate`` <``bthate@dds.nl``>
 |
 
 **COPYRIGHT**

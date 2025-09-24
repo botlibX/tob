@@ -19,9 +19,11 @@ lock = threading.RLock()
 
 
 class Mods:
+
+    ignore = "udp,rst,web"
     md5s = {}
-    mod = os.path.join(os.path.dirname(__file__), "modules")
-    package = __name__.split(".", maxsplit=1)[0] + "." + "modules"
+    mod = os.path.join(os.path.dirname(__file__), "mods")
+    package = __name__.split(".", maxsplit=1)[0] + "." + "mods"
 
 
 def getmod(name, path=None):
@@ -60,7 +62,8 @@ def modules():
         return []
     return list({
             x[:-3] for x in os.listdir(Mods.mod)
-            if x.endswith(".py") and not x.startswith("__")
+            if x.endswith(".py") and not x.startswith("__") and
+            x[:-3] not in spl(Mods.ignore)
            })
 
 

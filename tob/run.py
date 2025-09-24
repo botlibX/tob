@@ -23,7 +23,7 @@ from .utils   import daemon, forever, level, md5sum, pidfile
 from .utils   import privileges
 
 
-CHECKSUM = "afcd3009f975b7520e5ba4d187fc30aa"
+CHECKSUM = "92d0f24e87aa621a36813800918ac6c9"
 NAME = Workdir.name
 
 
