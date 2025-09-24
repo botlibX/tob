@@ -60,7 +60,7 @@ class Config:
     otxt     = ""
     sets     = {}
     verbose  = False
-    version  = 1
+    version  = 100
 
 
 class CLI(Client):
@@ -241,7 +241,7 @@ param.ver = [""]
 
 pre = Object()
 pre.cfg = ["nick=mekker", ""]
-pre.imp = ["testing/feeds.opml", ""]
+pre.imp = ["tests/feeds.opml", ""]
 pre.log = ["bla", ""]
 pre.rss = ["http://hnrss.org/newest", ""]
 pre.tdo = ["mekker", ""]
