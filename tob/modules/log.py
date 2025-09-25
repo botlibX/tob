@@ -4,9 +4,9 @@
 import time
 
 
-from ..disk   import find, write
-from ..object import Object
-from ..utils  import elapsed, fntime
+from ..caching import find, write
+from ..objects import Object
+from ..utility import elapsed, fntime
 
 
 class Log(Object):

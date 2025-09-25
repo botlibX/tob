@@ -19,16 +19,16 @@ import _thread
 sys.path.insert(0, os.getcwd())
 
 
-from tob.client  import Client, Output
-from tob.cmds    import Commands, command, table
-from tob.fleet   import Fleet
+from tob.brokers import Fleet
+from tob.clients import Client, Output
+from tob.command import Commands, command, table
 from tob.handler import Event
-from tob.method  import parse
-from tob.object  import Object, keys
-from tob.pkg     import Mods
-from tob.path    import Workdir, skel
-from tob.thread  import launch
-from tob.utils   import DEBUG, elapsed, level
+from tob.methods import parse
+from tob.objects import Object, keys
+from tob.package import Mods
+from tob.threads import launch
+from tob.utility import DEBUG, elapsed, level
+from tob.workdir import Workdir, skel
 
 
 CHECKSUM = ""

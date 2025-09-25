@@ -4,10 +4,10 @@
 import time
 
 
-from ..disk   import find
-from ..method import fmt
-from ..path   import long, skel, types
-from ..utils  import elapsed, fntime
+from ..caching import find
+from ..methods import fmt
+from ..utility import elapsed, fntime
+from ..workdir import long, skel, types
 
 
 def fnd(event):

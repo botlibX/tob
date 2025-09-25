@@ -6,9 +6,9 @@ import threading
 import _thread
 
 
-from .fleet   import Fleet
+from .brokers import Fleet
 from .handler import Handler
-from .thread  import launch
+from .threads import launch
 
 
 class Client(Handler):

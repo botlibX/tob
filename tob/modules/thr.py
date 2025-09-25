@@ -8,7 +8,7 @@ import threading
 import time
 
 
-from ..utils import elapsed
+from ..utility import elapsed
 
 
 STARTTIME = time.time()

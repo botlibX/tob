@@ -1,7 +1,7 @@
 # This file is been placed in the Public Domain.
 
 
-from ..path import types
+from ..workdir import types
 
 
 def ls(event):

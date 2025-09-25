@@ -9,18 +9,18 @@ import sys
 import time
 
 
-from .client  import Client
-from .cmds    import Commands, command, scanner, table
-from .method  import parse
+from .clients import Client
+from .command import Commands, command, scanner, table
+from .methods import parse
 from .handler import Event
-from .object  import update
-from .path    import Workdir, pidname, setwd
-from .pkg     import Mods, getmod, inits, modules, sums
-from .utils   import daemon, forever, level, md5sum, pidfile
-from .utils   import privileges
+from .objects import update
+from .workdir import Workdir, pidname, setwd
+from .package import Mods, getmod, inits, modules, sums
+from .utility import daemon, forever, level, md5sum, pidfile
+from .utility import privileges
 
 
-CHECKSUM = "df470596b391c10abaf7d908aab5cf13"
+CHECKSUM = "dd610a9343a35e22b08836cf7ef0f55b"
 NAME = Workdir.name
 
 

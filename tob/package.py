@@ -8,8 +8,8 @@ import threading
 import _thread
 
 
-from .thread import launch
-from .utils  import importer, md5sum, spl
+from .threads import launch
+from .utility import importer, md5sum, spl
 
 
 lock = threading.RLock()
@@ -19,8 +19,8 @@ class Mods:
 
     ignore = "mbx,rst,udp,web"
     md5s = {}
-    mod = os.path.join(os.path.dirname(__file__), "mods")
-    package = __name__.split(".", maxsplit=1)[0] + "." + "mods"
+    mod = os.path.join(os.path.dirname(__file__), "modules")
+    package = __name__.split(".", maxsplit=1)[0] + "." + "modules"
 
 
 def getmod(name, path=None):

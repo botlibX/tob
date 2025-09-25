@@ -6,11 +6,10 @@ import os
 import threading
 
 
-from .method import fqn, deleted, search
-from .object import Object, update
-from .path   import getpath, long, store
-from .serial import dump, load
-from .utils  import cdir, fntime
+from .methods import fqn, deleted, search
+from .objects import Object, dump, load, update
+from .workdir import getpath, long, store
+from .utility import cdir, fntime
 
 
 class Cache:

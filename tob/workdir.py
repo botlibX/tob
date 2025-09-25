@@ -5,7 +5,7 @@ import os
 import pathlib
 
 
-from .method import ident
+from .methods import ident
 
 
 class Workdir:

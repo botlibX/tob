@@ -7,7 +7,7 @@ import time
 import _thread
 
 
-from .thread import launch
+from .threads import launch
 
 
 class Event:

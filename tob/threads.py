@@ -8,7 +8,7 @@ import time
 import _thread
 
 
-from .method import name
+from .methods import name
 
 
 class Thread(threading.Thread):

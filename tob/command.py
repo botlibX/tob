@@ -6,10 +6,10 @@ import logging
 import os
 
 
-from .fleet  import Fleet
-from .method import parse
-from .pkg    import Mods, getmod, modules
-from .utils  import md5sum, spl
+from .brokers import Fleet
+from .methods import parse
+from .package import Mods, getmod, modules
+from .utility import md5sum, spl
 
 
 class Commands:

@@ -11,15 +11,16 @@ import threading
 import time
 
 
-from ..client  import Fleet, Output
-from ..cmds    import command
-from ..disk    import last, write
+from ..brokers import Fleet
+from ..caching import last, write
+from ..clients import Output
+from ..command import command
 from ..handler import Event as IEvent
-from ..method  import edit, fmt
-from ..object  import Object, keys
-from ..path    import Workdir, getpath
-from ..thread  import launch
-from ..utils   import LEVELS
+from ..methods import edit, fmt
+from ..objects import Object, keys
+from ..threads import launch
+from ..utility import LEVELS
+from ..workdir import Workdir, getpath
 
 
 IGNORE = ["PING", "PONG", "PRIVMSG"]
