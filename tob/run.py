@@ -23,7 +23,7 @@ from .utils   import daemon, forever, level, md5sum, pidfile
 from .utils   import privileges
 
 
-CHECKSUM = "92d0f24e87aa621a36813800918ac6c9"
+CHECKSUM = "df470596b391c10abaf7d908aab5cf13"
 NAME = Workdir.name
 
 
@@ -39,7 +39,7 @@ class Config:
     otxt = ""
     sets = {}
     verbose = False
-    version = 100
+    version = 101
     wdr = ""
 
 

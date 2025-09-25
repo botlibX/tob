@@ -20,7 +20,7 @@ lock = threading.RLock()
 
 class Mods:
 
-    ignore = "udp,rst,web"
+    ignore = "mbx,rst,udp,web"
     md5s = {}
     mod = os.path.join(os.path.dirname(__file__), "mods")
     package = __name__.split(".", maxsplit=1)[0] + "." + "mods"
