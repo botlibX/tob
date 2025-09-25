@@ -1,9 +1,6 @@
 # This file is placed in the Public Domain.
 
 
-"web"
-
-
 import logging
 import os
 import sys

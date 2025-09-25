@@ -1,9 +1,6 @@
 # This file is placed in the Public Domain.
 
 
-"mailbox"
-
-
 import mailbox
 import os
 import time

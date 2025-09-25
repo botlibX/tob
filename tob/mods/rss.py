@@ -1,9 +1,6 @@
 # This file is placed in the Public Domain.
 
 
-"rich site syndicate"
-
-
 import html
 import html.parser
 import http.client

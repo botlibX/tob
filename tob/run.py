@@ -1,9 +1,6 @@
 # This file is placed in the Public Domain.
 
 
-"runtime"
-
-
 import json
 import logging
 import os
@@ -189,9 +186,6 @@ def tbl(event):
     Commands.names = {}
     scanner()
     event.reply("# This file is placed in the Public Domain.")
-    event.reply("")
-    event.reply("")
-    event.reply('"lookup tables"')
     event.reply("")
     event.reply("")
     event.reply(f"NAMES = {json.dumps(Commands.names, indent=4, sort_keys=True)}")

@@ -1,9 +1,6 @@
 # This file is placed in the Public Domain.
 
 
-"client"
-
-
 import queue
 import threading
 import _thread
@@ -47,7 +44,7 @@ class Output(Client):
     def __init__(self):
         Client.__init__(self)
         self.oqueue = queue.Queue()
-        self.ostop  = threading.Event()
+        self.ostop = threading.Event()
 
     def oput(self, event):
         self.oqueue.put(event)

@@ -1,9 +1,6 @@
 # This file is placed in the Public Domain.
 
 
-"UDP to IRC relay"
-
-
 import logging
 import select
 import socket

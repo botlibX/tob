@@ -1,9 +1,6 @@
 # This file is been placed in the Public Domain.
 
 
-"available types"
-
-
 from ..path import types
 
 

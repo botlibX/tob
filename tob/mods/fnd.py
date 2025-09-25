@@ -1,9 +1,6 @@
 # This file is placed in the Public Domain.
 
 
-"find"
-
-
 import time
 
 

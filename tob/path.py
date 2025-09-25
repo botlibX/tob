@@ -1,9 +1,6 @@
 # This file is placed in the Public Domain.
 
 
-"path"
-
-
 import os
 import pathlib
 

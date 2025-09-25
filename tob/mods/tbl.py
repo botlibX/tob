@@ -1,9 +1,6 @@
 # This file is placed in the Public Domain.
 
 
-"lookup tables"
-
-
 NAMES = {
     "cfg": "irc",
     "dne": "tdo",

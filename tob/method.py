@@ -1,9 +1,6 @@
 # This file is placed in the Public Domain.
 
 
-"method"
-
-
 import datetime
 import os
 
@@ -86,7 +83,6 @@ def name(obj):
     if "__name__" in dir(obj):
         return f"{obj.__class__.__name__}.{obj.__name__}"
     return ""
-
 
 
 def parse(obj, txt=None):
