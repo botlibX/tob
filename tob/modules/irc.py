@@ -87,7 +87,7 @@ class Event(IEvent):
         self.command = ""
         self.channel = ""
         self.nick = ""
-        self.origin = ""
+        self.orig = ""
         self.rawstr = ""
         self.rest = ""
         self.txt = ""
@@ -250,22 +250,22 @@ class IRC(Output):
         self.docommand("PRIVMSG", channel, txt)
 
     def event(self, txt):
-        evt = self.parsing(txt)
-        cmd = evt.command
+        event = self.parsing(txt)
+        cmd = event.command
         if cmd == "PING":
             self.state.pongcheck = True
-            self.docommand("PONG", evt.txt or "")
+            self.docommand("PONG", event.txt or "")
         elif cmd == "PONG":
             self.state.pongcheck = False
         if cmd == "001":
             self.state.needconnect = False
             if self.cfg.servermodes:
                 self.docommand(f"MODE {self.cfg.nick} {self.cfg.servermodes}")
-            self.zelf = evt.args[-1]
+            self.zelf = event.args[-1]
         elif cmd == "376":
             self.joinall()
         elif cmd == "002":
-            self.state.host = evt.args[2][:-1]
+            self.state.host = event.args[2][:-1]
         elif cmd == "366":
             self.state.error = ""
             self.events.joined.set()
@@ -273,7 +273,7 @@ class IRC(Output):
             self.state.error = txt
             nck = self.cfg.nick = self.cfg.nick + "_"
             self.docommand("NICK", nck)
-        return evt
+        return event
 
     def extend(self, channel, txtlist):
         if channel not in self.cache:
@@ -332,11 +332,11 @@ class IRC(Output):
         obj.arguments = []
         arguments = rawstr.split()
         if arguments:
-            obj.origin = arguments[0]
+            obj.orig = arguments[0]
         else:
-            obj.origin = self.cfg.server
-        if obj.origin.startswith(":"):
-            obj.origin = obj.origin[1:]
+            obj.orig = self.cfg.server
+        if obj.orig.startswith(":"):
+            obj.orig = obj.orig[1:]
             if len(arguments) > 1:
                 obj.command = arguments[1]
                 obj.type = obj.command
@@ -354,10 +354,10 @@ class IRC(Output):
                         obj.arguments.append(arg)
                 obj.txt = " ".join(txtlist)
         else:
-            obj.command = obj.origin
-            obj.origin = self.cfg.server
+            obj.command = obj.orig
+            obj.orig = self.cfg.server
         try:
-            obj.nick, obj.origin = obj.origin.split("!")
+            obj.nick, obj.orig = obj.orig.split("!")
         except ValueError:
             obj.nick = ""
         target = ""
@@ -457,10 +457,10 @@ class IRC(Output):
         return 0
 
     def say(self, channel, txt):
-        evt = Event()
-        evt.channel = channel
-        evt.reply(txt)
-        self.oput(evt)
+        event = Event()
+        event.channel = channel
+        event.reply(txt)
+        self.oput(event)
 
     def some(self):
         self.events.connected.wait()
@@ -504,88 +504,88 @@ class IRC(Output):
 "callbacks"
 
 
-def cb_auth(evt):
-    bot = Fleet.get(evt.orig)
+def cb_auth(event):
+    bot = Fleet.get(event.origin)
     bot.docommand(f"AUTHENTICATE {bot.cfg.password}")
 
 
-def cb_cap(evt):
-    bot = Fleet.get(evt.orig)
-    if bot.cfg.password and "ACK" in evt.arguments:
+def cb_cap(event):
+    bot = Fleet.get(event.origin)
+    if bot.cfg.password and "ACK" in event.arguments:
         bot.direct("AUTHENTICATE PLAIN")
     else:
         bot.direct("CAP REQ :sasl")
 
 
-def cb_error(evt):
-    bot = Fleet.get(evt.orig)
+def cb_error(event):
+    bot = Fleet.get(event.origin)
     bot.state.nrerror += 1
-    bot.state.error = evt.txt
-    logging.debug(fmt(evt))
+    bot.state.error = event.txt
+    logging.debug(fmt(event))
 
 
-def cb_h903(evt):
-    bot = Fleet.get(evt.orig)
+def cb_h903(event):
+    bot = Fleet.get(event.origin)
     bot.direct("CAP END")
     bot.events.authed.set()
 
 
-def cb_h904(evt):
-    bot = Fleet.get(evt.orig)
+def cb_h904(event):
+    bot = Fleet.get(event.origin)
     bot.direct("CAP END")
     bot.events.authed.set()
 
 
-def cb_kill(evt):
+def cb_kill(event):
     pass
 
 
-def cb_log(evt):
+def cb_log(event):
     pass
 
 
-def cb_ready(evt):
-    bot = Fleet.get(evt.orig)
+def cb_ready(event):
+    bot = Fleet.get(event.origin)
     bot.events.ready.set()
 
 
-def cb_001(evt):
-    bot = Fleet.get(evt.orig)
+def cb_001(event):
+    bot = Fleet.get(event.origin)
     bot.events.logon.set()
 
 
-def cb_notice(evt):
-    bot = Fleet.get(evt.orig)
-    if evt.txt.startswith("VERSION"):
+def cb_notice(event):
+    bot = Fleet.get(event.origin)
+    if event.txt.startswith("VERSION"):
         txt = f"\001VERSION {NAME.upper()} 140 - {bot.cfg.username}\001"
-        bot.docommand("NOTICE", evt.channel, txt)
+        bot.docommand("NOTICE", event.channel, txt)
 
 
-def cb_privmsg(evt):
-    bot = Fleet.get(evt.orig)
+def cb_privmsg(event):
+    bot = Fleet.get(event.origin)
     if not bot.cfg.commands:
         return
-    if evt.txt:
-        if evt.txt[0] in [
+    if event.txt:
+        if event.txt[0] in [
             "!",
         ]:
-            evt.txt = evt.txt[1:]
-        elif evt.txt.startswith(f"{bot.cfg.nick}:"):
-            evt.txt = evt.txt[len(bot.cfg.nick) + 1 :]
+            event.txt = event.txt[1:]
+        elif event.txt.startswith(f"{bot.cfg.nick}:"):
+            event.txt = event.txt[len(bot.cfg.nick) + 1 :]
         else:
             return
-        if evt.txt:
-            evt.txt = evt.txt[0].lower() + evt.txt[1:]
-        if evt.txt:
-            launch(command, evt)
+        if event.txt:
+            event.txt = event.txt[0].lower() + event.txt[1:]
+        if event.txt:
+            launch(command, event)
 
 
-def cb_quit(evt):
-    bot = Fleet.get(evt.orig)
+def cb_quit(event):
+    bot = Fleet.get(event.origin)
     logging.debug(f"quit from {bot.cfg.server}")
     bot.state.nrerror += 1
-    bot.state.error = evt.txt
-    if evt.orig and evt.orig in bot.zelf:
+    bot.state.error = event.txt
+    if event.orig and event.origin in bot.zelf:
         bot.stop()
 
 

@@ -23,7 +23,7 @@ from .utility import daemon, forever, level, md5sum, pidfile
 from .utility import privileges
 
 
-CHECKSUM = "dd610a9343a35e22b08836cf7ef0f55b"
+CHECKSUM = "fbf60375fa2922d85fe099f311a6b5b4"
 NAME = Workdir.name
 
 
@@ -106,7 +106,7 @@ def control():
     Commands.add(tbl)
     csl = CLI()
     evt = Event()
-    evt.orig = repr(csl)
+    evt.origin = repr(csl)
     evt.type = "command"
     evt.txt = Config.otxt
     command(evt)
@@ -137,9 +137,12 @@ def boot(doparse=True):
         pth = os.path.join(pth, 'share', NAME,  'examples')
         Mods.mod = Config.mod = pth
         Mods.package = "mods"
-    if "m" in Config.opts:
+    elif "m" in Config.opts:
         Mods.mod = Config.mod = "mods"
         Mods.package = "mods"
+    else:
+        Mods. mod = os.path.join(os.path.dirname(__file__), "modules")
+        Mods.package = __name__.split(".", maxsplit=1)[0] + "." + "modules"
     if "a" in Config.opts:
         Config.init = ",".join(modules())
     setwd(NAME)

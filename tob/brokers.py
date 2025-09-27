@@ -1,7 +1,7 @@
 # This file is placed in the Public Domain.
 
 
-"an object for a string."
+"an object for a string"
 
 
 class Fleet:
@@ -24,17 +24,17 @@ class Fleet:
             client.announce(txt)
 
     @staticmethod
-    def display(evt):
-        client = Fleet.get(evt.orig)
-        client.display(evt)
+    def display(event):
+        client = Fleet.get(event.origin)
+        client.display(event)
 
     @staticmethod
-    def get(orig):
-        return Fleet.clients.get(orig, None)
+    def get(origin):
+        return Fleet.clients.get(origin, None)
 
     @staticmethod
-    def say(orig, channel, txt):
-        client = Fleet.get(orig)
+    def say(origin, channel, txt):
+        client = Fleet.get(origin)
         client.say(channel, txt)
 
     @staticmethod

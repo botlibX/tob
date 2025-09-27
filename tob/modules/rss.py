@@ -33,6 +33,8 @@ def init():
     fetcher.start()
     if fetcher.seenfn:
         logging.warning(f"since {elapsed(time.time()-fntime(fetcher.seenfn))}")
+    else:
+        logging.warning(f"no seen file")
     return fetcher
 
 
@@ -474,14 +476,15 @@ def rss(event):
     if "http://" not in url and "https://" not in url:
         event.reply("i need an url")
         return
-    for fnm, result in find("rss", {"rss": url}):
-        if result:
-            event.reply(f"{url} is known")
-            return
-    feed = Rss()
-    feed.rss = event.args[0]
-    write(feed)
-    event.done()
+    with importlock:
+        for fnm, result in find("rss", {"rss": url}):
+            if result:
+               event.reply(f"{url} is known")
+               return
+        feed = Rss()
+        feed.rss = event.args[0]
+        write(feed)
+        event.done()
 
 
 def syn(event):

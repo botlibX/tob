@@ -177,14 +177,14 @@ def tmr(event):
         return result
     diff = target - time.time()
     txt = " ".join(event.args[1:])
-    timer = Timed(diff, Fleet.say, event.orig, event.channel, txt)
+    timer = Timed(diff, Fleet.say, event.origin, event.channel, txt)
     timer.channel = event.channel
-    timer.orig = event.orig
+    timer.origin = event.origin
     timer.time = target
     timer.txt = txt
     write(timer)
     launch(timer.start)
-    event.reply("ok " +  elapsed(diff))
+    event.reply("ok " + elapsed(diff))
 
 
 MONTHS = [

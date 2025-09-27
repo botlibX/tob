@@ -16,16 +16,16 @@ from .threads import launch
 class Event:
 
     def __init__(self):
-        self._ready  = threading.Event()
-        self._thr    = None
-        self.args    = []
+        self._ready = threading.Event()
+        self._thr = None
+        self.args = []
         self.channel = ""
-        self.ctime   = time.time()
-        self.orig    = ""
-        self.rest    = ""
-        self.result  = {}
-        self.txt     = ""
-        self.type    = "event"
+        self.ctime = time.time()
+        self.origin = ""
+        self.rest = ""
+        self.result = {}
+        self.txt = ""
+        self.type = "event"
 
     def done(self):
         self.reply("ok")
@@ -48,16 +48,16 @@ class Event:
 class Handler:
 
     def __init__(self):
-        self.cbs     = {}
-        self.queue   = queue.Queue()
-        self.ready   = threading.Event()
+        self.callbacks = {}
+        self.queue = queue.Queue()
+        self.ready = threading.Event()
         self.stopped = threading.Event()
 
     def available(self, event):
-        return event.type in self.cbs
+        return event.type in self.callbacks
 
     def callback(self, event):
-        func = self.cbs.get(event.type, None)
+        func = self.callbacks.get(event.type, None)
         if func:
             event._thr = launch(
                                 func,
@@ -73,7 +73,7 @@ class Handler:
                 event = self.poll()
                 if event is None or self.stopped.is_set():
                     break
-                event.orig = repr(self)
+                event.origin = repr(self)
                 self.callback(event)
             except (KeyboardInterrupt, EOFError):
                 _thread.interrupt_main()
@@ -84,8 +84,8 @@ class Handler:
     def put(self, event):
         self.queue.put(event)
 
-    def register(self, typ, cbs):
-        self.cbs[typ] = cbs
+    def register(self, type, callback):
+        self.callbacks[type] = callback
 
     def start(self, daemon=True):
         self.stopped.clear()

@@ -22,11 +22,13 @@ class Mods:
 
     ignore = "mbx,rst,udp,web"
     md5s = {}
-    mod = os.path.join(os.path.dirname(__file__), "modules")
-    package = __name__.split(".", maxsplit=1)[0] + "." + "modules"
+    mod = ""
+    package = ""
 
 
 def getmod(name, path=None):
+    assert Mods.mod
+    assert Mods.package
     with lock:
         mname = Mods.package + "." +  name
         module = sys.modules.get(mname, None)
@@ -42,6 +44,7 @@ def getmod(name, path=None):
 
 
 def inits(names):
+    assert Mods.mod
     modz = []
     for name in sorted(spl(names)):
         try:
@@ -58,6 +61,7 @@ def inits(names):
 
 
 def modules():
+    assert Mods.mod
     if not os.path.exists(Mods.mod):
         return []
     return list({
@@ -68,6 +72,7 @@ def modules():
 
 
 def sums(checksum):
+    assert Mods.mod
     pth = os.path.join(Mods.mod, "tbl.py")
     if not os.path.exists(pth):
         logging.info("table is not there.")

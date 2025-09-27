@@ -26,6 +26,7 @@ from tob.handler import Event
 from tob.methods import parse
 from tob.objects import Object, keys
 from tob.package import Mods
+from tob.runtime import boot
 from tob.threads import launch
 from tob.utility import DEBUG, elapsed, level
 from tob.workdir import Workdir, skel
@@ -37,6 +38,8 @@ STARTTIME = time.time()
 
 
 DEBUG = True
+#Mods.mod = os.path.join(os.path.dirname(__file__), "modules")
+#Mods.package = __name__.split(".", maxsplit=1)[0] + "." + "modules"
 #Mods.mod = "mods"
 #Mods.package = "mods"
 Workdir.wdr = ".test"
@@ -179,6 +182,7 @@ def wrap(function):
 def main():
     nrcommand = 0
     parse(Config, " ".join(sys.argv[1:]))
+    boot()
     if "v" in Config.opts:
         banner()
     if "f" not in Config.opts:
