@@ -1,6 +1,9 @@
 # This file is placed in the Public Domain.
 
 
+"cache objects on disk."
+
+
 import json.decoder
 import os
 import threading

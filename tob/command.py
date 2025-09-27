@@ -1,6 +1,9 @@
 # This file is placed in the Public Domain.
 
 
+"program your own commands."
+
+
 import inspect
 import logging
 import os

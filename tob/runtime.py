@@ -1,6 +1,9 @@
 # This file is placed in the Public Domain.
 
 
+"all things runtime."
+
+
 import json
 import logging
 import os
@@ -36,7 +39,7 @@ class Config:
     otxt = ""
     sets = {}
     verbose = False
-    version = 101
+    version = 102
     wdr = ""
 
 
@@ -257,3 +260,7 @@ def main():
         wrapped(service)
     else:
         wrapped(control)
+
+
+if __name__ == "__main__":
+    main()

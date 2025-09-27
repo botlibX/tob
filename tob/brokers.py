@@ -1,6 +1,9 @@
 # This file is placed in the Public Domain.
 
 
+"an object for a string."
+
+
 class Fleet:
 
     clients = {}

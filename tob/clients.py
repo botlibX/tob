@@ -1,6 +1,9 @@
 # This file is placed in the Public Domain.
 
 
+"handle client events."
+
+
 import queue
 import threading
 import _thread

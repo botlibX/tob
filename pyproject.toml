@@ -8,7 +8,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "tob"
-version = "101"
+version = "102"
 authors = [
     {name = "Bart Thate", email = "bthate@dds.nl" },
 ]
@@ -24,7 +24,7 @@ classifiers=[
 
 
 [project.scripts]
-"tob" = "tob.run:main"
+"tob" = "tob.runtime:main"
 
 
 [project.urls]
@@ -36,6 +36,7 @@ classifiers=[
 [tool.setuptools]
 packages = [
     'tob',
-    'tob.mods',
+    'tob.modules',
+    'tob.network'
 ]
 include-package-data = false
