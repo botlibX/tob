@@ -17,8 +17,8 @@ class Workdir:
     wdr  = ""
 
 
-def getpath(obj):
-    return store(ident(obj))
+def getpath(object):
+    return store(ident(object))
 
 
 def long(name):
@@ -58,13 +58,13 @@ def skel():
     return result
 
 
-def store(pth=""):
+def store(path=""):
     assert Workdir.wdr
-    return os.path.join(Workdir.wdr, "store", pth)
+    return os.path.join(Workdir.wdr, "store", path)
 
 
-def strip(pth, nmr=2):
-    return os.path.join(pth.split(os.sep)[-nmr:])
+def strip(path, nmr=2):
+    return os.path.join(path.split(os.sep)[-nmr:])
 
 
 def types():
@@ -72,9 +72,9 @@ def types():
     return os.listdir(store())
 
 
-def wdr(pth):
+def wdr(path):
     assert Workdir.wdr
-    return os.path.join(Workdir.wdr, pth)
+    return os.path.join(Workdir.wdr, path)
 
 
 def __dir__():
@@ -90,3 +90,6 @@ def __dir__():
         'types',
         'wdr'
     )
+
+
+__all__ = __dir__()

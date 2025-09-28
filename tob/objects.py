@@ -22,85 +22,85 @@ class Object:
         return str(self.__dict__)
 
 
-def construct(obj, *args, **kwargs):
+def construct(object, *args, **kwargs):
     if args:
         val = args[0]
         if isinstance(val, zip):
-            update(obj, dict(val))
+            update(object, dict(val))
         elif isinstance(val, dict):
-            update(obj, val)
+            update(object, val)
         elif isinstance(val, Object):
-            update(obj, vars(val))
+            update(object, vars(val))
     if kwargs:
-        update(obj, kwargs)
+        update(object, kwargs)
 
 
-def items(obj):
-    if isinstance(obj, dict):
-        return obj.items()
-    return obj.__dict__.items()
+def items(object):
+    if isinstance(object, dict):
+        return object.items()
+    return object.__dict__.items()
 
 
-def keys(obj):
-    if isinstance(obj, dict):
-        return obj.keys()
-    return obj.__dict__.keys()
+def keys(object):
+    if isinstance(object, dict):
+        return object.keys()
+    return object.__dict__.keys()
 
 
-def update(obj, data, empty=True):
+def update(object, data, empty=True):
     for key, value in items(data):
         if not empty and not value:
             continue
-        setattr(obj, key, value)
+        setattr(object, key, value)
 
-def values(obj):
-    if isinstance(obj, dict):
-        return obj.values()
-    return obj.__dict__.values()
+def values(object):
+    if isinstance(object, dict):
+        return object.values()
+    return object.__dict__.values()
 
 
 class Encoder(json.JSONEncoder):
 
-    def default(self, o):
-        if isinstance(o, dict):
-            return o.items()
-        if issubclass(type(o), Object):
-            return vars(o)
+    def default(self, object):
+        if isinstance(object, dict):
+            return object.items()
+        if isinstance(object, Object):
+            return vars(object)
         if isinstance(o, list):
-            return iter(o)
+            return iter(object)
         try:
-            return json.JSONEncoder.default(self, o)
+            return json.JSONEncoder.default(self, object)
         except TypeError:
             try:
-                return vars(o)
+                return vars(object)
             except TypeError:
-                return repr(o)
+                return repr(object)
 
 
-def dump(obj, fp, *args, **kw):
+def dump(object, filepointer, *args, **kw):
     kw["cls"] = Encoder
-    json.dump(obj, fp, *args, **kw)
+    json.dump(object, filepointer, *args, **kw)
 
 
-def dumps(obj, *args, **kw):
+def dumps(object, *args, **kw):
     kw["cls"] = Encoder
-    return json.dumps(obj, *args, **kw)
+    return json.dumps(object, *args, **kw)
 
 
-def hook(objdict):
-    obj = Object()
-    construct(obj, objdict)
-    return obj
+def hook(data):
+    object = Object()
+    construct(object, data)
+    return object
 
 
-def load(fp, *args, **kw):
+def load(filepointer, *args, **kw):
     kw["object_hook"] = hook
-    return json.load(fp, *args, **kw)
+    return json.load(filepointer, *args, **kw)
 
 
-def loads(s, *args, **kw):
+def loads(string, *args, **kw):
     kw["object_hook"] = hook
-    return json.loads(s, *args, **kw)
+    return json.loads(string, *args, **kw)
 
 
 
@@ -117,3 +117,6 @@ def __dir__():
         'update',
         'values'
     )
+
+
+__all__ = __dir__()

@@ -71,7 +71,7 @@ def daemon(verbose=False):
 
 
 def elapsed(seconds, short=True):
-    txt = ""
+    text = ""
     nsec = float(seconds)
     if nsec < 1:
         return f"{nsec:.2f}s"
@@ -92,21 +92,21 @@ def elapsed(seconds, short=True):
     nsec   -= int(minute * minutes)
     sec     = int(nsec)
     if yeas:
-        txt += f"{yeas}y"
+        text += f"{yeas}y"
     if weeks:
         nrdays += weeks * 7
     if nrdays:
-        txt += f"{nrdays}d"
-    if short and txt:
-        return txt.strip()
+        text += f"{nrdays}d"
+    if short and text:
+        return text.strip()
     if hours:
-        txt += f"{hours}h"
+        text += f"{hours}h"
     if minutes:
-        txt += f"{minutes}m"
+        text += f"{minutes}m"
     if sec:
-        txt += f"{sec}s"
-    txt = txt.strip()
-    return txt
+        text += f"{sec}s"
+    text = text.strip()
+    return text
 
 
 def extract_date(daystr):
@@ -142,12 +142,12 @@ def forever():
             break
 
 
-def importer(name, pth):
+def importer(name, path):
     module = None
-    if not os.path.exists(pth):
+    if not os.path.exists(path):
         return module
     try:
-        spec = importlib.util.spec_from_file_location(name, pth)
+        spec = importlib.util.spec_from_file_location(name, path)
         if spec:
             module = importlib.util.module_from_spec(spec)
             if module:
@@ -156,7 +156,7 @@ def importer(name, pth):
                     spec.loader.exec_module(module)
                 if DEBUG:
                     module.DEBUG = True
-                logging.info("load %s", pth)
+                logging.info("load %s", path)
     except Exception as ex:
         logging.exception(ex)
         _thread.interrupt_main()
@@ -177,8 +177,8 @@ def level(loglevel="debug"):
 
 def md5sum(path):
     with open(path, "r", encoding="utf-8") as file:
-        txt = file.read().encode("utf-8")
-        return hashlib.md5(txt).hexdigest()
+        text = file.read().encode("utf-8")
+        return hashlib.md5(text).hexdigest()
 
 
 def pidfile(filename):
@@ -198,12 +198,12 @@ def privileges():
     os.setuid(pwnam2.pw_uid)
 
 
-def spl(txt):
+def spl(text):
     try:
-        result = txt.split(",")
+        result = text.split(",")
     except (TypeError, ValueError):
         result = [
-            txt,
+            text,
         ]
     return [x for x in result if x]
 
@@ -222,3 +222,6 @@ def __dir__():
         'privileges',
         'spl'
     )
+
+
+__all__ = __dir__()

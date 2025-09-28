@@ -38,11 +38,6 @@ STARTTIME = time.time()
 
 
 DEBUG = True
-#Mods.mod = os.path.join(os.path.dirname(__file__), "modules")
-#Mods.package = __name__.split(".", maxsplit=1)[0] + "." + "modules"
-#Mods.mod = "mods"
-#Mods.package = "mods"
-Workdir.wdr = ".test"
 
 
 events  = queue.Queue()
@@ -183,6 +178,7 @@ def main():
     nrcommand = 0
     parse(Config, " ".join(sys.argv[1:]))
     boot()
+    Workdir.wdr = ".test"
     if "v" in Config.opts:
         banner()
     if "f" not in Config.opts:

@@ -1,7 +1,7 @@
 # This file is placed in the Public Domain.
 
 
-"program your own commands."
+"program your own commands"
 
 
 import inspect
@@ -17,19 +17,19 @@ from .utility import md5sum, spl
 
 class Commands:
 
-    cmds = {}
+    commands = {}
     names = {}
 
     @staticmethod
-    def add(func) -> None:
+    def add(func):
         name = func.__name__
         modname = func.__module__.split(".")[-1]
-        Commands.cmds[name] = func
+        Commands.commands[name] = func
         Commands.names[name] = modname
 
     @staticmethod
     def get(cmd):
-        func = Commands.cmds.get(cmd, None)
+        func = Commands.commands.get(cmd, None)
         if func:
             return func
         name = Commands.names.get(cmd, None)
@@ -39,28 +39,29 @@ class Commands:
         if not module:
             return
         scan(module)
-        return Commands.cmds.get(cmd, None)
+        return Commands.commands.get(cmd, None)
 
 
-def command(evt):
-    parse(evt)
-    func = Commands.get(evt.cmd)
+def command(event):
+    parse(event)
+    func = Commands.get(event.cmd)
     if func:
-        func(evt)
-        Fleet.display(evt)
-    evt.ready()
+        func(event)
+        Fleet.display(event)
+    event.ready()
 
 
 def scan(module):
-    for key, cmdz in inspect.getmembers(module, inspect.isfunction):
+    for key, command in inspect.getmembers(module, inspect.isfunction):
         if key.startswith("cb"):
             continue
-        if 'event' in inspect.signature(cmdz).parameters:
+        if 'event' in inspect.signature(command).parameters:
             Commands.add(cmdz)
 
 
-def scanner(names=None):
+def scanner(names=""):
     res = []
+    assert Mods.mod
     if not os.path.exists(Mods.mod):
         logging.info("modules directory is not set.")
         return res
@@ -77,13 +78,13 @@ def scanner(names=None):
 
 
 def table(checksum=""):
-    pth = os.path.join(Mods.mod, "tbl.py")
-    if os.path.exists(pth):
-        if checksum and md5sum(pth) != checksum:
+    path = os.path.join(Mods.mod, "tbl.py")
+    if os.path.exists(path):
+        if checksum and md5sum(path) != checksum:
             logging.warning("table checksum error.")
-    tbl = getmod("tbl")
-    if tbl and "NAMES" in dir(tbl):
-        Commands.names.update(tbl.NAMES)
+    table = getmod("tbl")
+    if table and "NAMES" in dir(table):
+        Commands.names.update(table.NAMES)
     else:
         scanner()
 
@@ -96,3 +97,6 @@ def __dir__():
         'scanner',
         'table'
     )
+
+
+__all__ = __dir__()

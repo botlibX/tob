@@ -36,7 +36,7 @@ class Config:
     level = "warn"
     mod = ""
     opts = ""
-    otxt = ""
+    otext = ""
     sets = {}
     verbose = False
     version = 102
@@ -49,27 +49,27 @@ class CLI(Client):
         Client.__init__(self)
         self.register("command", command)
 
-    def announce(self, txt):
-        self.raw(txt)
+    def announce(self, text):
+        self.raw(text)
 
-    def raw(self, txt):
-        out(txt.encode('utf-8', 'replace').decode("utf-8"))
+    def raw(self, text):
+        out(text.encode('utf-8', 'replace').decode("utf-8"))
 
 
 class Console(CLI):
 
-    def announce(self, txt):
+    def announce(self, text):
         pass
 
     def callback(self, event):
-        if not event.txt:
+        if not event.text:
             return
         super().callback(event)
         event.wait()
 
     def poll(self):
         evt = Event()
-        evt.txt = input("> ")
+        evt.text = input("> ")
         evt.type = "command"
         return evt
 
@@ -108,7 +108,7 @@ def control():
     evt = Event()
     evt.origin = repr(csl)
     evt.type = "command"
-    evt.txt = Config.otxt
+    evt.text = Config.otext
     command(evt)
     evt.wait()
 
@@ -214,19 +214,19 @@ def banner():
     out("%s %s since %s (%s)" % (NAME.upper(), Config.version, tme, Config.level.upper()))
 
 
-def check(txt):
+def check(text):
     args = sys.argv[1:]
     for arg in args:
         if not arg.startswith("-"):
             continue
-        for char in txt:
+        for char in text:
             if char in arg:
                 return True
     return False
 
 
-def out(txt):
-    print(txt)
+def out(text):
+    print(text)
     sys.stdout.flush()
 
 

@@ -1,7 +1,7 @@
 # This file is placed in the Public Domain.
 
 
-"cache objects on disk."
+"cache objects on disk"
 
 
 import json.decoder
@@ -18,41 +18,39 @@ from .utility import cdir, fntime
 class Cache:
 
     lock = threading.RLock()
-    objs = {}
+    objects = {}
 
     @staticmethod
-    def add(path, obj):
-        Cache.objs[path] = obj
+    def add(path, object):
+        Cache.objects[path] = object
 
     @staticmethod
     def get(path):
-        return Cache.objs.get(path, None)
+        return Cache.objects.get(path, None)
 
     @staticmethod
-    def update(path, obj):
-        if not obj:
+    def update(path, object):
+        if not object:
             return
-        if path in Cache.objs:
-            update(Cache.objs[path], obj)
+        if path in Cache.objects:
+            update(Cache.objects[path], object)
         else:
-            Cache.add(path, obj)
+            Cache.add(path, object)
 
 
-def find(clz, selector=None, removed=False, matching=False):
+def find(clz, selector={}, removed=False, matching=False):
     clz = long(clz)
-    if selector is None:
-        selector = {}
     for pth in fns(clz):
-        obj = Cache.get(pth)
-        if not obj:
-            obj = Object()
-            read(obj, pth)
-            Cache.add(pth, obj)
-        if not removed and deleted(obj):
+        object = Cache.get(pth)
+        if not object:
+            object = Object()
+            read(object, pth)
+            Cache.add(pth, object)
+        if not removed and deleted(object):
             continue
-        if selector and not search(obj, selector, matching):
+        if selector and not search(object, selector, matching):
             continue
-        yield pth, obj
+        yield pth, object
 
 
 def fns(clz):
@@ -64,36 +62,34 @@ def fns(clz):
                 yield os.path.join(ddd, fll)
 
 
-def last(obj, selector=None):
-    if selector is None:
-        selector = {}
-    result = sorted(find(fqn(obj), selector), key=lambda x: fntime(x[0]))
+def last(object, selector={}):
+    result = sorted(find(fqn(object), selector), key=lambda x: fntime(x[0]))
     res = ""
     if result:
         inp = result[-1]
-        update(obj, inp[-1])
+        update(object, inp[-1])
         res = inp[0]
     return res
 
 
-def read(obj, path):
+def read(object, path):
     with Cache.lock:
         with open(path, "r", encoding="utf-8") as fpt:
             try:
-                update(obj, load(fpt))
+                update(object, load(fpt))
             except json.decoder.JSONDecodeError as ex:
                 ex.add_note(path)
                 raise ex
 
 
-def write(obj, path=None):
+def write(object, path=None):
     with Cache.lock:
         if path is None:
-            path = getpath(obj)
+            path = getpath(object)
         cdir(path)
         with open(path, "w", encoding="utf-8") as fpt:
-            dump(obj, fpt, indent=4)
-        Cache.update(path, obj)
+            dump(object, fpt, indent=4)
+        Cache.update(path, object)
         return path
 
 
@@ -105,3 +101,6 @@ def __dir__():
         'read',
         'write'
     )
+
+
+__all__ = __dir__()

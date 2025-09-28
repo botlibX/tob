@@ -1,7 +1,7 @@
 # This file is placed in the Public Domain.
 
 
-"functions with an object as the first argument."
+"object as the first argument"
 
 
 import datetime
@@ -11,149 +11,149 @@ import os
 from .objects import items, keys
 
 
-def deleted(obj):
-    return "__deleted__" in dir(obj) and obj.__deleted__
+def deleted(object):
+    return "__deleted__" in dir(object) and object.__deleted__
 
 
-def edit(obj, setter, skip=True):
+def edit(object, setter, skip=True):
     for key, val in items(setter):
         if skip and val == "":
             continue
         try:
-            setattr(obj, key, int(val))
+            setattr(object, key, int(val))
             continue
         except ValueError:
             pass
         try:
-            setattr(obj, key, float(val))
+            setattr(object, key, float(val))
             continue
         except ValueError:
             pass
         if val in ["True", "true"]:
-            setattr(obj, key, True)
+            setattr(object, key, True)
         elif val in ["False", "false"]:
-            setattr(obj, key, False)
+            setattr(object, key, False)
         else:
-            setattr(obj, key, val)
+            setattr(object, key, val)
 
 
-def fmt(obj, args=None, skip=None, plain=False, empty=False):
+def fmt(object, args=None, skip=None, plain=False, empty=False):
     if args is None:
-        args = keys(obj)
+        args = keys(object)
     if skip is None:
         skip = []
-    txt = ""
+    text = ""
     for key in args:
         if key.startswith("__"):
             continue
         if key in skip:
             continue
-        value = getattr(obj, key, None)
+        value = getattr(object, key, None)
         if value is None:
             continue
         if not empty and not value:
             continue
         if plain:
-            txt += f"{value} "
+            text += f"{value} "
         elif isinstance(value, str):
-            txt += f'{key}="{value}" '
+            text += f'{key}="{value}" '
         else:
-            txt += f"{key}={value} "
-    return txt.strip()
+            text += f"{key}={value} "
+    return text.strip()
 
 
-def fqn(obj):
-    kin = str(type(obj)).split()[-1][1:-2]
+def fqn(object):
+    kin = str(type(object)).split()[-1][1:-2]
     if kin == "type":
-        kin = f"{obj.__module__}.{obj.__name__}"
+        kin = f"{object.__module__}.{object.__name__}"
     return kin
 
 
-def ident(obj):
-    return os.path.join(fqn(obj), *str(datetime.datetime.now()).split())
+def ident(object):
+    return os.path.join(fqn(object), *str(datetime.datetime.now()).split())
 
 
-def name(obj):
-    typ = type(obj)
+def name(object):
+    typ = type(object)
     if "__builtins__" in dir(typ):
-        return obj.__name__
-    if "__self__" in dir(obj):
-        return f"{obj.__self__.__class__.__name__}.{obj.__name__}"
-    if "__class__" in dir(obj) and "__name__" in dir(obj):
-        return f"{obj.__class__.__name__}.{obj.__name__}"
-    if "__class__" in dir(obj):
-        return f"{obj.__class__.__module__}.{obj.__class__.__name__}"
-    if "__name__" in dir(obj):
-        return f"{obj.__class__.__name__}.{obj.__name__}"
+        return object.__name__
+    if "__self__" in dir(object):
+        return f"{object.__self__.__class__.__name__}.{object.__name__}"
+    if "__class__" in dir(object) and "__name__" in dir(object):
+        return f"{object.__class__.__name__}.{object.__name__}"
+    if "__class__" in dir(object):
+        return f"{object.__class__.__module__}.{object.__class__.__name__}"
+    if "__name__" in dir(object):
+        return f"{object.__class__.__name__}.{object.__name__}"
     return ""
 
 
-def parse(obj, txt=None):
-    if txt is None:
-        if "txt" in dir(obj):
-            txt = obj.txt
+def parse(object, text=""):
+    if text == "":
+        if "text" in dir(object):
+            text = object.text
         else:
-            txt = ""
+            text = ""
     args = []
-    obj.args   = getattr(obj, "args", [])
-    obj.cmd    = getattr(obj, "cmd", "")
-    obj.gets   = getattr(obj, "gets", "")
-    obj.index  = getattr(obj, "index", None)
-    obj.inits  = getattr(obj, "inits", "")
-    obj.mod    = getattr(obj, "mod", "")
-    obj.opts   = getattr(obj, "opts", "")
-    obj.result = getattr(obj, "result", "")
-    obj.sets   = getattr(obj, "sets", {})
-    obj.silent = getattr(obj, "silent", "")
-    obj.txt    = txt or getattr(obj, "txt", "")
-    obj.otxt   = obj.txt or getattr(obj, "otxt", "")
+    object.args   = getattr(object, "args", [])
+    object.cmd    = getattr(object, "cmd", "")
+    object.gets   = getattr(object, "gets", "")
+    object.index  = getattr(object, "index", None)
+    object.inits  = getattr(object, "inits", "")
+    object.mod    = getattr(object, "mod", "")
+    object.opts   = getattr(object, "opts", "")
+    object.result = getattr(object, "result", "")
+    object.sets   = getattr(object, "sets", {})
+    object.silent = getattr(object, "silent", "")
+    object.text    = text or getattr(object, "text", "")
+    object.otext   = object.text or getattr(object, "otext", "")
     _nr = -1
-    for spli in obj.otxt.split():
+    for spli in object.otext.split():
         if spli.startswith("-"):
             try:
-                obj.index = int(spli[1:])
+                object.index = int(spli[1:])
             except ValueError:
-                obj.opts += spli[1:]
+                object.opts += spli[1:]
             continue
         if "-=" in spli:
             key, value = spli.split("-=", maxsplit=1)
-            obj.silent[key] = value
-            obj.gets[key] = value
+            object.silent[key] = value
+            object.gets[key] = value
             continue
         if "==" in spli:
             key, value = spli.split("==", maxsplit=1)
-            obj.gets[key] = value
+            object.gets[key] = value
             continue
         if "=" in spli:
             key, value = spli.split("=", maxsplit=1)
             if key == "mod":
-                if obj.mod:
-                    obj.mod += f",{value}"
+                if object.mod:
+                    object.mod += f",{value}"
                 else:
-                    obj.mod = value
+                    object.mod = value
                 continue
-            obj.sets[key] = value
+            object.sets[key] = value
             continue
         _nr += 1
         if _nr == 0:
-            obj.cmd = spli
+            object.cmd = spli
             continue
         args.append(spli)
     if args:
-        obj.args = args
-        obj.txt  = obj.cmd or ""
-        obj.rest = " ".join(obj.args)
-        obj.txt  = obj.cmd + " " + obj.rest
+        object.args = args
+        object.text  = object.cmd or ""
+        object.rest = " ".join(object.args)
+        object.text  = object.cmd + " " + object.rest
     else:
-        obj.txt = obj.cmd or ""
+        object.text = object.cmd or ""
 
 
-def search(obj, selector, matching=False):
+def search(object, selector, matching=False):
     res = False
     if not selector:
         return res
     for key, value in items(selector):
-        val = getattr(obj, key, None)
+        val = getattr(object, key, None)
         if not val:
             continue
         if matching and value == val:
@@ -177,3 +177,6 @@ def __dir__():
         'parse',
         'search'
     )
+
+
+__all__ = __dir__()

@@ -1,7 +1,7 @@
 # This file is placed in the Public Domain.
 
 
-"handle client events."
+"handle client events"
 
 
 import queue
@@ -21,7 +21,7 @@ class Client(Handler):
         self.olock = threading.RLock()
         Fleet.add(self)
 
-    def announce(self, txt):
+    def announce(self, text):
         pass
 
     def display(self, event):
@@ -29,14 +29,14 @@ class Client(Handler):
             for tme in sorted(event.result):
                 self.dosay(event.channel, event.result[tme])
 
-    def dosay(self, channel, txt):
-        self.say(channel, txt)
+    def dosay(self, channel, text):
+        self.say(channel, text)
 
-    def raw(self, txt):
+    def raw(self, text):
         raise NotImplementedError("raw")
 
-    def say(self, channel, txt):
-        self.raw(txt)
+    def say(self, channel, text):
+        self.raw(text)
 
     def wait(self):
         pass
@@ -61,7 +61,7 @@ class Output(Client):
             self.display(event)
             self.oqueue.task_done()
 
-    def raw(self, txt):
+    def raw(self, text):
         raise NotImplementedError("raw")
 
     def start(self, daemon=True):
@@ -86,3 +86,7 @@ def __dir__():
         'Client',
         'Output'
    )
+
+
+__all__ = __dir__()
+

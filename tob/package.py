@@ -45,7 +45,7 @@ def getmod(name, path=None):
 
 def inits(names):
     assert Mods.mod
-    modz = []
+    modules = []
     for name in sorted(spl(names)):
         try:
             module = getmod(name)
@@ -53,11 +53,11 @@ def inits(names):
                 continue
             if "init" in dir(module):
                 thr = launch(module.init)
-                modz.append((module, thr))
+                modules.append((module, thr))
         except Exception as ex:
             logging.exception(ex)
             _thread.interrupt_main()
-    return modz
+    return modules
 
 
 def modules():
@@ -73,17 +73,17 @@ def modules():
 
 def sums(checksum):
     assert Mods.mod
-    pth = os.path.join(Mods.mod, "tbl.py")
-    if not os.path.exists(pth):
+    path = os.path.join(Mods.mod, "tbl.py")
+    if not os.path.exists(path):
         logging.info("table is not there.")
         return
-    elif checksum and md5sum(pth) != checksum:
+    elif checksum and md5sum(path) != checksum:
         logging.warning("table checksum error.")
         return
-    tbl = getmod("tbl")
-    if tbl:
-        if "MD5" in dir(tbl):
-            Mods.md5s.update(tbl.MD5)
+    table = getmod("tbl")
+    if table:
+        if "MD5" in dir(table):
+            Mods.md5s.update(table.MD5)
 
 
 def __dir__():
@@ -94,3 +94,6 @@ def __dir__():
         'modules',
         'sums'
     )
+
+
+__all__ = __dir__()

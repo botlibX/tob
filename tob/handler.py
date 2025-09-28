@@ -1,7 +1,7 @@
 # This file is placed in the Public Domain.
 
 
-"handle events."
+"handle events"
 
 
 import queue
@@ -24,7 +24,7 @@ class Event:
         self.origin = ""
         self.rest = ""
         self.result = {}
-        self.txt = ""
+        self.text = ""
         self.type = "event"
 
     def done(self):
@@ -33,8 +33,8 @@ class Event:
     def ready(self):
         self._ready.set()
 
-    def reply(self, txt):
-        self.result[time.time()] = txt
+    def reply(self, text):
+        self.result[time.time()] = text
 
     def wait(self, timeout=None):
         try:
@@ -62,7 +62,7 @@ class Handler:
             event._thr = launch(
                                 func,
                                 event,
-                                name=event.txt and event.txt.split()[0]
+                                name=event.text and event.text.split()[0]
                                )
         else:
             event.ready()
@@ -101,3 +101,6 @@ def __dir__():
         'Event',
         'Handler'
    )
+
+
+__all__ = __dir__()
