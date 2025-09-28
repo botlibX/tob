@@ -66,7 +66,7 @@ class Encoder(json.JSONEncoder):
             return object.items()
         if isinstance(object, Object):
             return vars(object)
-        if isinstance(o, list):
+        if isinstance(object, list):
             return iter(object)
         try:
             return json.JSONEncoder.default(self, object)

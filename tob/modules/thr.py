@@ -27,9 +27,9 @@ def thr(event):
             uptime = int(time.time() - STARTTIME)
         result.append((uptime, thread.name))
     res = []
-    for uptime, txt in sorted(result, key=lambda x: x[0]):
+    for uptime, text in sorted(result, key=lambda x: x[0]):
         lap = elapsed(uptime)
-        res.append(f"{txt}/{lap}")
+        res.append(f"{text}/{lap}")
     if res:
         event.reply(" ".join(res))
     else:

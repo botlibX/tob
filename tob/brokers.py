@@ -19,9 +19,9 @@ class Fleet:
         return list(Fleet.clients.values())
 
     @staticmethod
-    def announce(txt):
+    def announce(text):
         for client in Fleet.all():
-            client.announce(txt)
+            client.announce(text)
 
     @staticmethod
     def display(event):
@@ -33,9 +33,9 @@ class Fleet:
         return Fleet.clients.get(origin, None)
 
     @staticmethod
-    def say(origin, channel, txt):
+    def say(origin, channel, text):
         client = Fleet.get(origin)
-        client.say(channel, txt)
+        client.say(channel, text)
 
     @staticmethod
     def shutdown():

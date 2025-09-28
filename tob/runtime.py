@@ -23,7 +23,7 @@ from .utility import daemon, forever, level, md5sum, pidfile
 from .utility import privileges
 
 
-CHECKSUM = "fbf60375fa2922d85fe099f311a6b5b4"
+CHECKSUM = "b740892adad235295db24945c18bdc98"
 NAME = Workdir.name
 
 
@@ -80,6 +80,7 @@ class Console(CLI):
 def background():
     daemon("-v" in sys.argv)
     privileges()
+    banner()
     boot(False)
     pidfile(pidname(NAME))
     inits(Config.init or Config.default)
@@ -115,6 +116,7 @@ def control():
 
 def service():
     privileges()
+    banner()
     boot(False)
     pidfile(pidname(NAME))
     banner()
@@ -126,10 +128,10 @@ def boot(doparse=True):
     if doparse:
         parse(Config, " ".join(sys.argv[1:]))
         update(Config, Config.sets, empty=False)
-        Workdir.wdr = Config.wdr
-    level(Config.level)
+        Workdir.wdr = Config.wdr or Workdir.wdr or os.path.expanduser(f"~/.{NAME}")
     if "v" in Config.opts:
         banner()
+    level(Config.level)
     if 'e' in Config.opts:
         pkg = sys.modules.get(NAME)
         pth = pkg.__path__[0]
@@ -145,7 +147,7 @@ def boot(doparse=True):
         Mods.package = __name__.split(".", maxsplit=1)[0] + "." + "modules"
     if "a" in Config.opts:
         Config.init = ",".join(modules())
-    setwd(NAME)
+    #setwd(NAME)
     sums(CHECKSUM)
     table(CHECKSUM)
     Commands.add(cmd)

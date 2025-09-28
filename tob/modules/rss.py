@@ -34,7 +34,7 @@ def init():
     if fetcher.seenfn:
         logging.warning(f"since {elapsed(time.time()-fntime(fetcher.seenfn))}")
     else:
-        logging.warning(f"no seen file")
+        logging.warning("no seen file")
     return fetcher
 
 
@@ -124,14 +124,14 @@ class Fetcher(Object):
             write(self.seen, self.seenfn)
         if silent:
             return counter
-        txt = ""
+        text = ""
         feedname = getattr(feed, "name", None)
         if feedname:
-            txt = f"[{feedname}] "
+            text = f"[{feedname}] "
         for obj in result:
-            txt2 = txt + self.display(obj)
+            text2 = text + self.display(obj)
             for bot in Fleet.all():
-                bot.announce(txt2)
+                bot.announce(text2)
         return counter
 
     def run(self, silent=False):
@@ -182,9 +182,9 @@ class Parser:
         return result
 
     @staticmethod
-    def parse(txt, toke="item", items="title,link"):
+    def parse(text, toke="item", items="title,link"):
         result = []
-        for line in Parser.getitems(txt, toke):
+        for line in Parser.getitems(text, toke):
             line = line.strip()
             obj = Object()
             for itm in spl(items):
@@ -244,11 +244,11 @@ class OPML:
         return result
 
     @staticmethod
-    def parse(txt, toke="outline", itemz=None):
+    def parse(text, toke="outline", itemz=None):
         if itemz is None:
-            itemz = ",".join(OPML.getnames(txt))
+            itemz = ",".join(OPML.getnames(text))
         result = []
-        for attrz in OPML.getattrs(txt, toke):
+        for attrz in OPML.getattrs(text, toke):
             if not attrz:
                 continue
             obj = Object()
@@ -268,8 +268,8 @@ class OPML:
 "utilities"
 
 
-def attrs(obj, txt):
-    update(obj, OPML.parse(txt))
+def attrs(obj, text):
+    update(obj, OPML.parse(text))
 
 
 def cdata(line):
@@ -312,8 +312,8 @@ def gettinyurl(url):
     )
     req.add_header("User-agent", useragent("rss fetcher"))
     with urllib.request.urlopen(req) as htm:  # nosec
-        for txt in htm.readlines():
-            line = txt.decode("UTF-8").strip()
+        for text in htm.readlines():
+            line = text.decode("UTF-8").strip()
             i = re.search('data-clipboard-text="(.*?)"', line, re.M)
             if i:
                 return i.groups()
@@ -339,12 +339,12 @@ def striphtml(text):
 
 
 def unescape(text):
-    txt = re.sub(r"\s+", " ", text)
-    return html.unescape(txt)
+    text = re.sub(r"\s+", " ", text)
+    return html.unescape(text)
 
 
-def useragent(txt):
-    return "Mozilla/5.0 (X11; Linux x86_64) " + txt
+def useragent(text):
+    return "Mozilla/5.0 (X11; Linux x86_64) " + text
 
 
 "commands"
@@ -371,8 +371,8 @@ def exp(event):
             obj = Rss()
             update(obj, ooo)
             name = f"url{nrs}"
-            txt = f'<outline name="{name}" display_list="{obj.display_list}" xmlUrl="{obj.rss}"/>'
-            event.reply(" " * 12 + txt)
+            text = f'<outline name="{name}" display_list="{obj.display_list}" xmlUrl="{obj.rss}"/>'
+            event.reply(" " * 12 + text)
         event.reply(" " * 8 + "</outline>")
         event.reply("    <body>")
         event.reply("</opml>")
@@ -388,12 +388,12 @@ def imp(event):
         return
     with importlock:
         with open(fnm, "r", encoding="utf-8") as file:
-            txt = file.read()
+            text = file.read()
         prs = OPML()
         nrs = 0
         nrskip = 0
         insertid = shortid()
-        for obj in prs.parse(txt, "outline", "name,display_list,xmlUrl"):
+        for obj in prs.parse(text, "outline", "name,display_list,xmlUrl"):
             url = obj.xmlUrl
             if url in skipped:
                 continue
@@ -467,8 +467,8 @@ def rss(event):
         for fnm, fed in find("rss"):
             nrs += 1
             elp = elapsed(time.time() - fntime(fnm))
-            txt = fmt(fed)
-            event.reply(f"{nrs} {txt} {elp}")
+            text = fmt(fed)
+            event.reply(f"{nrs} {text} {elp}")
         if not nrs:
             event.reply("no feed found.")
         return

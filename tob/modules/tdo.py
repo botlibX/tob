@@ -16,14 +16,14 @@ class Todo(Object):
 
     def __init__(self):
         Object.__init__(self)
-        self.txt = ''
+        self.text = ''
 
 
 def dne(event):
     if not event.args:
-        event.reply("dne <txt>")
+        event.reply("dne <text>")
         return
-    selector = {'txt': event.args[0]}
+    selector = {'text': event.args[0]}
     nmr = 0
     for fnm, obj in find('todo', selector):
         nmr += 1
@@ -40,12 +40,12 @@ def tdo(event):
         nmr = 0
         for fnm, obj in find('todo'):
             lap = elapsed(time.time()-fntime(fnm))
-            event.reply(f'{nmr} {obj.txt} {lap}')
+            event.reply(f'{nmr} {obj.text} {lap}')
             nmr += 1
         if not nmr:
             event.reply("no todo")
         return
     obj = Todo()
-    obj.txt = event.rest
+    obj.text = event.rest
     write(obj)
     event.done()

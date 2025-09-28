@@ -43,10 +43,10 @@ class UDP(Object):
         self._starttime = time.time()
         self.ready = threading.Event()
 
-    def output(self, txt, addr=None):
+    def output(self, text, addr=None):
         if addr:
             Cfg.addr = addr
-        Fleet.announce(txt.replace("\00", ""))
+        Fleet.announce(text.replace("\00", ""))
 
     def loop(self):
         try:
@@ -55,10 +55,10 @@ class UDP(Object):
             return
         self.ready.set()
         while not self.stopped:
-            (txt, addr) = self._sock.recvfrom(64000)
+            (text, addr) = self._sock.recvfrom(64000)
             if self.stopped:
                 break
-            data = str(txt.rstrip(), "utf-8")
+            data = str(text.rstrip(), "utf-8")
             if not data:
                 break
             self.output(data, addr)
@@ -75,11 +75,11 @@ class UDP(Object):
         launch(self.loop)
 
 
-def toudp(host, port, txt):
+def toudp(host, port, text):
     if DEBUG:
         return
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-    sock.sendto(bytes(txt.strip(), "utf-8"), (host, port))
+    sock.sendto(bytes(text.strip(), "utf-8"), (host, port))
 
 
 def udp(event):
@@ -108,11 +108,11 @@ def udp(event):
             break
         stop = False
         for sock in inp:
-            txt = sock.readline()
-            if not txt:
+            text = sock.readline()
+            if not text:
                 stop = True
                 break
-            size += len(txt)
-            toudp(Cfg.host, Cfg.port, txt)
+            size += len(text)
+            toudp(Cfg.host, Cfg.port, text)
         if stop:
             break

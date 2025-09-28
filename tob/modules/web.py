@@ -74,8 +74,8 @@ class HTTPHandler(BaseHTTPRequestHandler):
     def raw(self, data):
         self.wfile.write(data)
 
-    def send(self, txt):
-        self.wfile.write(bytes(txt, encoding="utf-8"))
+    def send(self, text):
+        self.wfile.write(bytes(text, encoding="utf-8"))
         self.wfile.flush()
 
     def write_header(self, htype='text/plain', size=None):
@@ -117,18 +117,18 @@ class HTTPHandler(BaseHTTPRequestHandler):
             return
         try:
             with open(self.path, "r", encoding="utf-8", errors="ignore") as file:
-                txt = file.read()
+                text = file.read()
                 file.close()
             self.write_header("text/html")
-            self.send(html2(txt))
+            self.send(html2(text))
         except (TypeError, FileNotFoundError, IsADirectoryError):
             self.send_response(404)
             self.end_headers()
 
 
-def html2(txt):
+def html2(text):
     return """<!doctype html>
 <html>
    %s
 </html>
-""" % txt
+""" % text

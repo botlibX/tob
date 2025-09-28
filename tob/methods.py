@@ -95,18 +95,18 @@ def parse(object, text=""):
         else:
             text = ""
     args = []
-    object.args   = getattr(object, "args", [])
-    object.cmd    = getattr(object, "cmd", "")
-    object.gets   = getattr(object, "gets", "")
-    object.index  = getattr(object, "index", None)
-    object.inits  = getattr(object, "inits", "")
-    object.mod    = getattr(object, "mod", "")
-    object.opts   = getattr(object, "opts", "")
+    object.args = getattr(object, "args", [])
+    object.command = getattr(object, "command", "")
+    object.gets = getattr(object, "gets", "")
+    object.index = getattr(object, "index", None)
+    object.inits = getattr(object, "inits", "")
+    object.mod = getattr(object, "mod", "")
+    object.opts = getattr(object, "opts", "")
     object.result = getattr(object, "result", "")
-    object.sets   = getattr(object, "sets", {})
+    object.sets = getattr(object, "sets", {})
     object.silent = getattr(object, "silent", "")
-    object.text    = text or getattr(object, "text", "")
-    object.otext   = object.text or getattr(object, "otext", "")
+    object.text = text or getattr(object, "text", "")
+    object.otext = object.text or getattr(object, "otext", "")
     _nr = -1
     for spli in object.otext.split():
         if spli.startswith("-"):
@@ -136,16 +136,16 @@ def parse(object, text=""):
             continue
         _nr += 1
         if _nr == 0:
-            object.cmd = spli
+            object.command = spli
             continue
         args.append(spli)
     if args:
         object.args = args
-        object.text  = object.cmd or ""
+        object.text  = object.command or ""
         object.rest = " ".join(object.args)
-        object.text  = object.cmd + " " + object.rest
+        object.text  = object.command + " " + object.rest
     else:
-        object.text = object.cmd or ""
+        object.text = object.command or ""
 
 
 def search(object, selector, matching=False):

@@ -21,44 +21,27 @@ sys.path.insert(0, os.getcwd())
 
 from tob.brokers import Fleet
 from tob.clients import Client, Output
-from tob.command import Commands, command, table
+from tob.command import Commands, command
 from tob.handler import Event
 from tob.methods import parse
 from tob.objects import Object, keys
-from tob.package import Mods
-from tob.runtime import boot
+from tob.runtime import Config, boot
 from tob.threads import launch
-from tob.utility import DEBUG, elapsed, level
+from tob.utility import elapsed, level
 from tob.workdir import Workdir, skel
 
 
-CHECKSUM = ""
+import tob.utility
+tob.utility.DEBUG = True
+
+
 NAME = Workdir.name
 STARTTIME = time.time()
 
 
-DEBUG = True
-
-
-events  = queue.Queue()
+events = queue.Queue()
 paylock = _thread.allocate_lock()
-rand    = random.SystemRandom()
-
-
-class Config:
-
-    debug    = False
-    gets     = {}
-    index    = None
-    init     = ""
-    level    = "warn"
-    md5      = True
-    moddir   = "mods"
-    opts     = ""
-    otxt     = ""
-    sets     = {}
-    verbose  = False
-    version  = 102
+random = random.SystemRandom()
 
 
 class CLI(Client):
@@ -67,12 +50,12 @@ class CLI(Client):
         Client.__init__(self)
         self.register("command", command)
 
-    def dosay(self, channel, txt):
-        self.raw(txt)
+    def dosay(self, channel, text):
+        self.raw(text)
 
-    def raw(self, txt):
+    def raw(self, text):
         if "v" in Config.opts:
-            print(txt)
+            print(text)
 
 
 class Buffer(Output):
@@ -81,12 +64,12 @@ class Buffer(Output):
         Output.__init__(self)
         self.register("command", command)
 
-    def dosay(self, channel, txt):
-        self.raw(txt)
+    def dosay(self, channel, text):
+        self.raw(text)
 
-    def raw(self, txt):
+    def raw(self, text):
         if "v" in Config.opts:
-            print(txt)
+            print(text)
 
 
 class Pool:
@@ -98,12 +81,10 @@ class Pool:
 
     @staticmethod
     def add(clt):
-        "add client to pool."
         Pool.clients.append(clt)
 
     @staticmethod
     def init(clz, nr=None):
-        "initialize client pool."
         Pool.nrcpu = nr or os.cpu_count()
         for _x in range(Pool.nrcpu):
             clt = clz()
@@ -112,18 +93,12 @@ class Pool:
 
     @staticmethod
     def put(evt):
-        "dispatch to client."
         with Pool.lock:
             if Pool.nrlast >= Pool.nrcpu-1:
                 Pool.nrlast = 0
             clt = Pool.clients[Pool.nrlast]
             clt.put(evt)
             Pool.nrlast += 1
-
-
-def banner():
-    tme = time.ctime(time.time()).replace("  ", " ")
-    print(f"{NAME.upper()} {Config.version} TINDER since {tme} ({Config.level.upper()})")
 
 
 def consume():
@@ -136,18 +111,18 @@ def consume():
             os._exit(0)
 
 
-def payload(cmds):
+def payload(commands):
     with paylock:
         nmr = 0
-        cmdz = sorted(keys(cmds))
+        cmdz = sorted(keys(commands))
         if "s" in Config.opts:
-            rand.shuffle(cmdz)
+            random.shuffle(cmdz)
         todo = []
         for cmd in cmdz:
-            examples = getattr(cmds, cmd)
+            examples = getattr(commands, cmd)
             for example in examples:
                 event = Event()
-                event.txt = cmd + " " + example
+                event.text = cmd + " " + example
                 event.type = "command"
                 todo.append(event)
         for event in todo:
@@ -177,46 +152,43 @@ def wrap(function):
 def main():
     nrcommand = 0
     parse(Config, " ".join(sys.argv[1:]))
-    boot()
     Workdir.wdr = ".test"
-    if "v" in Config.opts:
-        banner()
     if "f" not in Config.opts:
         if os.path.exists(Workdir.wdr):
             shutil.rmtree(Workdir.wdr)
+    boot()
     level(Config.level)
     skel()
-    table(CHECKSUM)
-    nrs = Config.index or 1
-    thrs = []
+    number = Config.index or 1
+    threads = []
     if "z" in Config.opts:
         Pool.init(Buffer)
     else:
         Pool.init(Buffer, 1)
-    for _nr in range(nrs):
-        thrs.append(launch(payload, pre))
-    for thr in thrs:
+    for _nr in range(number):
+        threads.append(launch(payload, pre))
+    for thr in threads:
         nr = thr.join()
         if nr:
             nrcommand += nr
-    thrs = []
-    for _nr in range(nrs):
-        thrs.append(launch(payload, param))
-    for thr in thrs:
+    threads = []
+    for _nr in range(number):
+        threads.append(launch(payload, param))
+    for thr in threads:
         nr = thr.join()
         if nr:
             nrcommand += nr
-    thrs = []
-    for _nr in range(nrs):
-        thrs.append(launch(payload,  post))
-    for thr in thrs:
+    threads = []
+    for _nr in range(number):
+        threads.append(launch(payload,  post))
+    for thr in threads:
         nr = thr.join()
         if nr:
             nrcommand += nr
     launch(consume)
     events.join()
     Fleet.shutdown()
-    return nrs, nrcommand
+    return number, nrcommand
 
 
 param = Object()
@@ -265,5 +237,5 @@ if __name__ == "__main__":
     if "v" in Config.opts:
         print(f"{Pool.nrcpu} cpu's used")
         print(f"{nrevents} events left.")
-        print(f"total: {lap} nrs: {nrz} cmds: {commandz} call: %.6fs" % percall)
+        print(f"total: {lap} nrs: {nrz} commands: {commandz} call: %.6fs" % percall)
     sys.exit()

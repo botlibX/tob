@@ -72,8 +72,8 @@ class RESTHandler(BaseHTTPRequestHandler):
         self._ip = self.client_address[0]
         self._size = 0
 
-    def send(self, txt):
-        self.wfile.write(bytes(txt, "utf-8"))
+    def send(self, text):
+        self.wfile.write(bytes(text, "utf-8"))
         self.wfile.flush()
 
     def write_header(self, htype='text/plain'):
@@ -89,27 +89,27 @@ class RESTHandler(BaseHTTPRequestHandler):
             return
         if self.path == "/":
             self.write_header("text/html")
-            txt = ""
+            text = ""
             for fnm in types():
-                txt += f'<a href="http://{Config.hostname}:{Config.port}/{fnm}">{fnm}</a><br>\n'
-            self.send(html(txt.strip()))
+                text += f'<a href="http://{Config.hostname}:{Config.port}/{fnm}">{fnm}</a><br>\n'
+            self.send(html(text.strip()))
             return
         fnm = Workdir.wdr + os.sep + "store" + self.path
         fnm = os.path.abspath(fnm)
         if os.path.isdir(fnm):
             self.write_header("text/html")
-            txt = ""
+            text = ""
             for fnn in os.listdir(fnm):
                 filename = self.path  + os.sep + fnn
-                txt += f'<a href="http://{Config.hostname}:{Config.port}/{filename}">{filename}</a><br>\n'
-            self.send(txt.strip())
+                text += f'<a href="http://{Config.hostname}:{Config.port}/{filename}">{filename}</a><br>\n'
+            self.send(text.strip())
             return
         try:
             with open(fnm, "r", encoding="utf-8") as file:
-                txt = file.read()
+                text = file.read()
                 file.close()
             self.write_header("text/html")
-            self.send(html(txt))
+            self.send(html(text))
         except (TypeError, FileNotFoundError, IsADirectoryError) as ex:
             self.send_response(404)
             logging.exception(ex)
@@ -119,9 +119,9 @@ class RESTHandler(BaseHTTPRequestHandler):
         pass
 
 
-def html(txt):
+def html(text):
     return """<!doctype html>
 <html>
    %s
 </html>
-""" % txt
+""" % text

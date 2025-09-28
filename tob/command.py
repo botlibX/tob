@@ -21,32 +21,32 @@ class Commands:
     names = {}
 
     @staticmethod
-    def add(func):
-        name = func.__name__
-        modname = func.__module__.split(".")[-1]
-        Commands.commands[name] = func
+    def add(function):
+        name = function.__name__
+        modname = function.__module__.split(".")[-1]
+        Commands.commands[name] = function
         Commands.names[name] = modname
 
     @staticmethod
-    def get(cmd):
-        func = Commands.commands.get(cmd, None)
-        if func:
-            return func
-        name = Commands.names.get(cmd, None)
+    def get(command):
+        function = Commands.commands.get(command, None)
+        if function:
+            return function
+        name = Commands.names.get(command, None)
         if not name:
             return
         module = getmod(name)
         if not module:
             return
         scan(module)
-        return Commands.commands.get(cmd, None)
+        return Commands.commands.get(command, None)
 
 
 def command(event):
     parse(event)
-    func = Commands.get(event.cmd)
-    if func:
-        func(event)
+    function = Commands.get(event.command)
+    if function:
+        function(event)
         Fleet.display(event)
     event.ready()
 
@@ -56,7 +56,7 @@ def scan(module):
         if key.startswith("cb"):
             continue
         if 'event' in inspect.signature(command).parameters:
-            Commands.add(cmdz)
+            Commands.add(command)
 
 
 def scanner(names=""):

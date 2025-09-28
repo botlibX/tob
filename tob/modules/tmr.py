@@ -24,7 +24,7 @@ def init():
         nrs += 1
         diff = float(obj.time) - time.time()
         if diff > 0:
-            timer = Timed(diff, Fleet.announce, obj.txt)
+            timer = Timed(diff, Fleet.announce, obj.text)
             timer.start()
         else:
             obj.__deleted__ = True
@@ -83,22 +83,22 @@ def get_hour(daystr):
     return hmsres
 
 
-def get_time(txt):
+def get_time(text):
     try:
-        target = get_day(txt)
+        target = get_day(text)
     except NoDate:
         target = to_day(today())
-    hour =  get_hour(txt)
+    hour =  get_hour(text)
     if hour:
         target += hour
     return target
 
 
-def parse_time(txt):
+def parse_time(text):
     seconds = 0
     target = 0
-    txt = str(txt)
-    for word in txt.split():
+    text = str(text)
+    for word in text.split():
         if word.startswith("+"):
             seconds = int(word[1:])
             return time.time() + seconds
@@ -107,10 +107,10 @@ def parse_time(txt):
             return time.time() - seconds
     if not target:
         try:
-            target = get_day(txt)
+            target = get_day(text)
         except NoDate:
             target = to_day(today())
-        hour =  get_hour(txt)
+        hour =  get_hour(text)
         if hour:
             target += hour
     return target
@@ -146,7 +146,7 @@ def tmr(event):
                 continue
             lap = float(obj.time) - time.time()
             if lap > 0:
-                event.reply(f'{nmr} {obj.txt} {elapsed(lap)}')
+                event.reply(f'{nmr} {obj.text} {elapsed(lap)}')
                 nmr += 1
         if not nmr:
             event.reply("no timers.")
@@ -176,12 +176,12 @@ def tmr(event):
         event.reply("already passed given time.")
         return result
     diff = target - time.time()
-    txt = " ".join(event.args[1:])
-    timer = Timed(diff, Fleet.say, event.origin, event.channel, txt)
+    text = " ".join(event.args[1:])
+    timer = Timed(diff, Fleet.say, event.origin, event.channel, text)
     timer.channel = event.channel
     timer.origin = event.origin
     timer.time = target
-    timer.txt = txt
+    timer.text = text
     write(timer)
     launch(timer.start)
     event.reply("ok " + elapsed(diff))

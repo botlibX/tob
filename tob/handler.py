@@ -20,6 +20,7 @@ class Event:
         self._thr = None
         self.args = []
         self.channel = ""
+        self.command = ""
         self.ctime = time.time()
         self.origin = ""
         self.rest = ""

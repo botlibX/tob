@@ -43,13 +43,13 @@ def init():
         return irc
 
 
-def rlog(loglevel, txt, ignore=None):
+def rlog(loglevel, text, ignore=None):
     if ignore is None:
         ignore = []
     for ign in ignore:
-        if ign in str(txt):
+        if ign in str(text):
             return
-    logging.log(LEVELS.get(loglevel), txt)
+    logging.log(LEVELS.get(loglevel), text)
 
 
 class Config:
@@ -90,7 +90,7 @@ class Event(IEvent):
         self.orig = ""
         self.rawstr = ""
         self.rest = ""
-        self.txt = ""
+        self.text = ""
 
 
 class TextWrap(textwrap.TextWrapper):
@@ -146,9 +146,9 @@ class IRC(Output):
         self.register("QUIT", cb_quit)
         self.register("366", cb_ready)
 
-    def announce(self, txt):
+    def announce(self, text):
         for channel in self.channels:
-            self.say(channel, txt)
+            self.say(channel, text)
 
     def connect(self, server, port=6667):
         self.state.nrconnect += 1
@@ -179,10 +179,10 @@ class IRC(Output):
             return True
         return False
 
-    def direct(self, txt):
+    def direct(self, text):
         with saylock:
             time.sleep(2.0)
-            self.raw(txt)
+            self.raw(text)
 
     def disconnect(self):
         try:
@@ -192,22 +192,22 @@ class IRC(Output):
 
     def display(self, event):
         for key in sorted(event.result, key=lambda x: x):
-            txt = event.result.get(key)
-            if not txt:
+            text = event.result.get(key)
+            if not text:
                 continue
             textlist = []
-            txtlist = wrapper.wrap(txt)
-            if len(txtlist) > 3:
-                self.extend(event.channel, txtlist[3:])
-                textlist = txtlist[:3]
+            textlist = wrapper.wrap(text)
+            if len(textlist) > 3:
+                self.extend(event.channel, textlist[3:])
+                textlist = textlist[:3]
             else:
-                textlist = txtlist
+                textlist = textlist
             _nr = -1
-            for txt in textlist:
+            for text in textlist:
                 _nr += 1
-                self.dosay(event.channel, txt)
-            if len(txtlist) > 3:
-                length = len(txtlist) - 3
+                self.dosay(event.channel, text)
+            if len(textlist) > 3:
+                length = len(textlist) - 3
                 self.say(event.channel, f"use !mre to show more (+{length})")
 
     def docommand(self, cmd, *args):
@@ -217,11 +217,11 @@ class IRC(Output):
             elif len(args) == 1:
                 self.raw(f"{cmd.upper()} {args[0]}")
             elif len(args) == 2:
-                txt = " ".join(args[1:])
-                self.raw(f"{cmd.upper()} {args[0]} :{txt}")
+                text = " ".join(args[1:])
+                self.raw(f"{cmd.upper()} {args[0]} :{text}")
             elif len(args) >= 3:
-                txt = " ".join(args[2:])
-                self.raw("{cmd.upper()} {args[0]} {args[1]} :{txt}")
+                text = " ".join(args[2:])
+                self.raw("{cmd.upper()} {args[0]} {args[1]} :{text}")
             if (time.time() - self.state.last) < 5.0:
                 time.sleep(5.0)
             self.state.last = time.time()
@@ -243,18 +243,18 @@ class IRC(Output):
                 logging.debug(str(type(ex)) + " " + str(ex))
             time.sleep(self.cfg.sleep)
 
-    def dosay(self, channel, txt):
+    def dosay(self, channel, text):
         self.events.joined.wait()
-        txt = str(txt).replace("\n", "")
-        txt = txt.replace("  ", " ")
-        self.docommand("PRIVMSG", channel, txt)
+        text = str(text).replace("\n", "")
+        text = text.replace("  ", " ")
+        self.docommand("PRIVMSG", channel, text)
 
-    def event(self, txt):
-        event = self.parsing(txt)
+    def event(self, text):
+        event = self.parsing(text)
         cmd = event.command
         if cmd == "PING":
             self.state.pongcheck = True
-            self.docommand("PONG", event.txt or "")
+            self.docommand("PONG", event.text or "")
         elif cmd == "PONG":
             self.state.pongcheck = False
         if cmd == "001":
@@ -270,26 +270,26 @@ class IRC(Output):
             self.state.error = ""
             self.events.joined.set()
         elif cmd == "433":
-            self.state.error = txt
+            self.state.error = text
             nck = self.cfg.nick = self.cfg.nick + "_"
             self.docommand("NICK", nck)
         return event
 
-    def extend(self, channel, txtlist):
+    def extend(self, channel, textlist):
         if channel not in self.cache:
             self.cache[channel] = []
         chanlist = self.cache.get(channel)
-        chanlist.extend(txtlist)
+        chanlist.extend(textlist)
 
-    def gettxt(self, channel):
-        txt = None
+    def gettext(self, channel):
+        text = None
         try:
             che = self.cache.get(channel, None)
             if che:
-                txt = che.pop(0)
+                text = che.pop(0)
         except (KeyError, IndexError):
             pass
-        return txt
+        return text
 
     def joinall(self):
         for channel in self.channels:
@@ -320,11 +320,11 @@ class IRC(Output):
             self.cache[event.channel] = []
         self.oqueue.put_nowait(event)
 
-    def parsing(self, txt):
-        rawstr = str(txt)
+    def parsing(self, text):
+        rawstr = str(text)
         rawstr = rawstr.replace("\u0001", "")
         rawstr = rawstr.replace("\001", "")
-        logging.debug(txt)
+        logging.debug(text)
         obj = Event()
         obj.args = []
         obj.rawstr = rawstr
@@ -341,18 +341,18 @@ class IRC(Output):
                 obj.command = arguments[1]
                 obj.type = obj.command
             if len(arguments) > 2:
-                txtlist = []
+                textlist = []
                 adding = False
                 for arg in arguments[2:]:
                     if arg.count(":") <= 1 and arg.startswith(":"):
                         adding = True
-                        txtlist.append(arg[1:])
+                        textlist.append(arg[1:])
                         continue
                     if adding:
-                        txtlist.append(arg)
+                        textlist.append(arg)
                     else:
                         obj.arguments.append(arg)
-                obj.txt = " ".join(txtlist)
+                obj.text = " ".join(textlist)
         else:
             obj.command = obj.orig
             obj.orig = self.cfg.server
@@ -367,17 +367,17 @@ class IRC(Output):
             obj.channel = target
         else:
             obj.channel = obj.nick
-        if not obj.txt:
-            obj.txt = rawstr.split(":", 2)[-1]
-        if not obj.txt and len(arguments) == 1:
-            obj.txt = arguments[1]
-        splitted = obj.txt.split()
+        if not obj.text:
+            obj.text = rawstr.split(":", 2)[-1]
+        if not obj.text and len(arguments) == 1:
+            obj.text = arguments[1]
+        splitted = obj.text.split()
         if len(splitted) > 1:
             obj.args = splitted[1:]
         if obj.args:
             obj.rest = " ".join(obj.args)
         obj.orig = object.__repr__(self)
-        obj.txt = obj.txt.strip()
+        obj.text = obj.text.strip()
         obj.type = obj.command
         return obj
 
@@ -404,20 +404,20 @@ class IRC(Output):
                 self.stop()
                 return None
         try:
-            txt = self.buffer.pop(0)
+            text = self.buffer.pop(0)
         except IndexError:
-            txt = ""
-        return self.event(txt)
+            text = ""
+        return self.event(text)
 
-    def raw(self, txt):
-        txt = txt.rstrip()
-        rlog("info", txt, IGNORE)
-        txt = txt[:500]
-        txt += "\r\n"
-        txt = bytes(txt, "utf-8")
+    def raw(self, text):
+        text = text.rstrip()
+        rlog("info", text, IGNORE)
+        text = text[:500]
+        text += "\r\n"
+        text = bytes(text, "utf-8")
         if self.sock:
             try:
-                self.sock.send(txt)
+                self.sock.send(text)
             except (
                 OSError,
                 ssl.SSLError,
@@ -456,10 +456,10 @@ class IRC(Output):
             return len(self.cache.get(chan, []))
         return 0
 
-    def say(self, channel, txt):
+    def say(self, channel, text):
         event = Event()
         event.channel = channel
-        event.reply(txt)
+        event.reply(text)
         self.oput(event)
 
     def some(self):
@@ -467,10 +467,10 @@ class IRC(Output):
         if not self.sock:
             return
         inbytes = self.sock.recv(512)
-        txt = str(inbytes, "utf-8")
-        if txt == "":
+        text = str(inbytes, "utf-8")
+        if text == "":
             raise ConnectionResetError
-        self.state.lastline += txt
+        self.state.lastline += text
         splitted = self.state.lastline.split("\r\n")
         for line in splitted[:-1]:
             self.buffer.append(line)
@@ -520,7 +520,7 @@ def cb_cap(event):
 def cb_error(event):
     bot = Fleet.get(event.origin)
     bot.state.nrerror += 1
-    bot.state.error = event.txt
+    bot.state.error = event.text
     logging.debug(fmt(event))
 
 
@@ -556,27 +556,27 @@ def cb_001(event):
 
 def cb_notice(event):
     bot = Fleet.get(event.origin)
-    if event.txt.startswith("VERSION"):
-        txt = f"\001VERSION {NAME.upper()} 140 - {bot.cfg.username}\001"
-        bot.docommand("NOTICE", event.channel, txt)
+    if event.text.startswith("VERSION"):
+        text = f"\001VERSION {NAME.upper()} 140 - {bot.cfg.username}\001"
+        bot.docommand("NOTICE", event.channel, text)
 
 
 def cb_privmsg(event):
     bot = Fleet.get(event.origin)
     if not bot.cfg.commands:
         return
-    if event.txt:
-        if event.txt[0] in [
+    if event.text:
+        if event.text[0] in [
             "!",
         ]:
-            event.txt = event.txt[1:]
-        elif event.txt.startswith(f"{bot.cfg.nick}:"):
-            event.txt = event.txt[len(bot.cfg.nick) + 1 :]
+            event.text = event.text[1:]
+        elif event.text.startswith(f"{bot.cfg.nick}:"):
+            event.text = event.text[len(bot.cfg.nick) + 1 :]
         else:
             return
-        if event.txt:
-            event.txt = event.txt[0].lower() + event.txt[1:]
-        if event.txt:
+        if event.text:
+            event.text = event.text[0].lower() + event.text[1:]
+        if event.text:
             launch(command, event)
 
 
@@ -584,7 +584,7 @@ def cb_quit(event):
     bot = Fleet.get(event.origin)
     logging.debug(f"quit from {bot.cfg.server}")
     bot.state.nrerror += 1
-    bot.state.error = event.txt
+    bot.state.error = event.text
     if event.orig and event.origin in bot.zelf:
         bot.stop()
 
@@ -620,8 +620,8 @@ def mre(event):
         event.reply(f"no output in {event.channel} cache.")
         return
     for _x in range(3):
-        txt = bot.gettxt(event.channel)
-        event.reply(txt)
+        text = bot.gettext(event.channel)
+        event.reply(text)
     size = bot.size(event.channel)
     if size != 0:
         event.reply(f"{size} more in cache")
@@ -633,8 +633,8 @@ def pwd(event):
         return
     arg1 = event.args[0]
     arg2 = event.args[1]
-    txt = f"\x00{arg1}\x00{arg2}"
-    enc = txt.encode("ascii")
+    text = f"\x00{arg1}\x00{arg2}"
+    enc = text.encode("ascii")
     base = base64.b64encode(enc)
     dcd = base.decode("ascii")
     event.reply(dcd)
