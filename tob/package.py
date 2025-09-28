@@ -1,7 +1,7 @@
 # This file is placed in the Public Domain.
 
 
-"loading modules on demand."
+"loading modules on demand"
 
 
 import logging
@@ -20,7 +20,7 @@ lock = threading.RLock()
 
 class Mods:
 
-    ignore = "mbx,rst,udp,web"
+    ignore = ""
     md5s = {}
     mod = ""
     package = ""

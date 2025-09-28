@@ -38,9 +38,9 @@ class Cache:
             Cache.add(path, object)
 
 
-def find(clz, selector={}, removed=False, matching=False):
-    clz = long(clz)
-    for pth in fns(clz):
+def find(type, selector={}, removed=False, matching=False):
+    type = long(type)
+    for pth in fns(type):
         object = Cache.get(pth)
         if not object:
             object = Object()
@@ -53,33 +53,33 @@ def find(clz, selector={}, removed=False, matching=False):
         yield pth, object
 
 
-def fns(clz):
-    pth = store(clz)
-    for rootdir, dirs, _files in os.walk(pth, topdown=False):
-        for dname in dirs:
-            ddd = os.path.join(rootdir, dname)
-            for fll in os.listdir(ddd):
-                yield os.path.join(ddd, fll)
+def fns(type):
+    path = store(type)
+    for rootdir, dirs, _files in os.walk(path, topdown=False):
+        for dirname in dirs:
+            fullpath = os.path.join(rootdir, dirname)
+            for filename in os.listdir(fullpath):
+                yield os.path.join(fullpath, filename)
 
 
 def last(object, selector={}):
-    result = sorted(find(fqn(object), selector), key=lambda x: fntime(x[0]))
-    res = ""
-    if result:
-        inp = result[-1]
-        update(object, inp[-1])
-        res = inp[0]
-    return res
+    objects = sorted(find(fqn(object), selector), key=lambda x: fntime(x[0]))
+    path = ""
+    if objects:
+        input = objects[-1]
+        update(object, input[-1])
+        path = input[0]
+    return path
 
 
 def read(object, path):
     with Cache.lock:
-        with open(path, "r", encoding="utf-8") as fpt:
+        with open(path, "r", encoding="utf-8") as filepointer:
             try:
-                update(object, load(fpt))
-            except json.decoder.JSONDecodeError as ex:
-                ex.add_note(path)
-                raise ex
+                update(object, load(filepointer))
+            except json.decoder.JSONDecodeError as exception:
+                exeption.add_note(path)
+                raise exception
 
 
 def write(object, path=None):
@@ -87,8 +87,8 @@ def write(object, path=None):
         if path is None:
             path = getpath(object)
         cdir(path)
-        with open(path, "w", encoding="utf-8") as fpt:
-            dump(object, fpt, indent=4)
+        with open(path, "w", encoding="utf-8") as filepointer:
+            dump(object, filepointer, indent=4)
         Cache.update(path, object)
         return path
 

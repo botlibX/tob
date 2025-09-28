@@ -1,7 +1,7 @@
 # This file is placed in the Public Domain.
 
 
-"the dirty bag."
+"the dirty bag"
 
 
 import hashlib

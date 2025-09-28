@@ -1,7 +1,7 @@
 # This file is placed in the Public Domain.
 
 
-"all things runtime."
+"all things runtime"
 
 
 import json
@@ -32,6 +32,7 @@ class Config:
     debug = False
     default = "irc,mdl,rss"
     gets = {}
+    ignore = "mbx,rst,udp,web"
     init  = ""
     level = "warn"
     mod = ""
@@ -53,7 +54,7 @@ class CLI(Client):
         self.raw(text)
 
     def raw(self, text):
-        out(text.encode('utf-8', 'replace').decode("utf-8"))
+        output(text.encode('utf-8', 'replace').decode("utf-8"))
 
 
 class Console(CLI):
@@ -145,6 +146,7 @@ def boot(doparse=True):
     else:
         Mods. mod = os.path.join(os.path.dirname(__file__), "modules")
         Mods.package = __name__.split(".", maxsplit=1)[0] + "." + "modules"
+    Mods.ignore = Config.ignore
     if "a" in Config.opts:
         Config.init = ",".join(modules())
     #setwd(NAME)
@@ -213,7 +215,7 @@ def ver(event):
 
 def banner():
     tme = time.ctime(time.time()).replace("  ", " ")
-    out("%s %s since %s (%s)" % (NAME.upper(), Config.version, tme, Config.level.upper()))
+    output("%s %s since %s (%s)" % (NAME.upper(), Config.version, tme, Config.level.upper()))
 
 
 def check(text):
@@ -227,7 +229,7 @@ def check(text):
     return False
 
 
-def out(text):
+def output(text):
     print(text)
     sys.stdout.flush()
 
@@ -235,14 +237,14 @@ def out(text):
 "runtime"
 
 
-def wrapped(func):
+def wrapped(function):
     try:
-        func()
+        function()
     except (KeyboardInterrupt, EOFError):
-        out("")
+        output("")
 
 
-def wrap(func):
+def wrap(function):
     import termios
     old = None
     try:
@@ -250,7 +252,7 @@ def wrap(func):
     except termios.error:
         pass
     try:
-        wrapped(func)
+        wrapped(function)
     finally:
         if old:
             termios.tcsetattr(sys.stdin.fileno(), termios.TCSADRAIN, old)
