@@ -17,22 +17,22 @@ from .command import Commands, command, scanner, table
 from .methods import parse
 from .handler import Event
 from .objects import update
-from .workdir import Workdir, pidname, setwd
+from .workdir import Workdir, pidname
 from .package import Mods, getmod, inits, modules, sums
 from .utility import daemon, forever, level, md5sum, pidfile
 from .utility import privileges
 
 
-CHECKSUM = "b740892adad235295db24945c18bdc98"
+CHECKSUM = ""
 NAME = Workdir.name
 
 
 class Config:
 
     debug = False
-    default = "irc,mdl,rss"
+    default = "irc,rss"
     gets = {}
-    ignore = "mbx,rst,udp,web"
+    ignore = ""
     init  = ""
     level = "warn"
     mod = ""
@@ -75,9 +75,6 @@ class Console(CLI):
         return evt
 
 
-"scripts"
-
-
 def background():
     daemon("-v" in sys.argv)
     privileges()
@@ -106,6 +103,7 @@ def control():
     Commands.add(md5)
     Commands.add(srv)
     Commands.add(tbl)
+    Commands.add(ver)
     csl = CLI()
     evt = Event()
     evt.origin = repr(csl)
@@ -140,12 +138,12 @@ def boot(doparse=True):
         pth = os.path.join(pth, 'share', NAME,  'examples')
         Mods.mod = Config.mod = pth
         Mods.package = "mods"
-    elif "m" in Config.opts:
-        Mods.mod = Config.mod = "mods"
+    if "m" in Config.opts:
+        Mods.mods.append(Config.mod or "mods")
         Mods.package = "mods"
-    else:
-        Mods. mod = os.path.join(os.path.dirname(__file__), "modules")
-        Mods.package = __name__.split(".", maxsplit=1)[0] + "." + "modules"
+    Mods.mods.append(os.path.join(os.path.dirname(__file__), "modules"))
+    Mods.mods.append(os.path.join(os.path.dirname(__file__), "network"))
+    Mods.package = __name__.split(".", maxsplit=1)[0] + "." + "modules"
     Mods.ignore = Config.ignore
     if "a" in Config.opts:
         Config.init = ",".join(modules())
@@ -153,23 +151,7 @@ def boot(doparse=True):
     sums(CHECKSUM)
     table(CHECKSUM)
     Commands.add(cmd)
-    Commands.add(ver)
     logging.info("workdir is %s", Workdir.wdr)
-
-
-"commands"
-
-
-def cmd(event):
-    event.reply(",".join(sorted(Commands.names)))
-
-
-def md5(event):
-    tbl = getmod("tbl")
-    if tbl:
-        event.reply(md5sum(tbl.__file__))
-    else:
-        event.reply("table is not there.")
 
 
 TXT = """[Unit]
@@ -184,6 +166,18 @@ ExecStart=/home/%s/.local/bin/%s -s
 
 [Install]
 WantedBy=multi-user.target"""
+
+
+def cmd(event):
+    event.reply(",".join(sorted(Commands.names)))
+
+
+def md5(event):
+    tbl = getmod("tbl")
+    if tbl:
+        event.reply(md5sum(tbl.__file__))
+    else:
+        event.reply("table is not there.")
 
 
 def srv(event):
@@ -215,7 +209,7 @@ def ver(event):
 
 def banner():
     tme = time.ctime(time.time()).replace("  ", " ")
-    output("%s %s since %s (%s)" % (NAME.upper(), Config.version, tme, Config.level.upper()))
+    output("%s %s since %s (%s)" % (NAME.upper()[::-1], Config.version, tme, Config.level.upper()))
 
 
 def check(text):

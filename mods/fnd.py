@@ -4,10 +4,10 @@
 import time
 
 
-from ..caching import find
-from ..methods import fmt
-from ..utility import elapsed, fntime
-from ..workdir import long, skel, types
+from tob.caching import find
+from tob.methods import fmt
+from tob.utility import elapsed, fntime
+from tob.workdir import long, skel, types
 
 
 def fnd(event):

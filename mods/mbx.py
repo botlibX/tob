@@ -6,10 +6,10 @@ import os
 import time
 
 
-from ..disk   import find, write
-from ..method import fmt
-from ..object import Object, keys, update
-from ..utils  import elapsed, extract_date, spl
+from tob.caching import find, write
+from tob.methods import fmt
+from tob.objects import Object, keys, update
+from tob.utility import elapsed, extract_date, spl
 
 
 class Email(Object):

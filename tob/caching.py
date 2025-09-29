@@ -15,9 +15,11 @@ from .workdir import getpath, long, store
 from .utility import cdir, fntime
 
 
+lock = threading.RLock()
+
+
 class Cache:
 
-    lock = threading.RLock()
     objects = {}
 
     @staticmethod
@@ -73,17 +75,17 @@ def last(object, selector={}):
 
 
 def read(object, path):
-    with Cache.lock:
+    with lock:
         with open(path, "r", encoding="utf-8") as filepointer:
             try:
                 update(object, load(filepointer))
             except json.decoder.JSONDecodeError as exception:
-                exeption.add_note(path)
+                exception.add_note(path)
                 raise exception
 
 
 def write(object, path=None):
-    with Cache.lock:
+    with lock:
         if path is None:
             path = getpath(object)
         cdir(path)

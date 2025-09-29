@@ -42,13 +42,13 @@ class Commands:
         return Commands.commands.get(command, None)
 
 
-def command(event):
-    parse(event)
-    function = Commands.get(event.command)
+def command(evt):
+    parse(evt)
+    function = Commands.get(evt.command)
     if function:
-        function(event)
-        Fleet.display(event)
-    event.ready()
+        function(evt)
+        Fleet.display(evt)
+    evt.ready()
 
 
 def scan(module):
@@ -61,11 +61,7 @@ def scan(module):
 
 def scanner(names=""):
     res = []
-    assert Mods.mod
-    if not os.path.exists(Mods.mod):
-        logging.info("modules directory is not set.")
-        return res
-    logging.info("scanning %s", Mods.mod)
+    assert Mods.mods
     for nme in sorted(modules()):
         if names and nme not in spl(names):
             continue
@@ -78,10 +74,6 @@ def scanner(names=""):
 
 
 def table(checksum=""):
-    path = os.path.join(Mods.mod, "tbl.py")
-    if os.path.exists(path):
-        if checksum and md5sum(path) != checksum:
-            logging.warning("table checksum error.")
     table = getmod("tbl")
     if table and "NAMES" in dir(table):
         Commands.names.update(table.NAMES)

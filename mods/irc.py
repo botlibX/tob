@@ -11,16 +11,16 @@ import threading
 import time
 
 
-from ..brokers import Fleet
-from ..caching import last, write
-from ..clients import Output
-from ..command import command
-from ..handler import Event as IEvent
-from ..methods import edit, fmt
-from ..objects import Object, keys
-from ..threads import launch
-from ..utility import LEVELS
-from ..workdir import Workdir, getpath
+from tob.brokers import Fleet
+from tob.caching import last, write
+from tob.clients import Output
+from tob.command import command
+from tob.handler import Event as IEvent
+from tob.methods import edit, fmt
+from tob.objects import Object, keys
+from tob.threads import launch
+from tob.utility import LEVELS
+from tob.workdir import Workdir, getpath
 
 
 IGNORE = ["PING", "PONG", "PRIVMSG"]

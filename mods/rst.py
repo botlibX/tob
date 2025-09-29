@@ -10,9 +10,9 @@ import time
 from http.server import HTTPServer, BaseHTTPRequestHandler
 
 
-from ..object import Object
-from ..path   import Workdir, types
-from ..thread import launch
+from tob.objects import Object
+from tob.threads import launch
+from tob.workdir import Workdir, types
 
 
 DEBUG = False

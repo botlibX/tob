@@ -10,8 +10,8 @@ import time
 from http.server import HTTPServer, BaseHTTPRequestHandler
 
 
-from ..object import Object
-from ..thread import launch
+from tob.object import Object
+from tob.thread import launch
 
 
 DEBUG = False

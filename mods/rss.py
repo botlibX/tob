@@ -19,13 +19,13 @@ from urllib.error import HTTPError, URLError
 from urllib.parse import quote_plus, urlencode
 
 
-from ..caching import find, last, write
-from ..clients import Fleet
-from ..methods import fmt
-from ..objects import Object, update
-from ..threads import Repeater, launch
-from ..utility import elapsed, fntime, spl
-from ..workdir import getpath
+from tob.caching import find, last, write
+from tob.clients import Fleet
+from tob.methods import fmt
+from tob.objects import Object, update
+from tob.threads import Repeater, launch
+from tob.utility import elapsed, fntime, spl
+from tob.workdir import getpath
 
 
 def init():

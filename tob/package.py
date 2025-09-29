@@ -22,29 +22,32 @@ class Mods:
 
     ignore = ""
     md5s = {}
-    mod = ""
+    mods = []
     package = ""
 
 
 def getmod(name, path=None):
-    assert Mods.mod
-    assert Mods.package
     with lock:
+        assert Mods.mods
+        assert Mods.package
         mname = Mods.package + "." +  name
         module = sys.modules.get(mname, None)
         if module:
             return module
-        if not path:
-            path = Mods.mod
-        pth = os.path.join(path, f"{name}.py")
-        if os.path.exists(pth) and name != "tbl":
-            if Mods.md5s and md5sum(pth) != Mods.md5s.get(name, None):
-                logging.warning("md5 error on %s", pth.split(os.sep)[-1])
-        return importer(mname, pth)
+        mods = Mods.mods
+        if path:
+            mods.append(path)
+        for path in mods:
+            pth = os.path.join(path, f"{name}.py")
+            if os.path.exists(pth) and name != "tbl":
+                if Mods.md5s and md5sum(pth) != Mods.md5s.get(name, None):
+                    logging.warning("md5 error on %s", pth.split(os.sep)[-1])
+            mod = importer(mname, pth)
+            if mod:
+                return mod
 
 
 def inits(names):
-    assert Mods.mod
     modules = []
     for name in sorted(spl(names)):
         try:
@@ -61,25 +64,18 @@ def inits(names):
 
 
 def modules():
-    assert Mods.mod
-    if not os.path.exists(Mods.mod):
-        return []
-    return list({
-            x[:-3] for x in os.listdir(Mods.mod)
+    modules = []
+    for path in Mods.mods:
+        modules.extend(list({
+            x[:-3] for x in os.listdir(path)
             if x.endswith(".py") and not x.startswith("__") and
             x[:-3] not in spl(Mods.ignore)
-           })
+           }))
+    return sorted(modules)
 
 
 def sums(checksum):
-    assert Mods.mod
-    path = os.path.join(Mods.mod, "tbl.py")
-    if not os.path.exists(path):
-        logging.info("table is not there.")
-        return
-    elif checksum and md5sum(path) != checksum:
-        logging.warning("table checksum error.")
-        return
+    assert Mods.mods
     table = getmod("tbl")
     if table:
         if "MD5" in dir(table):
