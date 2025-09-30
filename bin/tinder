@@ -19,8 +19,7 @@ import _thread
 sys.path.insert(0, os.getcwd())
 
 
-from tob.brokers import Fleet
-from tob.clients import Client, Output
+from tob.clients import Client, Fleet, Output
 from tob.command import Commands, command
 from tob.handler import Event
 from tob.methods import parse
