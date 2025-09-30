@@ -10,7 +10,8 @@ import _thread
 
 
 from .brokers import Fleet
-from .handler import Handler
+from .command import command
+from .handler import Event, Handler
 from .threads import launch
 
 
@@ -81,11 +82,43 @@ class Output(Client):
             _thread.interrupt_main()
 
 
+class CLI(Client):
+
+    def __init__(self):
+        Client.__init__(self)
+        self.register("command", command)
+
+    def announce(self, text):
+        self.raw(text)
+
+    def raw(self, text):
+        raise NotImplementedError("raw")
+        output(text.encode('utf-8', 'replace').decode("utf-8"))
+
+
+class Console(CLI):
+
+    def announce(self, text):
+        pass
+
+    def callback(self, event):
+        if not event.text:
+            return
+        super().callback(event)
+        event.wait()
+
+    def poll(self):
+        evt = Event()
+        evt.text = input("> ")
+        evt.type = "command"
+        return evt
+
+
+
 def __dir__():
     return (
+        'CLI',
         'Client',
+        'Console',
         'Output'
    )
-
-
-__all__ = __dir__()

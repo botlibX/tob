@@ -90,6 +90,3 @@ def __dir__():
         'types',
         'wdr'
     )
-
-
-__all__ = __dir__()

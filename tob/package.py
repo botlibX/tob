@@ -4,6 +4,7 @@
 "loading modules on demand"
 
 
+import inspect
 import logging
 import os
 import sys
@@ -15,15 +16,20 @@ from .threads import launch
 from .utility import importer, md5sum, spl
 
 
+NAME = inspect.getmodulename(__file__)
+
+
+j = os.path.join
 lock = threading.RLock()
+path = os.path.dirname(inspect.getfile(importer))
 
 
 class Mods:
 
     ignore = ""
     md5s = {}
-    mods = []
-    package = ""
+    mods = [j(path, "modules"), j(path, "network"), "mods"]
+    package = ".".join([NAME, "mdoules"])
 
 
 def getmod(name, path=None):
@@ -90,6 +96,3 @@ def __dir__():
         'modules',
         'sums'
     )
-
-
-__all__ = __dir__()

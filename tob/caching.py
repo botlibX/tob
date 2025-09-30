@@ -103,6 +103,3 @@ def __dir__():
         'read',
         'write'
     )
-
-
-__all__ = __dir__()

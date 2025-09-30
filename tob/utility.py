@@ -50,6 +50,18 @@ def cdir(path):
     pth.parent.mkdir(parents=True, exist_ok=True)
 
 
+def check(text):
+    args = sys.argv[1:]
+    for arg in args:
+        if not arg.startswith("-"):
+            continue
+        for char in text:
+            if char in arg:
+                return True
+    return False
+
+
+
 def daemon(verbose=False):
     pid = os.fork()
     if pid != 0:
@@ -181,6 +193,11 @@ def md5sum(path):
         return hashlib.md5(text).hexdigest()
 
 
+def output(text):
+    print(text)
+    sys.stdout.flush()
+
+
 def pidfile(filename):
     if os.path.exists(filename):
         os.unlink(filename)
@@ -211,6 +228,7 @@ def spl(text):
 def __dir__():
     return (
         'cdir',
+        'check',
         'daemon',
         'elapsed',
         'extract_date',
@@ -218,10 +236,8 @@ def __dir__():
         'forever',
         'level',
         'md5sum',
+        'output',
         'pidfile',
         'privileges',
         'spl'
     )
-
-
-__all__ = __dir__()

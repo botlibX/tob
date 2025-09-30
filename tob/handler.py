@@ -102,6 +102,3 @@ def __dir__():
         'Event',
         'Handler'
    )
-
-
-__all__ = __dir__()

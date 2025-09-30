@@ -177,6 +177,3 @@ def __dir__():
         'parse',
         'search'
     )
-
-
-__all__ = __dir__()

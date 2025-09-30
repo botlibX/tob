@@ -108,6 +108,3 @@ def __dir__():
         'Thread',
         'launch'
    )
-
-
-__all__ = __dir__()

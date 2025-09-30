@@ -89,6 +89,3 @@ def __dir__():
         'scanner',
         'table'
     )
-
-
-__all__ = __dir__()
