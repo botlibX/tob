@@ -12,13 +12,13 @@ import sys
 import time
 
 
-from .clients import CLI, Console
+from .clients import Client
 from .command import Commands, command, scanner, table 
 from .methods import parse
 from .objects import update
 from .handler import Event
 from .package import Mods, inits, modules, sums
-from .workdir import Workdir
+from .workdir import Workdir, moddir
 from .utility import check, forever, level, md5sum, output
 
 
@@ -43,16 +43,40 @@ class Config:
     wdr = ""
 
 
-class CLI(CLI):
+class CLI(Client):
+
+    def __init__(self):
+        Client.__init__(self)
+        self.register("command", command)
+
+    def announce(self, text):
+        self.raw(text)
 
     def raw(self, text):
         output(text.encode('utf-8', 'replace').decode("utf-8"))
 
 
-class Console(Console):
+class Console(CLI):
 
-    def raw(self, text):
-        output(text.encode('utf-8', 'replace').decode("utf-8"))
+    def announce(self, text):
+        pass
+
+    def callback(self, event):
+        if not event.text:
+            return
+        super().callback(event)
+        event.wait()
+
+    def poll(self):
+        evt = Event()
+        evt.text = input("> ")
+        evt.type = "command"
+        return evt
+
+
+def banner():
+    tme = time.ctime(time.time()).replace("  ", " ")
+    output("%s %s since %s (%s)" % (NAME.upper()[::-1], Config.version, tme, Config.level.upper()))
 
 
 def background():
@@ -70,6 +94,7 @@ def boot(doparse=True):
         parse(Config, " ".join(sys.argv[1:]))
         update(Config, Config.sets, empty=False)
         Workdir.wdr = Config.wdr or Workdir.wdr or os.path.expanduser(f"~/.{NAME}")
+        Mods.mods.append(moddir())
     if "v" in Config.opts:
         banner()
     if "a" in Config.opts:
@@ -117,14 +142,6 @@ def service():
     banner()
     inits(Config.init or Config.default)
     forever()
-
-
-"utilities"
-
-
-def banner():
-    tme = time.ctime(time.time()).replace("  ", " ")
-    output("%s %s since %s (%s)" % (NAME.upper()[::-1], Config.version, tme, Config.level.upper()))
 
 
 "commands"

@@ -1,7 +1,7 @@
 # This file is placed in the Public Domain.
 
 
-"loading modules on demand"
+"loading on demand"
 
 
 import inspect
@@ -14,6 +14,7 @@ import _thread
 
 from .threads import launch
 from .utility import importer, md5sum, spl
+from .workdir import moddir
 
 
 NAME = inspect.getmodulename(__file__)
@@ -45,9 +46,12 @@ def getmod(name, path=None):
             mods.append(path)
         for path in mods:
             pth = os.path.join(path, f"{name}.py")
-            if os.path.exists(pth) and name != "tbl":
-                if Mods.md5s and md5sum(pth) != Mods.md5s.get(name, None):
-                    logging.warning("md5 error on %s", pth.split(os.sep)[-1])
+            if Mods.md5s and os.path.exists(pth) and name != "tbl":
+                if md5sum(pth) != Mods.md5s.get(name, None):
+                    logging.warning(
+                                    "md5 error on %s",
+                                    pth.split(os.sep)[-1]
+                                   )
             mod = importer(mname, pth)
             if mod:
                 return mod

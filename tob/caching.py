@@ -1,7 +1,7 @@
 # This file is placed in the Public Domain.
 
 
-"cache objects on disk"
+"cache objects"
 
 
 import json.decoder
@@ -9,8 +9,9 @@ import os
 import threading
 
 
+from .marshal import dump, load
 from .methods import fqn, deleted, search
-from .objects import Object, dump, load, update
+from .objects import Object, update
 from .workdir import getpath, long, store
 from .utility import cdir, fntime
 

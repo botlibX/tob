@@ -9,9 +9,7 @@ import threading
 import _thread
 
 
-from .brokers import Fleet
-from .command import command
-from .handler import Event, Handler
+from .handler import Handler
 from .threads import launch
 
 
@@ -82,43 +80,49 @@ class Output(Client):
             _thread.interrupt_main()
 
 
-class CLI(Client):
+class Fleet:
 
-    def __init__(self):
-        Client.__init__(self)
-        self.register("command", command)
+    clients = {}
 
-    def announce(self, text):
-        self.raw(text)
-
-    def raw(self, text):
-        raise NotImplementedError("raw")
-        output(text.encode('utf-8', 'replace').decode("utf-8"))
-
-
-class Console(CLI):
-
-    def announce(self, text):
-        pass
-
-    def callback(self, event):
-        if not event.text:
+    @staticmethod
+    def add(client):
+        if not client:
             return
-        super().callback(event)
-        event.wait()
+        Fleet.clients[repr(client)] = client
 
-    def poll(self):
-        evt = Event()
-        evt.text = input("> ")
-        evt.type = "command"
-        return evt
+    @staticmethod
+    def all():
+        return list(Fleet.clients.values())
 
+    @staticmethod
+    def announce(text):
+        for client in Fleet.all():
+            client.announce(text)
+
+    @staticmethod
+    def display(event):
+        client = Fleet.get(event.origin)
+        client.display(event)
+
+    @staticmethod
+    def get(origin):
+        return Fleet.clients.get(origin, None)
+
+    @staticmethod
+    def say(origin, channel, text):
+        client = Fleet.get(origin)
+        client.say(channel, text)
+
+    @staticmethod
+    def shutdown():
+        for client in Fleet.all():
+            client.stop()
+            client.wait()
 
 
 def __dir__():
     return (
-        'CLI',
         'Client',
-        'Console',
+        'Fleet',
         'Output'
    )
