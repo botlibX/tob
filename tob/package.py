@@ -14,7 +14,6 @@ import _thread
 
 from .threads import launch
 from .utility import importer, md5sum, spl
-from .workdir import moddir
 
 
 NAME = inspect.getmodulename(__file__)

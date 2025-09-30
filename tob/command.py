@@ -5,14 +5,12 @@
 
 
 import inspect
-import logging
-import os
 
 
 from .clients import Fleet
 from .methods import parse
 from .package import Mods, getmod, modules
-from .utility import md5sum, spl
+from .utility import spl
 
 
 class Commands:
