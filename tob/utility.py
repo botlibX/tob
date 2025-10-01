@@ -7,10 +7,6 @@
 import hashlib
 import logging
 import time
-import _thread
-
-
-DEBUG = False
 
 
 FORMATS = [
