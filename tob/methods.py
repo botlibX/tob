@@ -62,17 +62,6 @@ def fmt(obj, args=None, skip=None, plain=False, empty=False):
     return txt.strip()
 
 
-def fqn(obj):
-    kin = str(type(obj)).split()[-1][1:-2]
-    if kin == "type":
-        kin = f"{obj.__module__}.{obj.__name__}"
-    return kin
-
-
-def ident(obj):
-    return os.path.join(fqn(obj), *str(datetime.datetime.now()).split())
-
-
 def name(obj):
     typ = type(obj)
     if "__builtins__" in dir(typ):

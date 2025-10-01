@@ -66,7 +66,7 @@ def scanner(names=None):
         return res
     logging.info("scanning %s", Mods.mod)
     for nme in sorted(modules()):
-        if names and nme not in spl(names):
+        if names and nme not in names:
             continue
         module = getmod(nme)
         if not module:

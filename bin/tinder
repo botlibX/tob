@@ -27,7 +27,7 @@ from tob.methods import parse
 from tob.objects import Object, keys
 from tob.package import Mods
 from tob.threads import launch
-from tob.utility import DEBUG, elapsed, level
+from tob.utility import elapsed, level
 from tob.workdir import Workdir, skel
 
 
@@ -36,9 +36,7 @@ NAME = Workdir.name
 STARTTIME = time.time()
 
 
-DEBUG = True
-#Mods.mod = "mods"
-#Mods.package = "mods"
+Mods.debug = True
 Workdir.wdr = ".test"
 
 
@@ -241,7 +239,7 @@ param.ver = [""]
 
 pre = Object()
 pre.cfg = ["nick=mekker", ""]
-pre.imp = ["testing/feeds.opml", ""]
+pre.imp = ["tests/feeds.opml", ""]
 pre.log = ["bla", ""]
 pre.rss = ["http://hnrss.org/newest", ""]
 pre.tdo = ["mekker", ""]

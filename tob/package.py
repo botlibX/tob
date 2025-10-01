@@ -4,6 +4,7 @@
 "modules management"
 
 
+import hashlib
 import importlib
 import importlib.util
 import logging
@@ -14,7 +15,6 @@ import _thread
 
 
 from .threads import launch
-from .utility import md5sum, spl
 
 
 lock = threading.RLock()
@@ -66,7 +66,7 @@ def importer(name, pth):
 
 def inits(names):
     modz = []
-    for name in sorted(spl(names)):
+    for name in names:
         try:
             module = getmod(name)
             if not module:
@@ -78,6 +78,12 @@ def inits(names):
             logging.exception(ex)
             _thread.interrupt_main()
     return modz
+
+
+def md5sum(path):
+    with open(path, "r", encoding="utf-8") as file:
+        txt = file.read().encode("utf-8")
+        return hashlib.md5(txt).hexdigest()
 
 
 def modules():
