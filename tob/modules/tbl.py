@@ -6,7 +6,6 @@
 
 NAMES = {
     "cfg": "irc",
-    "dis": "mdl",
     "dne": "tdo",
     "dpl": "rss",
     "eml": "mbx",
@@ -19,7 +18,6 @@ NAMES = {
     "mbx": "mbx",
     "mre": "irc",
     "nme": "rss",
-    "now": "mdl",
     "pwd": "irc",
     "rem": "rss",
     "req": "req",
@@ -31,8 +29,7 @@ NAMES = {
     "thr": "thr",
     "tmr": "tmr",
     "udp": "udp",
-    "upt": "upt",
-    "wsd": "wsd"
+    "upt": "upt"
 }
 
 MD5 = {
@@ -42,7 +39,6 @@ MD5 = {
     "log": "f5d98c1eebf15123df5b24283b169f9a",
     "lst": "6515f068f67b719d8adb708c2239b8fd",
     "mbx": "6a0163c740a5710b12b7ebfb640cbb65",
-    "mdl": "c4f6d0764f22341e1ffb433771c5418f",
     "req": "793704d64443c4f19512924e294943ea",
     "rss": "e7248dca2496e39553652aa68e95a6d7",
     "rst": "c48a51adfdbab3f12caa9769f13dc11a",
@@ -54,5 +50,4 @@ MD5 = {
     "udp": "7aeb730e390255fc422d05bd080c53b4",
     "upt": "341c6b6125277edf0f51cd974533057a",
     "web": "97b3a7b8c22745489da4cb499c1f2066",
-    "wsd": "8a79e882b0ab492371393513f3d5ea3d",
 }

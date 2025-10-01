@@ -24,7 +24,7 @@ classifiers=[
 
 
 [project.scripts]
-"tob" = "tob.runtime:main"
+"tob" = "tob.network:main"
 
 
 [project.urls]

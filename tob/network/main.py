@@ -218,7 +218,7 @@ def ver(event):
 
 def banner():
     tme = time.ctime(time.time()).replace("  ", " ")
-    out("%s %s since %s %s" % (NAME.upper(), Config.version, tme, Config.level.upper()))
+    out("%s %s since %s %s" % (NAME.upper()[::-1], Config.version, tme, Config.level.upper()))
 
 
 def check(txt):
