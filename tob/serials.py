@@ -1,7 +1,7 @@
 # This file is placed in the Public Domain.
 
 
-"encoder/decoder"
+"json serializer"
 
 
 import json
@@ -15,7 +15,7 @@ class Encoder(json.JSONEncoder):
     def default(self, o):
         if isinstance(o, dict):
             return o.items()
-        if isinstance(o, Object):
+        if issubclass(type(o), Object):
             return vars(o)
         if isinstance(o, list):
             return iter(o)
@@ -28,9 +28,9 @@ class Encoder(json.JSONEncoder):
                 return repr(o)
 
 
-def dump(obj, filepointer, *args, **kw):
+def dump(obj, fp, *args, **kw):
     kw["cls"] = Encoder
-    json.dump(obj, filepointer, *args, **kw)
+    json.dump(obj, fp, *args, **kw)
 
 
 def dumps(obj, *args, **kw):
@@ -38,20 +38,20 @@ def dumps(obj, *args, **kw):
     return json.dumps(obj, *args, **kw)
 
 
-def hook(data):
+def hook(objdict):
     obj = Object()
-    construct(obj, data)
+    construct(obj, objdict)
     return obj
 
 
-def load(filepointer, *args, **kw):
+def load(fp, *args, **kw):
     kw["object_hook"] = hook
-    return json.load(filepointer, *args, **kw)
+    return json.load(fp, *args, **kw)
 
 
-def loads(string, *args, **kw):
+def loads(s, *args, **kw):
     kw["object_hook"] = hook
-    return json.loads(string, *args, **kw)
+    return json.loads(s, *args, **kw)
 
 
 def __dir__():

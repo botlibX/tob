@@ -1,7 +1,7 @@
 # This file is placed in the Public Domain.
 
 
-"the dirty bag"
+"utilities"
 
 
 import hashlib
@@ -50,18 +50,6 @@ def cdir(path):
     pth.parent.mkdir(parents=True, exist_ok=True)
 
 
-def check(text):
-    args = sys.argv[1:]
-    for arg in args:
-        if not arg.startswith("-"):
-            continue
-        for char in text:
-            if char in arg:
-                return True
-    return False
-
-
-
 def daemon(verbose=False):
     pid = os.fork()
     if pid != 0:
@@ -83,7 +71,7 @@ def daemon(verbose=False):
 
 
 def elapsed(seconds, short=True):
-    text = ""
+    txt = ""
     nsec = float(seconds)
     if nsec < 1:
         return f"{nsec:.2f}s"
@@ -104,21 +92,21 @@ def elapsed(seconds, short=True):
     nsec   -= int(minute * minutes)
     sec     = int(nsec)
     if yeas:
-        text += f"{yeas}y"
+        txt += f"{yeas}y"
     if weeks:
         nrdays += weeks * 7
     if nrdays:
-        text += f"{nrdays}d"
-    if short and text:
-        return text.strip()
+        txt += f"{nrdays}d"
+    if short and txt:
+        return txt.strip()
     if hours:
-        text += f"{hours}h"
+        txt += f"{hours}h"
     if minutes:
-        text += f"{minutes}m"
+        txt += f"{minutes}m"
     if sec:
-        text += f"{sec}s"
-    text = text.strip()
-    return text
+        txt += f"{sec}s"
+    txt = txt.strip()
+    return txt
 
 
 def extract_date(daystr):
@@ -154,12 +142,12 @@ def forever():
             break
 
 
-def importer(name, path):
+def importer(name, pth):
     module = None
-    if not os.path.exists(path):
+    if not os.path.exists(pth):
         return module
     try:
-        spec = importlib.util.spec_from_file_location(name, path)
+        spec = importlib.util.spec_from_file_location(name, pth)
         if spec:
             module = importlib.util.module_from_spec(spec)
             if module:
@@ -168,7 +156,7 @@ def importer(name, path):
                     spec.loader.exec_module(module)
                 if DEBUG:
                     module.DEBUG = True
-                logging.info("load %s", path)
+                logging.info("load %s", pth)
     except Exception as ex:
         logging.exception(ex)
         _thread.interrupt_main()
@@ -189,13 +177,8 @@ def level(loglevel="debug"):
 
 def md5sum(path):
     with open(path, "r", encoding="utf-8") as file:
-        text = file.read().encode("utf-8")
-        return hashlib.md5(text).hexdigest()
-
-
-def output(text):
-    print(text)
-    sys.stdout.flush()
+        txt = file.read().encode("utf-8")
+        return hashlib.md5(txt).hexdigest()
 
 
 def pidfile(filename):
@@ -215,12 +198,12 @@ def privileges():
     os.setuid(pwnam2.pw_uid)
 
 
-def spl(text):
+def spl(txt):
     try:
-        result = text.split(",")
+        result = txt.split(",")
     except (TypeError, ValueError):
         result = [
-            text,
+            txt,
         ]
     return [x for x in result if x]
 
@@ -228,7 +211,6 @@ def spl(text):
 def __dir__():
     return (
         'cdir',
-        'check',
         'daemon',
         'elapsed',
         'extract_date',
@@ -236,7 +218,6 @@ def __dir__():
         'forever',
         'level',
         'md5sum',
-        'output',
         'pidfile',
         'privileges',
         'spl'

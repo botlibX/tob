@@ -1,7 +1,7 @@
 # This file is placed in the Public Domain.
 
 
-"run code non-blocking"
+"threading"
 
 
 import logging
@@ -16,14 +16,14 @@ from .methods import name
 
 class Thread(threading.Thread):
 
-    def __init__(self, function, *args, daemon=True, **kwargs):
+    def __init__(self, func, *args, daemon=True, **kwargs):
         super().__init__(None, self.run, None, (), daemon=daemon)
-        self.name = kwargs.get("name", name(function))
+        self.name = kwargs.get("name", name(func))
         self.queue = queue.Queue()
         self.result = None
         self.starttime = time.time()
         self.stopped = threading.Event()
-        self.queue.put((function, args))
+        self.queue.put((func, args))
 
     def __iter__(self):
         return self
@@ -41,9 +41,9 @@ class Thread(threading.Thread):
         return result
 
     def run(self):
-        function, args = self.queue.get()
+        func, args = self.queue.get()
         try:
-            self.result = function(*args)
+            self.result = func(*args)
         except (KeyboardInterrupt, EOFError):
             _thread.interrupt_main()
         except Exception as ex:
@@ -53,9 +53,9 @@ class Thread(threading.Thread):
 
 class Timy(threading.Timer):
 
-    def __init__(self, sleep, function, *args, **kwargs):
-        super().__init__(sleep, function)
-        self.name = kwargs.get("name", name(function))
+    def __init__(self, sleep, func, *args, **kwargs):
+        super().__init__(sleep, func)
+        self.name = kwargs.get("name", name(func))
         self.sleep = sleep
         self.state = {}
         self.state["latest"] = time.time()
@@ -65,18 +65,18 @@ class Timy(threading.Timer):
 
 class Timed:
 
-    def __init__(self, sleep, function, *args, thrname="", **kwargs):
+    def __init__(self, sleep, func, *args, thrname="", **kwargs):
         self.args = args
-        self.function = function
+        self.func = func
         self.kwargs = kwargs
         self.sleep = sleep
-        self.name = thrname or kwargs.get("name", name(function))
+        self.name = thrname or kwargs.get("name", name(func))
         self.target = time.time() + self.sleep
         self.timer = None
 
     def run(self):
         self.timer.latest = time.time()
-        self.function(*self.args)
+        self.func(*self.args)
 
     def start(self):
         self.kwargs["name"] = self.name
@@ -96,8 +96,15 @@ class Repeater(Timed):
         super().run()
 
 
-def launch(function, *args, **kwargs):
-    thread = Thread(function, *args, **kwargs)
+class Formatter(logging.Formatter):
+
+    def format(self, record):
+        record.module = record.module.upper()
+        return logging.Formatter.format(self, record)
+
+
+def launch(func, *args, **kwargs):
+    thread = Thread(func, *args, **kwargs)
     thread.start()
     return thread
 

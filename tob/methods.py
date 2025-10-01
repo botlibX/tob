@@ -1,7 +1,7 @@
 # This file is placed in the Public Domain.
 
 
-"object as the first argument"
+"object functions"
 
 
 import datetime
@@ -42,7 +42,7 @@ def fmt(obj, args=None, skip=None, plain=False, empty=False):
         args = keys(obj)
     if skip is None:
         skip = []
-    text = ""
+    txt = ""
     for key in args:
         if key.startswith("__"):
             continue
@@ -54,12 +54,12 @@ def fmt(obj, args=None, skip=None, plain=False, empty=False):
         if not empty and not value:
             continue
         if plain:
-            text += f"{value} "
+            txt += f"{value} "
         elif isinstance(value, str):
-            text += f'{key}="{value}" '
+            txt += f'{key}="{value}" '
         else:
-            text += f"{key}={value} "
-    return text.strip()
+            txt += f"{key}={value} "
+    return txt.strip()
 
 
 def fqn(obj):
@@ -88,27 +88,28 @@ def name(obj):
     return ""
 
 
-def parse(obj, text=""):
-    if text == "":
-        if "text" in dir(obj):
-            text = obj.text
+
+def parse(obj, txt=None):
+    if txt is None:
+        if "txt" in dir(obj):
+            txt = obj.txt
         else:
-            text = ""
+            txt = ""
     args = []
-    obj.args = getattr(obj, "args", [])
-    obj.command = getattr(obj, "command", "")
-    obj.gets = getattr(obj, "gets", "")
-    obj.index = getattr(obj, "index", None)
-    obj.inits = getattr(obj, "inits", "")
-    obj.mod = getattr(obj, "mod", "")
-    obj.opts = getattr(obj, "opts", "")
+    obj.args   = getattr(obj, "args", [])
+    obj.cmd    = getattr(obj, "cmd", "")
+    obj.gets   = getattr(obj, "gets", "")
+    obj.index  = getattr(obj, "index", None)
+    obj.inits  = getattr(obj, "inits", "")
+    obj.mod    = getattr(obj, "mod", "")
+    obj.opts   = getattr(obj, "opts", "")
     obj.result = getattr(obj, "result", "")
-    obj.sets = getattr(obj, "sets", {})
+    obj.sets   = getattr(obj, "sets", {})
     obj.silent = getattr(obj, "silent", "")
-    obj.text = text or getattr(obj, "text", "")
-    obj.otext = obj.text or getattr(obj, "otext", "")
+    obj.txt    = txt or getattr(obj, "txt", "")
+    obj.otxt   = obj.txt or getattr(obj, "otxt", "")
     _nr = -1
-    for spli in obj.otext.split():
+    for spli in obj.otxt.split():
         if spli.startswith("-"):
             try:
                 obj.index = int(spli[1:])
@@ -136,16 +137,16 @@ def parse(obj, text=""):
             continue
         _nr += 1
         if _nr == 0:
-            obj.command = spli
+            obj.cmd = spli
             continue
         args.append(spli)
     if args:
         obj.args = args
-        obj.text  = obj.command or ""
+        obj.txt  = obj.cmd or ""
         obj.rest = " ".join(obj.args)
-        obj.text  = obj.command + " " + obj.rest
+        obj.txt  = obj.cmd + " " + obj.rest
     else:
-        obj.text = obj.command or ""
+        obj.txt = obj.cmd or ""
 
 
 def search(obj, selector, matching=False):

@@ -1,49 +1,50 @@
 # This file is placed in the Public Domain.
 
 
-"cache objects"
+"cache"
 
 
 import json.decoder
 import os
+import pathlib
 import threading
 
 
-from .marshal import dump, load
-from .methods import fqn, deleted, search
+from .methods import deleted, fqn, ident, search
 from .objects import Object, update
-from .workdir import getpath, long, store
+from .serials import dump, load
 from .utility import cdir, fntime
-
-
-lock = threading.RLock()
+from .workdir import getpath, long, store
 
 
 class Cache:
 
-    objects = {}
+    lock = threading.RLock()
+    objs = {}
 
     @staticmethod
     def add(path, obj):
-        Cache.objects[path] = obj
+        Cache.objs[path] = obj
 
     @staticmethod
     def get(path):
-        return Cache.objects.get(path, None)
+        return Cache.objs.get(path, None)
 
     @staticmethod
     def update(path, obj):
         if not obj:
             return
-        if path in Cache.objects:
-            update(Cache.objects[path], obj)
+        if path in Cache.objs:
+            update(Cache.objs[path], obj)
         else:
             Cache.add(path, obj)
 
 
-def find(typ, selector={}, removed=False, matching=False):
-    typ = long(typ)
-    for pth in fns(typ):
+def find(clz, selector=None, removed=False, matching=False):
+    clz = long(clz)
+    if selector is None:
+        selector = {}
+    for pth in fns(clz):
         obj = Cache.get(pth)
         if not obj:
             obj = Object()
@@ -56,44 +57,47 @@ def find(typ, selector={}, removed=False, matching=False):
         yield pth, obj
 
 
-def fns(typ):
-    path = store(typ)
-    for rootdir, dirs, _files in os.walk(path, topdown=False):
-        for dirname in dirs:
-            fullpath = os.path.join(rootdir, dirname)
-            for filename in os.listdir(fullpath):
-                yield os.path.join(fullpath, filename)
+def fns(clz):
+    pth = store(clz)
+    for rootdir, dirs, _files in os.walk(pth, topdown=False):
+        for dname in dirs:
+            ddd = os.path.join(rootdir, dname)
+            for fll in os.listdir(ddd):
+                yield os.path.join(ddd, fll)
 
 
-def last(obj, selector={}):
-    objs = sorted(find(fqn(obj), selector), key=lambda x: fntime(x[0]))
-    path = ""
-    if objs:
-        value = objs[-1]
-        update(obj, value[-1])
-        path = value[0]
-    return path
+def last(obj, selector=None):
+    if selector is None:
+        selector = {}
+    result = sorted(find(fqn(obj), selector), key=lambda x: fntime(x[0]))
+    res = ""
+    if result:
+        inp = result[-1]
+        update(obj, inp[-1])
+        res = inp[0]
+    return res
 
 
 def read(obj, path):
-    with lock:
-        with open(path, "r", encoding="utf-8") as filepointer:
+    with Cache.lock:
+        with open(path, "r", encoding="utf-8") as fpt:
             try:
-                update(obj, load(filepointer))
-            except json.decoder.JSONDecodeError as exception:
-                exception.add_note(path)
-                raise exception
+                update(obj, load(fpt))
+            except json.decoder.JSONDecodeError as ex:
+                ex.add_note(path)
+                raise ex
 
 
 def write(obj, path=None):
-    with lock:
+    with Cache.lock:
         if path is None:
             path = getpath(obj)
         cdir(path)
-        with open(path, "w", encoding="utf-8") as filepointer:
-            dump(obj, filepointer, indent=4)
+        with open(path, "w", encoding="utf-8") as fpt:
+            dump(obj, fpt, indent=4)
         Cache.update(path, obj)
         return path
+
 
 
 def __dir__():

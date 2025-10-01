@@ -1,7 +1,7 @@
 # This file is placed in the Public Domain.
 
 
-"handle client events"
+"clients"
 
 
 import queue
@@ -9,6 +9,7 @@ import threading
 import _thread
 
 
+from .brokers import Fleet
 from .handler import Handler
 from .threads import launch
 
@@ -20,7 +21,7 @@ class Client(Handler):
         self.olock = threading.RLock()
         Fleet.add(self)
 
-    def announce(self, text):
+    def announce(self, txt):
         pass
 
     def display(self, event):
@@ -28,14 +29,14 @@ class Client(Handler):
             for tme in sorted(event.result):
                 self.dosay(event.channel, event.result[tme])
 
-    def dosay(self, channel, text):
-        self.say(channel, text)
+    def dosay(self, channel, txt):
+        self.say(channel, txt)
 
-    def raw(self, text):
+    def raw(self, txt):
         raise NotImplementedError("raw")
 
-    def say(self, channel, text):
-        self.raw(text)
+    def say(self, channel, txt):
+        self.raw(txt)
 
     def wait(self):
         pass
@@ -46,7 +47,7 @@ class Output(Client):
     def __init__(self):
         Client.__init__(self)
         self.oqueue = queue.Queue()
-        self.ostop = threading.Event()
+        self.ostop  = threading.Event()
 
     def oput(self, event):
         self.oqueue.put(event)
@@ -60,7 +61,7 @@ class Output(Client):
             self.display(event)
             self.oqueue.task_done()
 
-    def raw(self, text):
+    def raw(self, txt):
         raise NotImplementedError("raw")
 
     def start(self, daemon=True):
@@ -80,49 +81,8 @@ class Output(Client):
             _thread.interrupt_main()
 
 
-class Fleet:
-
-    clients = {}
-
-    @staticmethod
-    def add(client):
-        if not client:
-            return
-        Fleet.clients[repr(client)] = client
-
-    @staticmethod
-    def all():
-        return list(Fleet.clients.values())
-
-    @staticmethod
-    def announce(text):
-        for client in Fleet.all():
-            client.announce(text)
-
-    @staticmethod
-    def display(event):
-        client = Fleet.get(event.origin)
-        client.display(event)
-
-    @staticmethod
-    def get(origin):
-        return Fleet.clients.get(origin, None)
-
-    @staticmethod
-    def say(origin, channel, text):
-        client = Fleet.get(origin)
-        client.say(channel, text)
-
-    @staticmethod
-    def shutdown():
-        for client in Fleet.all():
-            client.stop()
-            client.wait()
-
-
 def __dir__():
     return (
         'Client',
-        'Fleet',
         'Output'
    )

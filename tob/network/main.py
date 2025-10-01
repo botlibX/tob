@@ -1,45 +1,52 @@
 # This file is placed in the Public Domain.
 
 
-"runtime scripts"
-
-
 import json
 import logging
 import os
+import os.path
+import pathlib
 import sys
 import time
+import _thread
 
 
-from .clients import Client
-from .command import Commands, command, scanner, table
-from .methods import parse
-from .objects import update
-from .handler import Event
-from .package import Mods, getmod, inits, modules, sums
-from .workdir import Workdir, moddir, pidname
-from .utility import check, forever, level, md5sum, output
-from .utility import daemon, pidfile, privileges
+sys.path.insert(0, os.getcwd())
 
 
+from ..brokers import Fleet
+from ..clients import Client
+from ..command import Commands, command, scanner, table
+from ..methods import parse
+from ..handler import Event
+from ..objects import update
+from ..package import Mods, getmod, inits, modules, sums
+from ..threads import launch
+from ..utility import daemon, forever, level, md5sum, pidfile
+from ..utility import level, privileges, spl
+from ..workdir import Workdir, pidname, setwd
+
+
+CHECKSUM = "71275884e586908006345d50d54f169e"
 CHECKSUM = ""
+
+
 NAME = Workdir.name
 
 
 class Config:
 
     debug = False
-    default = "irc,rss"
+    default = "irc,mdl,rss"
     gets = {}
-    ignore = ""
     init  = ""
     level = "warn"
     mod = ""
     opts = ""
-    otext = ""
+    otxt = ""
     sets = {}
     verbose = False
-    version = 102
+    version = 174
     wdr = ""
 
 
@@ -49,61 +56,41 @@ class CLI(Client):
         Client.__init__(self)
         self.register("command", command)
 
-    def announce(self, text):
-        self.raw(text)
+    def announce(self, txt):
+        self.raw(txt)
 
-    def raw(self, text):
-        output(text.encode('utf-8', 'replace').decode("utf-8"))
+    def raw(self, txt):
+        out(txt.encode('utf-8', 'replace').decode("utf-8"))
 
 
 class Console(CLI):
 
-    def announce(self, text):
+    def announce(self, txt):
         pass
 
     def callback(self, event):
-        if not event.text:
+        if not event.txt:
             return
         super().callback(event)
         event.wait()
 
     def poll(self):
         evt = Event()
-        evt.text = input("> ")
+        evt.txt = input("> ")
         evt.type = "command"
         return evt
 
 
-def banner():
-    tme = time.ctime(time.time()).replace("  ", " ")
-    output("%s %s since %s (%s)" % (NAME.upper(), Config.version, tme, Config.level.upper()))
+"scripts"
 
 
 def background():
     daemon("-v" in sys.argv)
     privileges()
-    banner()
     boot(False)
     pidfile(pidname(NAME))
     inits(Config.init or Config.default)
     forever()
-
-
-def boot(doparse=True):
-    if doparse:
-        parse(Config, " ".join(sys.argv[1:]))
-        update(Config, Config.sets, empty=False)
-        Workdir.wdr = Config.wdr or Workdir.wdr or os.path.expanduser(f"~/.{NAME}")
-        Mods.mods.append(moddir())
-    if "v" in Config.opts:
-        banner()
-    if "a" in Config.opts:
-        Config.init = ",".join(modules())
-    level(Config.level)
-    sums(CHECKSUM)
-    table(CHECKSUM)
-    Commands.add(cmd)
-    logging.info("workdir is %s", Workdir.wdr)
 
 
 def console():
@@ -124,24 +111,50 @@ def control():
     Commands.add(md5)
     Commands.add(srv)
     Commands.add(tbl)
-    Commands.add(ver)
     csl = CLI()
     evt = Event()
-    evt.origin = repr(csl)
+    evt.orig = repr(csl)
     evt.type = "command"
-    evt.text = Config.otext
+    evt.txt = Config.otxt
     command(evt)
     evt.wait()
 
 
 def service():
     privileges()
-    banner()
     boot(False)
     pidfile(pidname(NAME))
     banner()
     inits(Config.init or Config.default)
     forever()
+
+
+def boot(doparse=True):
+    if doparse:
+        parse(Config, " ".join(sys.argv[1:]))
+        update(Config, Config.sets, empty=False)
+        Workdir.wdr = Config.wdr
+    level(Config.level)
+    if "v" in Config.opts:
+        banner()
+    if 'e' in Config.opts:
+        pkg = sys.modules.get(NAME)
+        pth = pkg.__path__[0]
+        pth = os.sep.join(pth.split(os.sep)[:-4])
+        pth = os.path.join(pth, 'share', NAME,  'examples')
+        Mods.mod = Config.mod = pth
+        Mods.package = "mods"
+    if "m" in Config.opts:
+        Mods.mod = Config.mod = "mods"
+        Mods.package = "mods"
+    if "a" in Config.opts:
+        Config.init = ",".join(modules())
+    setwd(NAME)
+    sums(CHECKSUM)
+    table(CHECKSUM)
+    Commands.add(cmd)
+    Commands.add(ver)
+    logging.info("workdir is %s", Workdir.wdr)
 
 
 "commands"
@@ -152,36 +165,11 @@ def cmd(event):
 
 
 def md5(event):
-    mod = getmod("tbl")
-    if mod:
-        event.reply(md5sum(mod.__file__))
+    tbl = getmod("tbl")
+    if tbl:
+        event.reply(md5sum(tbl.__file__))
     else:
         event.reply("table is not there.")
-
-
-def srv(event):
-    import getpass
-    name = getpass.getuser()
-    event.reply(TXT % (NAME.upper(), name, name, name, NAME))
-
-
-def tbl(event):
-    Commands.names = {}
-    scanner()
-    event.reply("# This file is placed in the Public Domain.")
-    event.reply("")
-    event.reply("")
-    event.reply(f"NAMES = {json.dumps(Commands.names, indent=4, sort_keys=True)}")
-    event.reply("")
-    event.reply("")
-    event.reply("MD5 = {")
-    for module in scanner():
-        event.reply(f'    "{module.__name__.split(".")[-1]}": "{md5sum(module.__file__)}",')
-    event.reply("}")
-
-
-def ver(event):
-    event.reply(f"{NAME.upper()} {Config.version}")
 
 
 TXT = """[Unit]
@@ -198,17 +186,68 @@ ExecStart=/home/%s/.local/bin/%s -s
 WantedBy=multi-user.target"""
 
 
-"main"
+def srv(event):
+    import getpass
+    name = getpass.getuser()
+    event.reply(TXT % (NAME.upper(), name, name, name, NAME))
 
 
-def wrapped(function):
+def tbl(event):
+    Commands.names = {}
+    scanner()
+    event.reply("# This file is placed in the Public Domain.")
+    event.reply("")
+    event.reply("")
+    event.reply('"lookup tables"')
+    event.reply("")
+    event.reply("")
+    event.reply(f"NAMES = {json.dumps(Commands.names, indent=4, sort_keys=True)}")
+    event.reply("")
+    event.reply("MD5 = {")
+    for module in scanner():
+        event.reply(f'    "{module.__name__.split(".")[-1]}": "{md5sum(module.__file__)}",')
+    event.reply("}")
+
+
+def ver(event):
+    event.reply(f"{NAME.upper()} {Config.version}")
+
+
+"utilities"
+
+
+def banner():
+    tme = time.ctime(time.time()).replace("  ", " ")
+    out("%s %s since %s %s" % (NAME.upper(), Config.version, tme, Config.level.upper()))
+
+
+def check(txt):
+    args = sys.argv[1:]
+    for arg in args:
+        if not arg.startswith("-"):
+            continue
+        for char in txt:
+            if char in arg:
+                return True
+    return False
+
+
+def out(txt):
+    print(txt)
+    sys.stdout.flush()
+
+
+"runtime"
+
+
+def wrapped(func):
     try:
-        function()
+        func()
     except (KeyboardInterrupt, EOFError):
-        output("")
+        out("")
 
 
-def wrap(function):
+def wrap(func):
     import termios
     old = None
     try:
@@ -216,7 +255,7 @@ def wrap(function):
     except termios.error:
         pass
     try:
-        wrapped(function)
+        wrapped(func)
     finally:
         if old:
             termios.tcsetattr(sys.stdin.fileno(), termios.TCSADRAIN, old)

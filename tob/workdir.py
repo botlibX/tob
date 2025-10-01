@@ -1,7 +1,7 @@
 # This file is placed in the Public Domain.
 
 
-"working directory"
+"cache"
 
 
 import os
@@ -58,13 +58,13 @@ def skel():
     return result
 
 
-def store(path=""):
+def store(pth=""):
     assert Workdir.wdr
-    return os.path.join(Workdir.wdr, "store", path)
+    return os.path.join(Workdir.wdr, "store", pth)
 
 
-def strip(path, nmr=2):
-    return os.path.join(path.split(os.sep)[-nmr:])
+def strip(pth, nmr=2):
+    return os.path.join(pth.split(os.sep)[-nmr:])
 
 
 def types():
@@ -72,9 +72,10 @@ def types():
     return os.listdir(store())
 
 
-def wdr(path):
+def wdr(pth):
     assert Workdir.wdr
-    return os.path.join(Workdir.wdr, path)
+    return os.path.join(Workdir.wdr, pth)
+
 
 
 def __dir__():
@@ -87,6 +88,5 @@ def __dir__():
         'setwd',
         'store',
         'strip',
-        'types',
-        'wdr'
+        'types'
     )
