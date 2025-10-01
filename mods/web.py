@@ -21,7 +21,7 @@ def init():
     try:
         server = HTTP((Cfg.hostname, int(Cfg.port)), HTTPHandler)
         server.start()
-        logging.warning(f"http://{Cfg.hostname}:{Cfg.port}")
+        logging.warning("http://%s:%s", Cfg.hostname, Cfg.port)
         return server
     except OSError as ex:
         logging.warning(str(ex))

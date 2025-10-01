@@ -8,7 +8,7 @@ import sys
 sys.path.insert(0, os.getcwd())
 
 
-from tob.runtime import main
+from tob.network.main import main
 
 
 main()

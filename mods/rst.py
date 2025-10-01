@@ -22,7 +22,7 @@ def init():
     try:
         rest = REST((Config.hostname, int(Config.port)), RESTHandler)
         rest.start()
-        logging.warning(f"http://{Config.hostname}:{Config.port}")
+        logging.warning("http://%s:%s", Config.hostname, Config.port)
         return rest
     except OSError as ex:
         logging.error(str(ex))

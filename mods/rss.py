@@ -32,7 +32,7 @@ def init():
     fetcher = Fetcher()
     fetcher.start()
     if fetcher.seenfn:
-        logging.warning(f"since {elapsed(time.time()-fntime(fetcher.seenfn))}")
+        logging.warning("since %s", elapsed(time.time()-fntime(fetcher.seenfn)))
     else:
         logging.warning("no seen file")
     return fetcher
@@ -288,7 +288,7 @@ def getfeed(url, items):
     try:
         rest = geturl(url)
     except (http.client.HTTPException, ValueError, HTTPError, URLError) as ex:
-        logging.error(f"{url} {ex}")
+        logging.error("%s %s", url, ex)
         errors[url] = time.time()
         return result
     if rest:
@@ -363,6 +363,7 @@ def dpl(event):
 
 
 def exp(event):
+    print("yo!")
     with importlock:
         event.reply(TEMPLATE)
         nrs = 0
@@ -479,8 +480,8 @@ def rss(event):
     with importlock:
         for fnm, result in find("rss", {"rss": url}):
             if result:
-               event.reply(f"{url} is known")
-               return
+                event.reply("%s is known", url)
+                return
         feed = Rss()
         feed.rss = event.args[0]
         write(feed)

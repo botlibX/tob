@@ -36,7 +36,7 @@ def init():
         irc.start()
         irc.events.joined.wait(30.0)
         if irc.events.joined.is_set():
-            logging.warning(f"{fmt(irc.cfg, skip=["password", "realname", "username"])}")
+            logging.warning("%s", fmt(irc.cfg, skip=["password", "realname", "username"]))
         else:
             irc.stop()
         return irc
@@ -86,7 +86,7 @@ class Event(IEvent):
         self.command = ""
         self.channel = ""
         self.nick = ""
-        self.orig = ""
+        self.origin = ""
         self.rawstr = ""
         self.rest = ""
         self.text = ""
@@ -174,7 +174,7 @@ class IRC(Output):
             self.sock.setblocking(True)
             self.sock.settimeout(180.0)
             self.events.connected.set()
-            logging.debug(f"connected {self.cfg.server}:{self.cfg.port} {self.cfg.channel}")
+            logging.debug("connected %s:%s %s", self.cfg.server, self.cfg.port, self.cfg.channel)
             return True
         return False
 
@@ -199,8 +199,6 @@ class IRC(Output):
             if len(textlist) > 3:
                 self.extend(event.channel, textlist[3:])
                 textlist = textlist[:3]
-            else:
-                textlist = textlist
             _nr = -1
             for text in textlist:
                 _nr += 1
@@ -229,7 +227,7 @@ class IRC(Output):
         while 1:
             try:
                 if self.connect(server, port):
-                    self.logon(self.cfg.server, self.cfg.nick)
+                    self.logon(self.cfg.server, nck or self.cfg.nick)
                     self.events.joined.wait(15.0)
                     if not self.events.joined.is_set():
                         self.disconnect()
@@ -239,7 +237,7 @@ class IRC(Output):
             except (socket.timeout, ssl.SSLError, OSError, ConnectionResetError) as ex:
                 self.events.joined.set()
                 self.state.error = str(ex)
-                logging.debug(str(type(ex)) + " " + str(ex))
+                logging.debug("%s", str(type(ex)) + " " + str(ex))
             time.sleep(self.cfg.sleep)
 
     def dosay(self, channel, text):
@@ -331,11 +329,11 @@ class IRC(Output):
         obj.arguments = []
         arguments = rawstr.split()
         if arguments:
-            obj.orig = arguments[0]
+            obj.origin = arguments[0]
         else:
-            obj.orig = self.cfg.server
-        if obj.orig.startswith(":"):
-            obj.orig = obj.orig[1:]
+            obj.origin = self.cfg.server
+        if obj.origin.startswith(":"):
+            obj.origin = obj.origin[1:]
             if len(arguments) > 1:
                 obj.command = arguments[1]
                 obj.type = obj.command
@@ -353,10 +351,10 @@ class IRC(Output):
                         obj.arguments.append(arg)
                 obj.text = " ".join(textlist)
         else:
-            obj.command = obj.orig
-            obj.orig = self.cfg.server
+            obj.command = obj.origin
+            obj.origin = self.cfg.server
         try:
-            obj.nick, obj.orig = obj.orig.split("!")
+            obj.nick, obj.origin = obj.origin.split("!")
         except ValueError:
             obj.nick = ""
         target = ""
@@ -425,7 +423,7 @@ class IRC(Output):
                 BrokenPipeError,
                 socket.timeout,
             ) as ex:
-                logging.debug(str(type(ex)) + " " + str(ex))
+                logging.debug("%s", str(type(ex)) + " " + str(ex))
                 self.events.joined.set()
                 self.state.nrerror += 1
                 self.state.error = str(ex)
@@ -436,7 +434,7 @@ class IRC(Output):
         self.state.nrsend += 1
 
     def reconnect(self):
-        logging.debug(f"reconnecting {self.cfg.server:self.cfg.port}")
+        logging.debug("reconnecting %s:%s", self.cfg.server, self.cfg.port)
         self.disconnect()
         self.events.connected.clear()
         self.events.joined.clear()
@@ -504,12 +502,12 @@ class IRC(Output):
 
 
 def cb_auth(event):
-    bot = Fleet.get(event.origin)
+    bot = Fleet.get(event.orig)
     bot.docommand(f"AUTHENTICATE {bot.cfg.password}")
 
 
 def cb_cap(event):
-    bot = Fleet.get(event.origin)
+    bot = Fleet.get(event.orig)
     if bot.cfg.password and "ACK" in event.arguments:
         bot.direct("AUTHENTICATE PLAIN")
     else:
@@ -517,20 +515,20 @@ def cb_cap(event):
 
 
 def cb_error(event):
-    bot = Fleet.get(event.origin)
+    bot = Fleet.get(event.orig)
     bot.state.nrerror += 1
     bot.state.error = event.text
     logging.debug(fmt(event))
 
 
 def cb_h903(event):
-    bot = Fleet.get(event.origin)
+    bot = Fleet.get(event.orig)
     bot.direct("CAP END")
     bot.events.authed.set()
 
 
 def cb_h904(event):
-    bot = Fleet.get(event.origin)
+    bot = Fleet.get(event.orig)
     bot.direct("CAP END")
     bot.events.authed.set()
 
@@ -544,24 +542,24 @@ def cb_log(event):
 
 
 def cb_ready(event):
-    bot = Fleet.get(event.origin)
+    bot = Fleet.get(event.orig)
     bot.events.ready.set()
 
 
 def cb_001(event):
-    bot = Fleet.get(event.origin)
+    bot = Fleet.get(event.orig)
     bot.events.logon.set()
 
 
 def cb_notice(event):
-    bot = Fleet.get(event.origin)
+    bot = Fleet.get(event.orig)
     if event.text.startswith("VERSION"):
         text = f"\001VERSION {NAME.upper()} 140 - {bot.cfg.username}\001"
         bot.docommand("NOTICE", event.channel, text)
 
 
 def cb_privmsg(event):
-    bot = Fleet.get(event.origin)
+    bot = Fleet.get(event.orig)
     if not bot.cfg.commands:
         return
     if event.text:
@@ -580,11 +578,11 @@ def cb_privmsg(event):
 
 
 def cb_quit(event):
-    bot = Fleet.get(event.origin)
-    logging.debug(f"quit from {bot.cfg.server}")
+    bot = Fleet.get(event.orig)
+    logging.debug("quit from %s", bot.cfg.server)
     bot.state.nrerror += 1
     bot.state.error = event.text
-    if event.orig and event.origin in bot.zelf:
+    if event.orig and event.orig in bot.zelf:
         bot.stop()
 
 
