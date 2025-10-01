@@ -6,8 +6,6 @@
 
 import hashlib
 import logging
-import importlib
-import importlib.util
 import os
 import pathlib
 import sys
@@ -140,27 +138,6 @@ def forever():
             time.sleep(0.1)
         except (KeyboardInterrupt, EOFError):
             break
-
-
-def importer(name, pth):
-    module = None
-    if not os.path.exists(pth):
-        return module
-    try:
-        spec = importlib.util.spec_from_file_location(name, pth)
-        if spec:
-            module = importlib.util.module_from_spec(spec)
-            if module:
-                sys.modules[name] = module
-                if spec.loader:
-                    spec.loader.exec_module(module)
-                if DEBUG:
-                    module.DEBUG = True
-                logging.info("load %s", pth)
-    except Exception as ex:
-        logging.exception(ex)
-        _thread.interrupt_main()
-    return module
 
 
 def level(loglevel="debug"):

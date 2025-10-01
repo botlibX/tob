@@ -50,6 +50,7 @@ def update(obj, data, empty=True):
             continue
         setattr(obj, key, value)
 
+
 def values(obj):
     if isinstance(obj, dict):
         return obj.values()

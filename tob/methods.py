@@ -88,7 +88,6 @@ def name(obj):
     return ""
 
 
-
 def parse(obj, txt=None):
     if txt is None:
         if "txt" in dir(obj):

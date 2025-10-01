@@ -4,6 +4,8 @@
 "modules management"
 
 
+import importlib
+import importlib.util
 import logging
 import os
 import sys
@@ -12,13 +14,15 @@ import _thread
 
 
 from .threads import launch
-from .utility import importer, md5sum, spl
+from .utility import md5sum, spl
 
 
 lock = threading.RLock()
 
 
 class Mods:
+
+    debug = False
     md5s = {}
     mod = os.path.join(os.path.dirname(__file__), "modules")
     package = __name__.split(".", maxsplit=1)[0] + "." + "modules"
@@ -37,6 +41,27 @@ def getmod(name, path=None):
             if Mods.md5s and md5sum(pth) != Mods.md5s.get(name, None):
                 logging.warning("md5 error on %s", pth.split(os.sep)[-1])
         return importer(mname, pth)
+
+
+def importer(name, pth):
+    module = None
+    if not os.path.exists(pth):
+        return module
+    try:
+        spec = importlib.util.spec_from_file_location(name, pth)
+        if spec:
+            module = importlib.util.module_from_spec(spec)
+            if module:
+                sys.modules[name] = module
+                if spec.loader:
+                    spec.loader.exec_module(module)
+                if Mods.debug:
+                    module.DEBUG = True
+                logging.info("load %s", pth)
+    except Exception as ex:
+        logging.exception(ex)
+        _thread.interrupt_main()
+    return module
 
 
 def inits(names):

@@ -1,7 +1,7 @@
 # This file is placed in the Public Domain.
 
 
-"cache"
+"working directory"
 
 
 import os
@@ -75,7 +75,6 @@ def types():
 def wdr(pth):
     assert Workdir.wdr
     return os.path.join(Workdir.wdr, pth)
-
 
 
 def __dir__():
