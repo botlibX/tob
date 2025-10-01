@@ -12,7 +12,7 @@ import time
 
 
 from .clients import Client
-from .command import Commands, command, scanner, table 
+from .command import Commands, command, scanner, table
 from .methods import parse
 from .objects import update
 from .handler import Event

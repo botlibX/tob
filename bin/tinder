@@ -20,7 +20,7 @@ sys.path.insert(0, os.getcwd())
 
 
 from tob.clients import Client, Fleet, Output
-from tob.command import Commands, command
+from tob.command import command
 from tob.handler import Event
 from tob.methods import parse
 from tob.objects import Object, keys
@@ -228,7 +228,7 @@ post.rem = ["hnrss", ""]
 if __name__ == "__main__":
     nrz, commandz = wrap(main)
     if nrz is None and commandz is None:
-       os._exit(1)
+        os._exit(1)
     endtime = time.time()
     lap = elapsed(endtime-STARTTIME)
     nrevents = events.qsize()
