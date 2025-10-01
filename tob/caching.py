@@ -6,11 +6,10 @@
 
 import json.decoder
 import os
-import pathlib
 import threading
 
 
-from .methods import deleted, fqn, ident, search
+from .methods import deleted, fqn, search
 from .objects import Object, update
 from .serials import dump, load
 from .utility import cdir, fntime
