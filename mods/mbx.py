@@ -9,10 +9,10 @@ import os
 import time
 
 
-from ..caching import find, write
-from ..methods import fmt
-from ..objects import Object, keys, update
-from ..utility import elapsed, extract_date, spl
+from tob.caching import find, write
+from tob.methods import fmt
+from tob.objects import Object, keys, update
+from tob.utility import elapsed, extract_date, spl
 
 
 class Email(Object):

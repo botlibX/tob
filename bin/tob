@@ -128,6 +128,9 @@ def boot(doparse=True):
         update(Config, Config.sets, empty=False)
         Workdir.wdr = Config.wdr
     level(Config.level)
+    if "m" in Config.opts:
+        Mods.mod = Config.mod = "mods"
+        Mods.package = "mods"
     if "v" in Config.opts:
         banner()
     if "a" in Config.opts:
