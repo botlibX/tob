@@ -152,9 +152,9 @@ def cmd(event):
 
 
 def md5(event):
-    tbl = getmod("tbl")
-    if tbl:
-        event.reply(md5sum(tbl.__file__))
+    mod = getmod("tbl")
+    if mod:
+        event.reply(md5sum(mod.__file__))
     else:
         event.reply("table is not there.")
 

@@ -17,8 +17,8 @@ class Workdir:
     wdr  = ""
 
 
-def getpath(object):
-    return store(ident(object))
+def getpath(obj):
+    return store(ident(obj))
 
 
 def long(name):

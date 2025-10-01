@@ -12,36 +12,36 @@ from .objects import Object, construct
 
 class Encoder(json.JSONEncoder):
 
-    def default(self, object):
-        if isinstance(object, dict):
-            return object.items()
-        if isinstance(object, Object):
-            return vars(object)
-        if isinstance(object, list):
-            return iter(object)
+    def default(self, o):
+        if isinstance(o, dict):
+            return o.items()
+        if isinstance(o, Object):
+            return vars(o)
+        if isinstance(o, list):
+            return iter(o)
         try:
-            return json.JSONEncoder.default(self, object)
+            return json.JSONEncoder.default(self, o)
         except TypeError:
             try:
-                return vars(object)
+                return vars(o)
             except TypeError:
-                return repr(object)
+                return repr(o)
 
 
-def dump(object, filepointer, *args, **kw):
+def dump(obj, filepointer, *args, **kw):
     kw["cls"] = Encoder
-    json.dump(object, filepointer, *args, **kw)
+    json.dump(obj, filepointer, *args, **kw)
 
 
-def dumps(object, *args, **kw):
+def dumps(obj, *args, **kw):
     kw["cls"] = Encoder
-    return json.dumps(object, *args, **kw)
+    return json.dumps(obj, *args, **kw)
 
 
 def hook(data):
-    object = Object()
-    construct(object, data)
-    return object
+    obj = Object()
+    construct(obj, data)
+    return obj
 
 
 def load(filepointer, *args, **kw):

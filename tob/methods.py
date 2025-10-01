@@ -11,35 +11,35 @@ import os
 from .objects import items, keys
 
 
-def deleted(object):
-    return "__deleted__" in dir(object) and object.__deleted__
+def deleted(obj):
+    return "__deleted__" in dir(obj) and obj.__deleted__
 
 
-def edit(object, setter, skip=True):
+def edit(obj, setter, skip=True):
     for key, val in items(setter):
         if skip and val == "":
             continue
         try:
-            setattr(object, key, int(val))
+            setattr(obj, key, int(val))
             continue
         except ValueError:
             pass
         try:
-            setattr(object, key, float(val))
+            setattr(obj, key, float(val))
             continue
         except ValueError:
             pass
         if val in ["True", "true"]:
-            setattr(object, key, True)
+            setattr(obj, key, True)
         elif val in ["False", "false"]:
-            setattr(object, key, False)
+            setattr(obj, key, False)
         else:
-            setattr(object, key, val)
+            setattr(obj, key, val)
 
 
-def fmt(object, args=None, skip=None, plain=False, empty=False):
+def fmt(obj, args=None, skip=None, plain=False, empty=False):
     if args is None:
-        args = keys(object)
+        args = keys(obj)
     if skip is None:
         skip = []
     text = ""
@@ -48,7 +48,7 @@ def fmt(object, args=None, skip=None, plain=False, empty=False):
             continue
         if key in skip:
             continue
-        value = getattr(object, key, None)
+        value = getattr(obj, key, None)
         if value is None:
             continue
         if not empty and not value:
@@ -62,98 +62,98 @@ def fmt(object, args=None, skip=None, plain=False, empty=False):
     return text.strip()
 
 
-def fqn(object):
-    kin = str(type(object)).split()[-1][1:-2]
+def fqn(obj):
+    kin = str(type(obj)).split()[-1][1:-2]
     if kin == "type":
-        kin = f"{object.__module__}.{object.__name__}"
+        kin = f"{obj.__module__}.{obj.__name__}"
     return kin
 
 
-def ident(object):
-    return os.path.join(fqn(object), *str(datetime.datetime.now()).split())
+def ident(obj):
+    return os.path.join(fqn(obj), *str(datetime.datetime.now()).split())
 
 
-def name(object):
-    typ = type(object)
+def name(obj):
+    typ = type(obj)
     if "__builtins__" in dir(typ):
-        return object.__name__
-    if "__self__" in dir(object):
-        return f"{object.__self__.__class__.__name__}.{object.__name__}"
-    if "__class__" in dir(object) and "__name__" in dir(object):
-        return f"{object.__class__.__name__}.{object.__name__}"
-    if "__class__" in dir(object):
-        return f"{object.__class__.__module__}.{object.__class__.__name__}"
-    if "__name__" in dir(object):
-        return f"{object.__class__.__name__}.{object.__name__}"
+        return obj.__name__
+    if "__self__" in dir(obj):
+        return f"{obj.__self__.__class__.__name__}.{obj.__name__}"
+    if "__class__" in dir(obj) and "__name__" in dir(obj):
+        return f"{obj.__class__.__name__}.{obj.__name__}"
+    if "__class__" in dir(obj):
+        return f"{obj.__class__.__module__}.{obj.__class__.__name__}"
+    if "__name__" in dir(obj):
+        return f"{obj.__class__.__name__}.{obj.__name__}"
     return ""
 
 
-def parse(object, text=""):
+def parse(obj, text=""):
     if text == "":
-        if "text" in dir(object):
-            text = object.text
+        if "text" in dir(obj):
+            text = obj.text
         else:
             text = ""
     args = []
-    object.args = getattr(object, "args", [])
-    object.command = getattr(object, "command", "")
-    object.gets = getattr(object, "gets", "")
-    object.index = getattr(object, "index", None)
-    object.inits = getattr(object, "inits", "")
-    object.mod = getattr(object, "mod", "")
-    object.opts = getattr(object, "opts", "")
-    object.result = getattr(object, "result", "")
-    object.sets = getattr(object, "sets", {})
-    object.silent = getattr(object, "silent", "")
-    object.text = text or getattr(object, "text", "")
-    object.otext = object.text or getattr(object, "otext", "")
+    obj.args = getattr(obj, "args", [])
+    obj.command = getattr(obj, "command", "")
+    obj.gets = getattr(obj, "gets", "")
+    obj.index = getattr(obj, "index", None)
+    obj.inits = getattr(obj, "inits", "")
+    obj.mod = getattr(obj, "mod", "")
+    obj.opts = getattr(obj, "opts", "")
+    obj.result = getattr(obj, "result", "")
+    obj.sets = getattr(obj, "sets", {})
+    obj.silent = getattr(obj, "silent", "")
+    obj.text = text or getattr(obj, "text", "")
+    obj.otext = obj.text or getattr(obj, "otext", "")
     _nr = -1
-    for spli in object.otext.split():
+    for spli in obj.otext.split():
         if spli.startswith("-"):
             try:
-                object.index = int(spli[1:])
+                obj.index = int(spli[1:])
             except ValueError:
-                object.opts += spli[1:]
+                obj.opts += spli[1:]
             continue
         if "-=" in spli:
             key, value = spli.split("-=", maxsplit=1)
-            object.silent[key] = value
-            object.gets[key] = value
+            obj.silent[key] = value
+            obj.gets[key] = value
             continue
         if "==" in spli:
             key, value = spli.split("==", maxsplit=1)
-            object.gets[key] = value
+            obj.gets[key] = value
             continue
         if "=" in spli:
             key, value = spli.split("=", maxsplit=1)
             if key == "mod":
-                if object.mod:
-                    object.mod += f",{value}"
+                if obj.mod:
+                    obj.mod += f",{value}"
                 else:
-                    object.mod = value
+                    obj.mod = value
                 continue
-            object.sets[key] = value
+            obj.sets[key] = value
             continue
         _nr += 1
         if _nr == 0:
-            object.command = spli
+            obj.command = spli
             continue
         args.append(spli)
     if args:
-        object.args = args
-        object.text  = object.command or ""
-        object.rest = " ".join(object.args)
-        object.text  = object.command + " " + object.rest
+        obj.args = args
+        obj.text  = obj.command or ""
+        obj.rest = " ".join(obj.args)
+        obj.text  = obj.command + " " + obj.rest
     else:
-        object.text = object.command or ""
+        obj.text = obj.command or ""
 
 
-def search(object, selector, matching=False):
+def search(obj, selector, matching=False):
     res = False
     if not selector:
         return res
     for key, value in items(selector):
-        val = getattr(object, key, None)
+        val = getattr(obj, key, None)
         if not val:
             continue
         if matching and value == val:

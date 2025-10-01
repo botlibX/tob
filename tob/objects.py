@@ -19,41 +19,41 @@ class Object:
         return str(self.__dict__)
 
 
-def construct(object, *args, **kwargs):
+def construct(obj, *args, **kwargs):
     if args:
         val = args[0]
         if isinstance(val, zip):
-            update(object, dict(val))
+            update(obj, dict(val))
         elif isinstance(val, dict):
-            update(object, val)
+            update(obj, val)
         elif isinstance(val, Object):
-            update(object, vars(val))
+            update(obj, vars(val))
     if kwargs:
-        update(object, kwargs)
+        update(obj, kwargs)
 
 
-def items(object):
-    if isinstance(object, dict):
-        return object.items()
-    return object.__dict__.items()
+def items(obj):
+    if isinstance(obj, dict):
+        return obj.items()
+    return obj.__dict__.items()
 
 
-def keys(object):
-    if isinstance(object, dict):
-        return object.keys()
-    return object.__dict__.keys()
+def keys(obj):
+    if isinstance(obj, dict):
+        return obj.keys()
+    return obj.__dict__.keys()
 
 
-def update(object, data, empty=True):
+def update(obj, data, empty=True):
     for key, value in items(data):
         if not empty and not value:
             continue
-        setattr(object, key, value)
+        setattr(obj, key, value)
 
-def values(object):
-    if isinstance(object, dict):
-        return object.values()
-    return object.__dict__.values()
+def values(obj):
+    if isinstance(obj, dict):
+        return obj.values()
+    return obj.__dict__.values()
 
 
 def __dir__():

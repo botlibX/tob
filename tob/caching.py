@@ -24,40 +24,40 @@ class Cache:
     objects = {}
 
     @staticmethod
-    def add(path, object):
-        Cache.objects[path] = object
+    def add(path, obj):
+        Cache.objects[path] = obj
 
     @staticmethod
     def get(path):
         return Cache.objects.get(path, None)
 
     @staticmethod
-    def update(path, object):
-        if not object:
+    def update(path, obj):
+        if not obj:
             return
         if path in Cache.objects:
-            update(Cache.objects[path], object)
+            update(Cache.objects[path], obj)
         else:
-            Cache.add(path, object)
+            Cache.add(path, obj)
 
 
-def find(type, selector={}, removed=False, matching=False):
-    type = long(type)
-    for pth in fns(type):
-        object = Cache.get(pth)
-        if not object:
-            object = Object()
-            read(object, pth)
-            Cache.add(pth, object)
-        if not removed and deleted(object):
+def find(typ, selector={}, removed=False, matching=False):
+    typ = long(typ)
+    for pth in fns(typ):
+        obj = Cache.get(pth)
+        if not obj:
+            obj = Object()
+            read(obj, pth)
+            Cache.add(pth, obj)
+        if not removed and deleted(obj):
             continue
-        if selector and not search(object, selector, matching):
+        if selector and not search(obj, selector, matching):
             continue
-        yield pth, object
+        yield pth, obj
 
 
-def fns(type):
-    path = store(type)
+def fns(typ):
+    path = store(typ)
     for rootdir, dirs, _files in os.walk(path, topdown=False):
         for dirname in dirs:
             fullpath = os.path.join(rootdir, dirname)
@@ -65,34 +65,34 @@ def fns(type):
                 yield os.path.join(fullpath, filename)
 
 
-def last(object, selector={}):
-    objects = sorted(find(fqn(object), selector), key=lambda x: fntime(x[0]))
+def last(obj, selector={}):
+    objs = sorted(find(fqn(obj), selector), key=lambda x: fntime(x[0]))
     path = ""
-    if objects:
-        input = objects[-1]
-        update(object, input[-1])
-        path = input[0]
+    if objs:
+        value = objs[-1]
+        update(obj, value[-1])
+        path = value[0]
     return path
 
 
-def read(object, path):
+def read(obj, path):
     with lock:
         with open(path, "r", encoding="utf-8") as filepointer:
             try:
-                update(object, load(filepointer))
+                update(obj, load(filepointer))
             except json.decoder.JSONDecodeError as exception:
                 exception.add_note(path)
                 raise exception
 
 
-def write(object, path=None):
+def write(obj, path=None):
     with lock:
         if path is None:
-            path = getpath(object)
+            path = getpath(obj)
         cdir(path)
         with open(path, "w", encoding="utf-8") as filepointer:
-            dump(object, filepointer, indent=4)
-        Cache.update(path, object)
+            dump(obj, filepointer, indent=4)
+        Cache.update(path, obj)
         return path
 
 

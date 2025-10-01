@@ -26,18 +26,18 @@ class Commands:
         Commands.names[name] = modname
 
     @staticmethod
-    def get(command):
-        function = Commands.commands.get(command, None)
+    def get(name):
+        function = Commands.commands.get(name, None)
         if function:
             return function
-        name = Commands.names.get(command, None)
+        name = Commands.names.get(name, None)
         if not name:
             return
         module = getmod(name)
         if not module:
             return
         scan(module)
-        return Commands.commands.get(command, None)
+        return Commands.commands.get(name, None)
 
 
 def command(evt):
@@ -50,11 +50,11 @@ def command(evt):
 
 
 def scan(module):
-    for key, command in inspect.getmembers(module, inspect.isfunction):
+    for key, value in inspect.getmembers(module, inspect.isfunction):
         if key.startswith("cb"):
             continue
-        if 'event' in inspect.signature(command).parameters:
-            Commands.add(command)
+        if 'event' in inspect.signature(value).parameters:
+            Commands.add(value)
 
 
 def scanner(names=""):
@@ -72,9 +72,9 @@ def scanner(names=""):
 
 
 def table(checksum=""):
-    table = getmod("tbl")
-    if table and "NAMES" in dir(table):
-        Commands.names.update(table.NAMES)
+    mod = getmod("tbl")
+    if mod and "NAMES" in dir(mod):
+        Commands.names.update(mod.NAMES)
     else:
         scanner()
 

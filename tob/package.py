@@ -21,14 +21,14 @@ NAME = inspect.getmodulename(__file__)
 
 j = os.path.join
 lock = threading.RLock()
-path = os.path.dirname(inspect.getfile(importer))
+pdir = os.path.dirname(inspect.getfile(importer))
 
 
 class Mods:
 
     ignore = ""
     md5s = {}
-    mods = [j(path, "modules"), j(path, "network"), "mods"]
+    mods = [j(pdir, "modules"), j(pdir, "network"), "mods"]
     package = ".".join([NAME, "mdoules"])
 
 
@@ -43,8 +43,8 @@ def getmod(name, path=None):
         mods = Mods.mods
         if path:
             mods.append(path)
-        for path in mods:
-            pth = os.path.join(path, f"{name}.py")
+        for pth in mods:
+            pth = os.path.join(pth, f"{name}.py")
             if Mods.md5s and os.path.exists(pth) and name != "tbl":
                 if md5sum(pth) != Mods.md5s.get(name, None):
                     logging.warning(
@@ -57,7 +57,7 @@ def getmod(name, path=None):
 
 
 def inits(names):
-    modules = []
+    mods = []
     for name in sorted(spl(names)):
         try:
             module = getmod(name)
@@ -65,22 +65,22 @@ def inits(names):
                 continue
             if "init" in dir(module):
                 thr = launch(module.init)
-                modules.append((module, thr))
+                mods.append((module, thr))
         except Exception as ex:
             logging.exception(ex)
             _thread.interrupt_main()
-    return modules
+    return mods
 
 
 def modules():
-    modules = []
+    mods = []
     for path in Mods.mods:
-        modules.extend(list({
+        mods.extend(list({
             x[:-3] for x in os.listdir(path)
             if x.endswith(".py") and not x.startswith("__") and
             x[:-3] not in spl(Mods.ignore)
            }))
-    return sorted(modules)
+    return sorted(mods)
 
 
 def sums(checksum):
