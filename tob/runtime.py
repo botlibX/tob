@@ -76,7 +76,7 @@ class Console(CLI):
 
 def banner():
     tme = time.ctime(time.time()).replace("  ", " ")
-    output("%s %s since %s (%s)" % (NAME.upper()[::-1], Config.version, tme, Config.level.upper()))
+    output("%s %s since %s (%s)" % (NAME.upper(), Config.version, tme, Config.level.upper()))
 
 
 def background():
