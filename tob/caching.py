@@ -1,7 +1,7 @@
 # This file is placed in the Public Domain.
 
 
-"cache"
+"an object for a string"
 
 
 import json.decoder

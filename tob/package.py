@@ -1,7 +1,7 @@
 # This file is placed in the Public Domain.
 
 
-"modules management"
+"module management"
 
 
 import hashlib
@@ -39,9 +39,8 @@ def getmod(name):
                 if md5sum(pth) != Mods.md5s.get(name, None):
                     logging.info("md5 error on %s", pth.split(os.sep)[-1])
             mod = importer(mname, pth)
-            if not mod:
-                continue
-            return mod
+            if mod:
+                return mod
 
 
 def importer(name, pth):

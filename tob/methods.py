@@ -1,7 +1,7 @@
 # This file is placed in the Public Domain.
 
 
-"object functions"
+"an object as the first argument"
 
 
 from .objects import items, keys
