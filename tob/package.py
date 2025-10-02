@@ -50,24 +50,23 @@ def getmod(name):
 
 
 def importer(name, pth):
-    module = None
     if not os.path.exists(pth):
-        return module
+        return
     try:
         spec = importlib.util.spec_from_file_location(name, pth)
         if spec:
-            module = importlib.util.module_from_spec(spec)
-            if module:
-                sys.modules[name] = module
+            mod = importlib.util.module_from_spec(spec)
+            if mod:
+                sys.modules[name] = mod
                 if spec.loader:
-                    spec.loader.exec_module(module)
+                    spec.loader.exec_module(mod)
                 if Mods.debug:
-                    module.DEBUG = True
+                    mod.DEBUG = True
                 logging.info("load %s", pth)
+                return mod
     except Exception as ex:
         logging.exception(ex)
         _thread.interrupt_main()
-    return module
 
 
 def inits(names):
