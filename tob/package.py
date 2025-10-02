@@ -103,7 +103,7 @@ def modules():
             x[:-3] for x in os.listdir(path)
             if x.endswith(".py") and not x.startswith("__")
            ])
-    return mods
+    return sorted(mods)
 
 
 def sums(checksum):

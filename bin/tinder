@@ -38,6 +38,7 @@ STARTTIME = time.time()
 
 Mods.debug = True
 Mods.mods["mods"] = "mods"
+Mods.mods[Mods.name + ".network"] = os.path.join(Mods.path, "network")
 Workdir.wdr = ".test"
 
 
