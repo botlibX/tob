@@ -130,6 +130,8 @@ def boot(doparse=True):
     level(Config.level)
     if "m" in Config.opts:
         Mods.mods["mods"] = "mods"
+    if "n" in Config.opts:
+        Mods.mods[Mods.name + ".network"] = os.path.join(Mods.path, "network")
     if "v" in Config.opts:
         banner()
     if "a" in Config.opts:

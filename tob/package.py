@@ -18,8 +18,8 @@ from .threads import launch
 
 
 lock = threading.RLock()
-name = __name__.split(".", maxsplit=1)[0] + "." + "modules"
-path = os.path.join(os.path.dirname(__file__), "modules")
+name = __name__.split(".", maxsplit=1)[0]
+path = os.path.dirname(__file__)
 
 
 class Mods:
@@ -27,7 +27,9 @@ class Mods:
     debug = False
     md5s = {}
     mods = {}
-    mods[name] = path
+    mods[name + ".modules"] = os.path.join(path, "modules")
+    name = name
+    path = path
 
 
 def getmod(name):
@@ -40,7 +42,7 @@ def getmod(name):
             pth = os.path.join(path, f"{name}.py")
             if Mods.md5s and os.path.exists(pth) and name != "tbl":
                 if md5sum(pth) != Mods.md5s.get(name, None):
-                    logging.warning("md5 error on %s", pth.split(os.sep)[-1])
+                    logging.info("md5 error on %s", pth.split(os.sep)[-1])
             mod = importer(mname, pth)
             if not mod:
                 continue
