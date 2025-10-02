@@ -53,9 +53,6 @@ class Handler:
         self.ready   = threading.Event()
         self.stopped = threading.Event()
 
-    def available(self, event):
-        return event.type in self.cbs
-
     def callback(self, event):
         func = self.cbs.get(event.type, None)
         if func:

@@ -2,6 +2,7 @@
 # This file is placed in the Public Domain.
 
 
+import inspect
 import json
 import logging
 import os
@@ -27,6 +28,7 @@ CHECKSUM = ""
 
 
 NAME = Workdir.name
+PATH = os.path.dirname(inspect.getfile(Mods))
 
 
 class Config:
@@ -131,7 +133,8 @@ def boot(doparse=True):
     if "m" in Config.opts:
         Mods.mods["mods"] = "mods"
     if "n" in Config.opts:
-        Mods.mods[Mods.name + ".network"] = os.path.join(Mods.path, "network")
+        Mods.mods[NAME + ".network"] = os.path.join(PATH, "network")
+    Mods.mods[NAME + ".modules"] = os.path.join(PATH, "modules")
     if "v" in Config.opts:
         banner()
     if "a" in Config.opts:

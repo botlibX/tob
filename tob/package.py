@@ -18,8 +18,6 @@ from .threads import launch
 
 
 lock = threading.RLock()
-name = __name__.split(".", maxsplit=1)[0]
-path = os.path.dirname(__file__)
 
 
 class Mods:
@@ -27,9 +25,6 @@ class Mods:
     debug = False
     md5s = {}
     mods = {}
-    mods[name + ".modules"] = os.path.join(path, "modules")
-    name = name
-    path = path
 
 
 def getmod(name):
