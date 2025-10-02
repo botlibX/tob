@@ -34,6 +34,9 @@ class Commands:
             return func
         name = Commands.names.get(cmd, None)
         if not name:
+            scanner(name)
+        name = Commands.names.get(cmd, None)
+        if not name:
             return
         module = getmod(name)
         if not module:
@@ -61,10 +64,6 @@ def scan(module):
 
 def scanner(names=None):
     res = []
-    if not os.path.exists(Mods.mod):
-        logging.info("modules directory is not set.")
-        return res
-    logging.info("scanning %s", Mods.mod)
     for nme in sorted(modules()):
         if names and nme not in names:
             continue
@@ -77,10 +76,6 @@ def scanner(names=None):
 
 
 def table(checksum=""):
-    pth = os.path.join(Mods.mod, "tbl.py")
-    if os.path.exists(pth):
-        if checksum and md5sum(pth) != checksum:
-            logging.warning("table checksum error.")
     tbl = getmod("tbl")
     if tbl and "NAMES" in dir(tbl):
         Commands.names.update(tbl.NAMES)

@@ -6,6 +6,7 @@
 
 import hashlib
 import logging
+import os
 import time
 
 
@@ -85,6 +86,19 @@ def extract_date(daystr):
         except ValueError:
             pass
     return res
+
+
+def fntime(daystr):
+    datestr = " ".join(daystr.split(os.sep)[-2:])
+    datestr = datestr.replace("_", " ")
+    if "." in datestr:
+        datestr, rest = datestr.rsplit(".", 1)
+    else:
+        rest = ""
+    timed = time.mktime(time.strptime(datestr, "%Y-%m-%d %H:%M:%S"))
+    if rest:
+        timed += float("." + rest)
+    return float(timed)
 
 
 def level(loglevel="debug"):

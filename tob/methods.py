@@ -4,8 +4,6 @@
 "object functions"
 
 
-
-
 from .objects import items, keys
 
 
@@ -158,8 +156,6 @@ def __dir__():
         'deleted',
         'edit',
         'fmt',
-        'fqn',
-        'ident',
         'name',
         'parse',
         'search'

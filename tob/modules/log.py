@@ -7,9 +7,9 @@
 import time
 
 
-from ..caching import find, fntime, write
+from ..caching import find, write
 from ..objects import Object
-from ..utility import elapsed
+from ..utility import elapsed, fntime
 
 
 class Log(Object):

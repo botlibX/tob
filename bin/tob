@@ -129,8 +129,7 @@ def boot(doparse=True):
         Workdir.wdr = Config.wdr
     level(Config.level)
     if "m" in Config.opts:
-        Mods.mod = Config.mod = "mods"
-        Mods.package = "mods"
+        Mods.mods["mods"] = "mods"
     if "v" in Config.opts:
         banner()
     if "a" in Config.opts:
@@ -188,6 +187,7 @@ def tbl(event):
     event.reply("")
     event.reply("")
     event.reply(f"NAMES = {json.dumps(Commands.names, indent=4, sort_keys=True)}")
+    event.reply("")
     event.reply("")
     event.reply("MD5 = {")
     for module in scanner():

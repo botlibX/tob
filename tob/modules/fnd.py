@@ -7,9 +7,9 @@
 import time
 
 
-from ..caching import find, fntime
+from ..caching import find
 from ..methods import fmt
-from ..utility import elapsed
+from ..utility import elapsed, fntime
 from ..workdir import long, skel, types
 
 

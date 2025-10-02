@@ -22,12 +22,13 @@ from urllib.error import HTTPError, URLError
 from urllib.parse import quote_plus, urlencode
 
 
-from ..caching import find, fntime, getpath, last, write
+from ..caching import find, last, write
 from ..clients import Fleet
 from ..methods import fmt
 from ..objects import Object, update
 from ..threads import Repeater, launch
-from ..utility import elapsed, spl
+from ..utility import elapsed, fntime, spl
+from ..workdir import getpath
 
 
 def init():

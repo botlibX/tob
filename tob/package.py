@@ -18,29 +18,33 @@ from .threads import launch
 
 
 lock = threading.RLock()
+name = __name__.split(".", maxsplit=1)[0] + "." + "modules"
+path = os.path.join(os.path.dirname(__file__), "modules")
 
 
 class Mods:
 
     debug = False
     md5s = {}
-    mod = os.path.join(os.path.dirname(__file__), "modules")
-    package = __name__.split(".", maxsplit=1)[0] + "." + "modules"
+    mods = {}
+    mods[name] = path
 
 
-def getmod(name, path=None):
+def getmod(name):
     with lock:
-        mname = Mods.package + "." +  name
-        module = sys.modules.get(mname, None)
-        if module:
-            return module
-        if not path:
-            path = Mods.mod
-        pth = os.path.join(path, f"{name}.py")
-        if os.path.exists(pth) and name != "tbl":
-            if Mods.md5s and md5sum(pth) != Mods.md5s.get(name, None):
-                logging.warning("md5 error on %s", pth.split(os.sep)[-1])
-        return importer(mname, pth)
+        for nme, path in Mods.mods.items():
+            mname = nme + "." +  name
+            module = sys.modules.get(mname, None)
+            if module:
+                return module
+            pth = os.path.join(path, f"{name}.py")
+            if Mods.md5s and os.path.exists(pth) and name != "tbl":
+                if md5sum(pth) != Mods.md5s.get(name, None):
+                    logging.warning("md5 error on %s", pth.split(os.sep)[-1])
+            mod = importer(mname, pth)
+            if not mod:
+                continue
+            return mod
 
 
 def importer(name, pth):
@@ -66,7 +70,9 @@ def importer(name, pth):
 
 def inits(names):
     modz = []
-    for name in names:
+    for name in modules():
+        if name not in names:
+            continue
         try:
             module = getmod(name)
             if not module:
@@ -87,22 +93,18 @@ def md5sum(path):
 
 
 def modules():
-    if not os.path.exists(Mods.mod):
-        return []
-    return list({
-            x[:-3] for x in os.listdir(Mods.mod)
+    mods = []
+    for name, path in Mods.mods.items():
+        if not os.path.exists(path):
+            continue
+        mods.extend([
+            x[:-3] for x in os.listdir(path)
             if x.endswith(".py") and not x.startswith("__")
-           })
+           ])
+    return mods
 
 
 def sums(checksum):
-    pth = os.path.join(Mods.mod, "tbl.py")
-    if not os.path.exists(pth):
-        logging.info("table is not there.")
-        return
-    elif checksum and md5sum(pth) != checksum:
-        logging.warning("table checksum error.")
-        return
     tbl = getmod("tbl")
     if tbl:
         if "MD5" in dir(tbl):

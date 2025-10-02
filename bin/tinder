@@ -37,6 +37,7 @@ STARTTIME = time.time()
 
 
 Mods.debug = True
+Mods.mods["mods"] = "mods"
 Workdir.wdr = ".test"
 
 
