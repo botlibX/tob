@@ -2,7 +2,6 @@
 # This file is placed in the Public Domain.
 
 
-import inspect
 import json
 import logging
 import os
@@ -19,9 +18,9 @@ from tob.command import Commands, command, scanner, table
 from tob.methods import parse
 from tob.handler import Event
 from tob.objects import update
-from tob.package import NAME, PATH, Mods, getmod, inits, md5sum, modules, sums
+from tob.package import NAME, Mods, getmod, inits, md5sum, modules, sums
 from tob.utility import level, spl
-from tob.workdir import Workdir, j, pidfile, pidname, setwd
+from tob.workdir import Workdir, pidfile, pidname, setwd
 
 
 CHECKSUM = ""

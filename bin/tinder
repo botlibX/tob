@@ -21,25 +21,24 @@ sys.path.insert(0, os.getcwd())
 
 from tob.brokers import Fleet
 from tob.clients import Client, Output
-from tob.command import Commands, command, table
+from tob.command import command, table
 from tob.handler import Event
 from tob.methods import parse
 from tob.objects import Object, keys
-from tob.package import NAME, PATH, Mods
+from tob.package import NAME, Mods
 from tob.threads import launch
-from tob.utility import DEBUG, elapsed, level
-from tob.workdir import Workdir, j, skel
+from tob.utility import elapsed, level
+from tob.workdir import Workdir, skel
 
 
 CHECKSUM = ""
-DEBUG = True
-NAME = Workdir.name
 STARTTIME = time.time()
 
 
 Mods.add("mods", "mods")
 Mods.add("modules")
 Mods.add("network")
+Mods.debug = True
 
 
 Workdir.wdr = ".test"
@@ -266,6 +265,7 @@ if __name__ == "__main__":
     nrevents = events.qsize()
     percall = (endtime-STARTTIME)/(commandz)
     if "v" in Config.opts:
+        print(f"debug is {Mods.debug}")
         print(f"{Pool.nrcpu} cpu's used")
         print(f"{nrevents} events left.")
         print(f"total: {lap} nrs: {nrz} cmds: {commandz} call: %.6fs" % percall)
