@@ -37,9 +37,11 @@ NAME = Workdir.name
 STARTTIME = time.time()
 
 
-Mods.mods["mods"] = "mods"
-Mods.mods[NAME + ".modules"] = j(PATH, "modules")
-Mods.mods[NAME + ".network"] = j(PATH, "network")
+Mods.add("mods", "mods")
+Mods.add("modules")
+Mods.add("network")
+
+
 Workdir.wdr = ".test"
 
 

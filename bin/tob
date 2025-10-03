@@ -19,16 +19,15 @@ from tob.command import Commands, command, scanner, table
 from tob.methods import parse
 from tob.handler import Event
 from tob.objects import update
-from tob.package import Mods, getmod, inits, md5sum, modules, sums
+from tob.package import NAME, PATH, Mods, getmod, inits, md5sum, modules, sums
 from tob.utility import level, spl
-from tob.workdir import Workdir, pidfile, pidname, setwd
+from tob.workdir import Workdir, j, pidfile, pidname, setwd
 
 
 CHECKSUM = ""
 
 
-NAME = Workdir.name
-PATH = os.path.dirname(inspect.getfile(Mods))
+"config"
 
 
 class Config:
@@ -46,6 +45,9 @@ class Config:
     verbose = False
     version = 102
     wdr = ""
+
+
+"clients"
 
 
 class CLI(Client):
@@ -77,6 +79,9 @@ class Console(CLI):
         evt.txt = input("> ")
         evt.type = "command"
         return evt
+
+
+"scripts"
 
 
 def background():
@@ -131,10 +136,10 @@ def boot(doparse=True):
         Workdir.wdr = Config.wdr
     level(Config.level)
     if "m" in Config.opts:
-        Mods.mods["mods"] = "mods"
+        Mods.add("mods", "mods", plain=True)
     if "n" in Config.opts:
-        Mods.mods[NAME + ".network"] = os.path.join(PATH, "network")
-    Mods.mods[NAME + ".modules"] = os.path.join(PATH, "modules")
+        Mods.add("network")
+    Mods.add("modules")
     if "v" in Config.opts:
         banner()
     if "a" in Config.opts:
@@ -160,20 +165,6 @@ def md5(event):
         event.reply(md5sum(tbl.__file__))
     else:
         event.reply("table is not there.")
-
-
-TXT = """[Unit]
-Description=%s
-After=network-online.target
-
-[Service]
-Type=simple
-User=%s
-Group=%s
-ExecStart=/home/%s/.local/bin/%s -s
-
-[Install]
-WantedBy=multi-user.target"""
 
 
 def srv(event):
@@ -297,6 +288,20 @@ def main():
         wrapped(service)
     else:
         wrapped(control)
+
+
+TXT = """[Unit]
+Description=%s
+After=network-online.target
+
+[Service]
+Type=simple
+User=%s
+Group=%s
+ExecStart=/home/%s/.local/bin/%s -s
+
+[Install]
+WantedBy=multi-user.target"""
 
 
 if __name__ == "__main__":

@@ -15,7 +15,7 @@ import _thread
 
 from .threads import launch
 from .utility import importer
-from .workdir import Workdir
+from .workdir import Workdir, j
 
 
 NAME = Workdir.name
@@ -31,6 +31,13 @@ class Mods:
     md5s = {}
     mods = {}
 
+    @staticmethod
+    def add(name, path=None):
+        if path is not None:
+            Mods.mods[name] = path
+        else:
+            Mods.mods[NAME + "." + name] = j(PATH, name)
+
 
 def getmod(name):
     with lock:
@@ -39,7 +46,7 @@ def getmod(name):
             module = sys.modules.get(mname, None)
             if module:
                 return module
-            pth = os.path.join(path, f"{name}.py")
+            pth = j(path, f"{name}.py")
             if Mods.md5s and os.path.exists(pth) and name != "tbl":
                 if md5sum(pth) != Mods.md5s.get(name, None):
                     logging.info("md5 error on %s", pth.split(os.sep)[-1])

@@ -12,7 +12,7 @@ import threading
 from .methods import deleted, search
 from .objects import Object, update
 from .serials import dump, load
-from .workdir import cdir, fqn, getpath, long, store
+from .workdir import cdir, fqn, getpath, j, long, store
 from .utility import fntime
 
 
@@ -62,9 +62,9 @@ def fns(clz):
     pth = store(clz)
     for rootdir, dirs, _files in os.walk(pth, topdown=False):
         for dname in dirs:
-            ddd = os.path.join(rootdir, dname)
+            ddd = j(rootdir, dname)
             for fll in os.listdir(ddd):
-                yield os.path.join(ddd, fll)
+                yield j(ddd, fll)
 
 
 def last(obj, selector=None):
