@@ -7,7 +7,6 @@
 import json.decoder
 import os
 import threading
-import time
 
 
 from .methods import deleted, search

@@ -9,6 +9,9 @@ import os
 import pathlib
 
 
+j = os.path.join
+
+
 class Workdir:
 
     name = __file__.rsplit(os.sep, maxsplit=2)[-2]
@@ -32,7 +35,7 @@ def getpath(obj):
 
 
 def ident(obj):
-    return os.path.join(fqn(obj), *str(datetime.datetime.now()).split())
+    return j(fqn(obj), *str(datetime.datetime.now()).split())
 
 
 def long(name):
@@ -47,7 +50,7 @@ def long(name):
 
 def moddir():
     assert Workdir.wdr
-    return os.path.join(Workdir.wdr, "mods")
+    return j(Workdir.wdr, "mods")
 
 
 def pidfile(filename):
@@ -61,7 +64,7 @@ def pidfile(filename):
 
 def pidname(name):
     assert Workdir.wdr
-    return os.path.join(Workdir.wdr, f"{name}.pid")
+    return j(Workdir.wdr, f"{name}.pid")
 
 
 def setwd(name, path=""):
@@ -83,11 +86,11 @@ def skel():
 
 def store(pth=""):
     assert Workdir.wdr
-    return os.path.join(Workdir.wdr, "store", pth)
+    return j(Workdir.wdr, "store", pth)
 
 
 def strip(pth, nmr=2):
-    return os.path.join(pth.split(os.sep)[-nmr:])
+    return j(pth.split(os.sep)[-nmr:])
 
 
 def types():
@@ -97,7 +100,7 @@ def types():
 
 def wdr(pth):
     assert Workdir.wdr
-    return os.path.join(Workdir.wdr, pth)
+    return j(Workdir.wdr, pth)
 
 
 def __dir__():
@@ -107,6 +110,7 @@ def __dir__():
         'fqn',
         'getpath',
         'ident',
+        'j',
         'long',
         'moddir',
         'pidfile',

@@ -5,9 +5,16 @@
 
 
 import hashlib
+import importlib
+import importlib.util
 import logging
 import os
+import sys
 import time
+import _thread
+
+
+DEBUG = False
 
 
 FORMATS = [
@@ -101,6 +108,26 @@ def fntime(daystr):
     return float(timed)
 
 
+def importer(name, pth):
+    if not os.path.exists(pth):
+        return
+    try:
+        spec = importlib.util.spec_from_file_location(name, pth)
+        if spec:
+            mod = importlib.util.module_from_spec(spec)
+            if mod:
+                sys.modules[name] = mod
+                if spec.loader:
+                    spec.loader.exec_module(mod)
+                if DEBUG:
+                    mod.DEBUG = True
+                logging.info("load %s", pth)
+                return mod
+    except Exception as ex:
+        logging.exception(ex)
+        _thread.interrupt_main()
+
+
 def level(loglevel="debug"):
     if loglevel != "none":
         datefmt = "%H:%M:%S"
@@ -135,6 +162,7 @@ def __dir__():
         'elapsed',
         'extract_date',
         'fntime',
+        'importer',
         'level',
         'md5sum',
         'spl'

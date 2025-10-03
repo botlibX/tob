@@ -25,20 +25,21 @@ from tob.command import Commands, command, table
 from tob.handler import Event
 from tob.methods import parse
 from tob.objects import Object, keys
-from tob.package import Mods
+from tob.package import NAME, PATH, Mods
 from tob.threads import launch
-from tob.utility import elapsed, level
-from tob.workdir import Workdir, skel
+from tob.utility import DEBUG, elapsed, level
+from tob.workdir import Workdir, j, skel
 
 
 CHECKSUM = ""
+DEBUG = True
 NAME = Workdir.name
 STARTTIME = time.time()
 
 
-Mods.debug = True
 Mods.mods["mods"] = "mods"
-Mods.mods[Mods.name + ".network"] = os.path.join(Mods.path, "network")
+Mods.mods[NAME + ".modules"] = j(PATH, "modules")
+Mods.mods[NAME + ".network"] = j(PATH, "network")
 Workdir.wdr = ".test"
 
 
