@@ -135,7 +135,7 @@ def boot(doparse=True):
         Workdir.wdr = Config.wdr
     level(Config.level)
     if "m" in Config.opts:
-        Mods.add("mods", "mods", plain=True)
+        Mods.add("mods", "mods")
     if "n" in Config.opts:
         Mods.add("network")
     Mods.add("modules")
