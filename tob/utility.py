@@ -10,9 +10,6 @@ import os
 import time
 
 
-DEBUG = False
-
-
 FORMATS = [
     "%Y-%M-%D %H:%M:%S",
     "%Y-%m-%d %H:%M:%S",

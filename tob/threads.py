@@ -96,13 +96,6 @@ class Repeater(Timed):
         super().run()
 
 
-class Formatter(logging.Formatter):
-
-    def format(self, record):
-        record.module = record.module.upper()
-        return logging.Formatter.format(self, record)
-
-
 def launch(func, *args, **kwargs):
     thread = Thread(func, *args, **kwargs)
     thread.start()
