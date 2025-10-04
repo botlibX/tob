@@ -5,11 +5,15 @@
 
 
 import inspect
+import threading
 
 
 from .brokers import Fleet
 from .methods import parse
 from .package import getmod, modules
+
+
+lock = threading.RLock()
 
 
 class Commands:
@@ -26,15 +30,18 @@ class Commands:
 
     @staticmethod
     def get(cmd):
-        func = Commands.cmds.get(cmd, None)
-        if func:
-            return func
-        name = Commands.names.get(cmd, None)
-        if name:
-            module = getmod(name)
-            if module:
-                scan(module)
-        return Commands.cmds.get(cmd, None)
+        with lock:
+            if not Commands.names:
+                scanner()
+            func = Commands.cmds.get(cmd, None)
+            if func:
+                return func
+            name = Commands.names.get(cmd, None)
+            if name:
+                module = getmod(name)
+                if module:
+                    scan(module)
+            return Commands.cmds.get(cmd, None)
 
 
 def command(evt):
