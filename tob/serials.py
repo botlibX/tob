@@ -38,19 +38,11 @@ def dumps(obj, *args, **kw):
     return json.dumps(obj, *args, **kw)
 
 
-def hook(objdict):
-    obj = Object()
-    construct(obj, objdict)
-    return obj
-
-
 def load(fp, *args, **kw):
-    kw["object_hook"] = hook
     return json.load(fp, *args, **kw)
 
 
 def loads(s, *args, **kw):
-    kw["object_hook"] = hook
     return json.loads(s, *args, **kw)
 
 

@@ -30,14 +30,10 @@ class Commands:
         if func:
             return func
         name = Commands.names.get(cmd, None)
-        if not name:
-            scanner(name)
-        name = Commands.names.get(cmd, None)
-        if not name:
-            return
-        module = getmod(name)
-        if not module:
-            scan(module)
+        if name:
+            module = getmod(name)
+            if module:
+                scan(module)
         return Commands.cmds.get(cmd, None)
 
 
