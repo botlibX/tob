@@ -95,9 +95,11 @@ def modules():
 
 def sums(checksum):
     tbl = getmod("tbl")
-    if tbl:
-        if "MD5" in dir(tbl):
-            Mods.md5s.update(tbl.MD5)
+    if not tbl:
+        logging.info("no table")
+        return
+    if "MD5" in dir(tbl):
+        Mods.md5s.update(tbl.MD5)
 
 
 def __dir__():

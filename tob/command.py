@@ -31,8 +31,8 @@ class Commands:
     @staticmethod
     def get(cmd):
         with lock:
-            if not Commands.names:
-                scanner()
+            #if not Commands.names:
+            #    scanner()
             func = Commands.cmds.get(cmd, None)
             if func:
                 return func
