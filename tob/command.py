@@ -37,8 +37,7 @@ class Commands:
             return
         module = getmod(name)
         if not module:
-            return
-        scan(module)
+            scan(module)
         return Commands.cmds.get(cmd, None)
 
 

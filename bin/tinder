@@ -21,7 +21,7 @@ sys.path.insert(0, os.getcwd())
 
 from tob.brokers import Fleet
 from tob.clients import Client, Output
-from tob.command import command, table
+from tob.command import command, scanner
 from tob.handler import Event
 from tob.methods import parse
 from tob.objects import Object, keys
@@ -188,7 +188,8 @@ def main():
             shutil.rmtree(Workdir.wdr)
     level(Config.level)
     skel()
-    table(CHECKSUM)
+    for mod in scanner():
+        mod.DEBUG = True
     nrs = Config.index or 1
     thrs = []
     if "z" in Config.opts:

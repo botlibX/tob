@@ -5,8 +5,6 @@
 
 
 import hashlib
-import importlib
-import importlib.util
 import inspect
 import logging
 import os
@@ -16,6 +14,7 @@ import _thread
 
 
 from .threads import launch
+from .utility import importer
 from .workdir import Workdir, j
 
 
@@ -56,27 +55,7 @@ def getmod(name):
                 return mod
 
 
-def importer(name, pth):
-    if not os.path.exists(pth):
-        return
-    try:
-        spec = importlib.util.spec_from_file_location(name, pth)
-        if spec:
-            mod = importlib.util.module_from_spec(spec)
-            if mod:
-                sys.modules[name] = mod
-                if spec.loader:
-                    spec.loader.exec_module(mod)
-                if Mods.debug:
-                    mod.DEBUG = True
-                logging.info("load %s", pth)
-                return mod
-    except Exception as ex:
-        logging.exception(ex)
-        _thread.interrupt_main()
-
-
-def inits(names):
+def inits(names, debug=False):
     modz = []
     for name in modules():
         if name not in names:
@@ -85,6 +64,8 @@ def inits(names):
             module = getmod(name)
             if not module:
                 continue
+            if debug:
+                module.DEBUG = True
             if "init" in dir(module):
                 thr = launch(module.init)
                 modz.append((module, thr))
@@ -123,7 +104,9 @@ def __dir__():
     return (
         'Mods',
         'getmod',
-        'init',
+        'importer',
+        'inits',
+        'md5sum',
         'modules',
         'sums'
     )
