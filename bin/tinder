@@ -127,7 +127,7 @@ class Pool:
 
 def banner():
     tme = time.ctime(time.time()).replace("  ", " ")
-    print(f"{NAME.upper()} {Config.version} TINDER since {tme} ({Config.level.upper()})")
+    print(f"{NAME[::-1].upper()} {Config.version} TINDER since {tme} ({Config.level.upper()})")
 
 
 def consume():

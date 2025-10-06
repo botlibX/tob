@@ -7,16 +7,11 @@
 import json
 
 
-from .objects import Object, construct
-
-
 class Encoder(json.JSONEncoder):
 
     def default(self, o):
         if isinstance(o, dict):
             return o.items()
-        if issubclass(type(o), Object):
-            return vars(o)
         if isinstance(o, list):
             return iter(o)
         try:

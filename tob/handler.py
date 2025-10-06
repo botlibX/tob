@@ -18,25 +18,20 @@ class Handler:
     def __init__(self):
         self.cbs = {}
         self.queue = queue.Queue()
-        self.ready = threading.Event()
-        self.stopped = threading.Event()
 
     def callback(self, event):
         func = self.cbs.get(event.type, None)
         if func:
-            event._thr = launch(
-                                func,
-                                event,
-                                name=event.txt and event.txt.split()[0]
-                               )
+            name = event.txt and event.txt.split()[0]
+            event._thr = launch(func, event, name=name)
         else:
             event.ready()
 
     def loop(self):
-        while not self.stopped.is_set():
+        while True:
             try:
                 event = self.poll()
-                if event is None or self.stopped.is_set():
+                if event is None:
                     break
                 event.orig = repr(self)
                 self.callback(event)
@@ -52,12 +47,10 @@ class Handler:
     def register(self, typ, cbs):
         self.cbs[typ] = cbs
 
-    def start(self, daemon=True):
-        self.stopped.clear()
-        launch(self.loop, daemon=daemon)
+    def start(self):
+        launch(self.loop)
 
     def stop(self):
-        self.stopped.set()
         self.queue.put(None)
 
 

@@ -1,7 +1,7 @@
 # This file is placed in the Public Domain.
 
 
-"an object for a string"
+"object for a string"
 
 
 import json.decoder
@@ -33,8 +33,6 @@ class Cache:
 
     @staticmethod
     def update(path, obj):
-        if not obj:
-            return
         if path in Cache.objs:
             update(Cache.objs[path], obj)
         else:

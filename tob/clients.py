@@ -22,7 +22,7 @@ class Client(Handler):
         Fleet.add(self)
 
     def announce(self, txt):
-        pass
+        self.raw(txt)
 
     def display(self, event):
         with self.olock:
@@ -60,9 +60,6 @@ class Output(Client):
                 break
             self.display(event)
             self.oqueue.task_done()
-
-    def raw(self, txt):
-        raise NotImplementedError("raw")
 
     def start(self, daemon=True):
         self.ostop.clear()

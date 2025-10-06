@@ -99,7 +99,7 @@ def console():
         if "w" in Config.opts:
             thr.join(30.0)
     csl = Console()
-    csl.start(daemon=True)
+    csl.start()
     forever()
 
 

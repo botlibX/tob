@@ -1,7 +1,7 @@
 # This file is placed in the Public Domain.
 
 
-"a client for a string"
+"client for a string"
 
 
 class Fleet:
@@ -10,8 +10,6 @@ class Fleet:
 
     @staticmethod
     def add(client):
-        if not client:
-            return
         Fleet.clients[repr(client)] = client
 
     @staticmethod

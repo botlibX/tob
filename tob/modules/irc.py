@@ -298,7 +298,7 @@ class IRC(Output):
             self.docommand("JOIN", channel)
 
     def keep(self):
-        while not self.stopped.is_set():
+        while True:
             if self.state.stopkeep:
                 self.state.stopkeep = False
                 break

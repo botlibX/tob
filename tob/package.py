@@ -47,26 +47,25 @@ def getmod(name):
             if module:
                 return module
             pth = j(path, f"{name}.py")
-            if Mods.md5s and os.path.exists(pth) and name != "tbl":
-                if md5sum(pth) != Mods.md5s.get(name, None):
-                    logging.info("md5 error on %s", pth.split(os.sep)[-1])
+            if Mods.md5s:
+                if os.path.exists(pth) and name != "tbl":
+                    md5 = Mods.md5s.get(name, None)
+                    if md5sum(pth) != md5:
+                        file = pth.split(os.sep)[-1]
+                        logging.info("md5 error %s", file)
             mod = importer(mname, pth)
             if mod:
                 return mod
 
 
-def inits(names, debug=False):
+def inits(names):
     modz = []
     for name in modules():
         if name not in names:
             continue
         try:
             module = getmod(name)
-            if not module:
-                continue
-            if debug:
-                module.DEBUG = True
-            if "init" in dir(module):
+            if module and "init" in dir(module):
                 thr = launch(module.init)
                 modz.append((module, thr))
         except Exception as ex:
