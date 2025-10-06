@@ -7,7 +7,8 @@
 from json import JSONEncoder
 from json import dump as jdump
 from json import dumps as jdumps
-from json import load, loads
+from json import load as load
+from json import loads as loads
 
 
 class Encoder(JSONEncoder):
