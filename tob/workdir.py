@@ -116,6 +116,7 @@ def __dir__():
         'pidfile',
         'pidname',
         'setwd',
+        'skel',
         'store',
         'strip',
         'types'
