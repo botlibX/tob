@@ -20,7 +20,7 @@ from tob.handler import Event
 from tob.objects import update
 from tob.package import NAME, Mods, getmod, inits, md5sum, modules, sums
 from tob.utility import level, spl
-from tob.workdir import Workdir, pidfile, pidname, setwd
+from tob.workdir import Workdir, moddir, pidfile, pidname, setwd
 
 
 CHECKSUM = ""
@@ -134,16 +134,17 @@ def boot(doparse=True):
         update(Config, Config.sets, empty=False)
         Workdir.wdr = Config.wdr
     level(Config.level)
+    setwd(NAME)
     if "m" in Config.opts:
         Mods.add("mods", "mods")
     if "n" in Config.opts:
         Mods.add("network")
     Mods.add("modules")
+    Mods.add("mymods", moddir())
     if "v" in Config.opts:
         banner()
     if "a" in Config.opts:
         Config.init = ",".join(modules())
-    setwd(NAME)
     sums(CHECKSUM)
     table(CHECKSUM)
     Commands.add(cmd)

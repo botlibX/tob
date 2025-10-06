@@ -6,7 +6,7 @@ T O B
 
 
 |
-| ``tob`` - TOB
+| ``TOB`` - bot in reverse
 |
 
 
@@ -25,8 +25,7 @@ T O B
 
 ``TOB`` has all you need to program a unix cli program, such as disk
 perisistence for configuration files, event handler to handle the
-client/server connection, deferred exception handling to not crash
-on an error, etc.
+client/server connection, easy programming of your own commands, etc.
 
 ``TOB`` contains python3 code to program objects in a functional way.
 it provides an "clean namespace" Object class that only has dunder
@@ -84,7 +83,7 @@ start console
 | ``$ tob -c``
 |
 
-start console and run irc and rss clients
+start console and run irc and rss 
 
 |
 | ``$ tob -c init=irc,rss``
@@ -130,7 +129,6 @@ here is a list of available commands
 | ``pwd`` - sasl nickserv name/pass
 | ``rem`` - removes a rss feed
 | ``res`` - restore deleted feeds
-| ``req`` - reconsider
 | ``rss`` - add a feed
 | ``syn`` - sync rss feeds
 | ``tdo`` - add todo item
@@ -176,8 +174,9 @@ opml
 **PROGRAMMING**
 
 
-``tob`` has it's modules in the package, so edit a file in tob/modules/<name>.py
-and add the following for ``hello world``
+``tob`` has it's modules in the ~/.tob/mods directory so for a ``hello world``
+command you would  edit a file in ~/.tob/mods/hello.py and add the
+following
 
 ::
 
@@ -185,31 +184,16 @@ and add the following for ``hello world``
         event.reply("hello world !!")
 
 
-``tob`` uses loading on demand of modules and has a ``tbl`` command to
-generate a table for this.
-
-
-|
-| ``$ tob tbl > tob/modules/tbl.py``
-|
-
-a md5sum can be added to verify the modules md5sums are matching.
-
-|
-| ``$ tob md5``
-|
-
-put this value in tob/modules/__init__.py and ``tob`` can execute the ``hello``
-command now.
+typing the hello command would result into a nice ``hello world !!``
 
 |
 | ``$ tob hello``
 | ``hello world !!``
 |
 
-Commands run in their own thread and the program borks on exit, output gets
-flushed on print so exceptions appear in the systemd logs. Modules can contain
-your own written python3 code, see the tob/modules directory for examples.
+commands run in their own thread and the program borks on exit to enable a
+short debug cycle, output gets flushed on print so exceptions appear in the
+systemd logs. modules can contain your own written python3 code.
 
 
 **FILES**

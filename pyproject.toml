@@ -8,11 +8,11 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "tob"
-version = "102"
+version = "103"
 authors = [
     {name = "Bart Thate", email = "bthate@dds.nl" },
 ]
-description = "bot in reverse."
+description = "bot in reverse"
 readme = "README.rst"
 license = "Unlicense"
 classifiers=[
@@ -35,4 +35,3 @@ packages = [
     'tob.modules',
     'tob.network'
 ]
-include-package-data = false
