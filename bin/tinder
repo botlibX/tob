@@ -260,7 +260,7 @@ post.rem = ["hnrss", ""]
 if __name__ == "__main__":
     nrz, commandz = wrap(main)
     if nrz is None and commandz is None:
-       os._exit(1)
+        os._exit(1)
     endtime = time.time()
     lap = elapsed(endtime-STARTTIME)
     nrevents = events.qsize()

@@ -23,7 +23,7 @@ DEBUG = False
 def init():
     udpd = UDP()
     udpd.start()
-    logging.warning(f"http://{Cfg.host}:{Cfg.port}")
+    logging.warning("http://%s:%s", Cfg.host, Cfg.port)
     return udpd
 
 

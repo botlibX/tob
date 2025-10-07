@@ -29,7 +29,7 @@ def init():
         else:
             obj.__deleted__ = True
             write(obj, fnm)
-    logging.warning(f"{nrs} timers")
+    logging.warning("%s timers", nrs)
 
 
 class NoDate(Exception):

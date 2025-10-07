@@ -35,7 +35,7 @@ def init():
     fetcher = Fetcher()
     fetcher.start()
     if fetcher.seenfn:
-        logging.warning(f"since {elapsed(time.time()-fntime(fetcher.seenfn))}")
+        logging.warning("since %s", elapsed(time.time()-fntime(fetcher.seenfn)))
     return fetcher
 
 
@@ -289,7 +289,7 @@ def getfeed(url, items):
     try:
         rest = geturl(url)
     except (http.client.HTTPException, ValueError, HTTPError, URLError) as ex:
-        logging.error(f"{url} {ex}")
+        logging.error("%s %s", url, ex)
         errors[url] = time.time()
         return result
     if rest:
