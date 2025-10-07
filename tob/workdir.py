@@ -98,11 +98,6 @@ def types():
     return os.listdir(store())
 
 
-def wdr(pth):
-    assert Workdir.wdr
-    return j(Workdir.wdr, pth)
-
-
 def __dir__():
     return (
         'Workdir',

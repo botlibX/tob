@@ -13,8 +13,8 @@ import time
 from http.server import HTTPServer, BaseHTTPRequestHandler
 
 
-from ..objects import Object
-from ..threads import launch
+from tob.objects import Object
+from tob.threads import launch
 
 
 DEBUG = False
