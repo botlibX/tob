@@ -14,7 +14,7 @@ class Fleet:
 
     @staticmethod
     def all():
-        return list(Fleet.clients.values())
+        return Fleet.clients.values()
 
     @staticmethod
     def announce(txt):
@@ -38,8 +38,8 @@ class Fleet:
     @staticmethod
     def shutdown():
         for client in Fleet.all():
-            client.stop()
             client.wait()
+            client.stop()
 
 
 def __dir__():

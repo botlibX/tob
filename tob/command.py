@@ -13,9 +13,6 @@ from .methods import parse
 from .package import getmod, modules
 
 
-lock = threading.RLock()
-
-
 class Commands:
 
     cmds = {}
@@ -30,16 +27,15 @@ class Commands:
 
     @staticmethod
     def get(cmd):
-        with lock:
-            func = Commands.cmds.get(cmd, None)
-            if func:
-                return func
-            name = Commands.names.get(cmd, None)
-            if name:
-                module = getmod(name)
-                if module:
-                    scan(module)
-            return Commands.cmds.get(cmd, None)
+        func = Commands.cmds.get(cmd, None)
+        if func:
+            return func
+        name = Commands.names.get(cmd, None)
+        if name:
+            module = getmod(name)
+            if module:
+                scan(module)
+        return Commands.cmds.get(cmd, None)
 
 
 def command(evt):

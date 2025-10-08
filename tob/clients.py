@@ -27,7 +27,10 @@ class Client(Handler):
     def display(self, event):
         with self.olock:
             for tme in sorted(event.result):
-                self.dosay(event.channel, event.result[tme])
+                self.dosay(
+                           event.channel,
+                           event.result[tme]
+                          )
 
     def dosay(self, channel, txt):
         self.say(channel, txt)
@@ -47,13 +50,12 @@ class Output(Client):
     def __init__(self):
         Client.__init__(self)
         self.oqueue = queue.Queue()
-        self.ostop  = threading.Event()
 
     def oput(self, event):
         self.oqueue.put(event)
 
     def output(self):
-        while not self.ostop.is_set():
+        while True:
             event = self.oqueue.get()
             if event is None:
                 self.oqueue.task_done()
@@ -61,13 +63,11 @@ class Output(Client):
             self.display(event)
             self.oqueue.task_done()
 
-    def start(self, daemon=True):
-        self.ostop.clear()
-        launch(self.output, daemon=daemon)
+    def start(self):
+        launch(self.output)
         super().start()
 
     def stop(self):
-        self.ostop.set()
         self.oqueue.put(None)
         super().stop()
 

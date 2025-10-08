@@ -136,11 +136,11 @@ def boot(doparse=True):
     level(Config.level)
     setwd(NAME)
     if "m" in Config.opts:
-        Mods.add("mods", "mods")
+        Mods.dir("mods", "mods")
     if "n" in Config.opts:
-        Mods.add("network")
-    Mods.add("modules")
-    Mods.add("mymods", moddir())
+        Mods.dir("network")
+    Mods.dir("modules")
+    Mods.dir("mymods", moddir())
     if "v" in Config.opts:
         banner()
     if "a" in Config.opts:

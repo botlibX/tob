@@ -68,7 +68,10 @@ def fns(clz):
 def last(obj, selector=None):
     if selector is None:
         selector = {}
-    result = sorted(find(fqn(obj), selector), key=lambda x: fntime(x[0]))
+    result = sorted(
+                    find(fqn(obj), selector),
+                    key=lambda x: fntime(x[0])
+                   )
     res = ""
     if result:
         inp = result[-1]

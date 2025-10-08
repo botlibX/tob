@@ -35,9 +35,9 @@ CHECKSUM = ""
 STARTTIME = time.time()
 
 
-Mods.add("mods", "mods")
-Mods.add("modules")
-Mods.add("network")
+Mods.dir("mods", "mods")
+Mods.dir("modules")
+Mods.dir("network")
 Mods.debug = True
 
 

@@ -14,7 +14,7 @@ import _thread
 
 
 from .threads import launch
-from .utility import importer
+from .utility import importer, md5sum
 from .workdir import Workdir, j
 
 
@@ -28,34 +28,33 @@ lock = threading.RLock()
 class Mods:
 
     debug = False
+    dirs = {}
     md5s = {}
-    mods = {}
 
     @staticmethod
-    def add(name, path=None):
+    def dir(name, path=None):
         if path is not None:
-            Mods.mods[name] = path
+            Mods.dirs[name] = path
         else:
-            Mods.mods[NAME + "." + name] = j(PATH, name)
+            Mods.dirs[NAME + "." + name] = j(PATH, name)
 
 
 def getmod(name):
-    with lock:
-        for nme, path in Mods.mods.items():
-            mname = nme + "." +  name
-            module = sys.modules.get(mname, None)
-            if module:
-                return module
-            pth = j(path, f"{name}.py")
-            if Mods.md5s:
-                if os.path.exists(pth) and name != "tbl":
-                    md5 = Mods.md5s.get(name, None)
-                    if md5sum(pth) != md5:
-                        file = pth.split(os.sep)[-1]
-                        logging.info("md5 error %s", file)
-            mod = importer(mname, pth)
-            if mod:
-                return mod
+    for nme, path in Mods.dirs.items():
+        mname = nme + "." +  name
+        module = sys.modules.get(mname, None)
+        if module:
+            return module
+        pth = j(path, f"{name}.py")
+        if Mods.md5s:
+            if os.path.exists(pth) and name != "tbl":
+                md5 = Mods.md5s.get(name, None)
+                if md5sum(pth) != md5:
+                    file = pth.split(os.sep)[-1]
+                    logging.info("md5 error %s", file)
+        mod = importer(mname, pth)
+        if mod:
+            return mod
 
 
 def inits(names):
@@ -74,15 +73,9 @@ def inits(names):
     return modz
 
 
-def md5sum(path):
-    with open(path, "r", encoding="utf-8") as file:
-        txt = file.read().encode("utf-8")
-        return hashlib.md5(txt).hexdigest()
-
-
 def modules():
     mods = []
-    for name, path in Mods.mods.items():
+    for name, path in Mods.dirs.items():
         if not os.path.exists(path):
             continue
         mods.extend([

@@ -26,7 +26,7 @@ def construct(obj, *args, **kwargs):
             update(obj, dict(val))
         elif isinstance(val, dict):
             update(obj, val)
-        elif isinstance(val, Object):
+        else:
             update(obj, vars(val))
     if kwargs:
         update(obj, kwargs)

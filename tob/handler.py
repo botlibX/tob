@@ -68,9 +68,6 @@ class Event:
         self.txt = ""
         self.type = "event"
 
-    def done(self):
-        self.reply("ok")
-
     def ready(self):
         self._ready.set()
 
