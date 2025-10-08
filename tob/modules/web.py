@@ -14,10 +14,12 @@ from http.server import HTTPServer, BaseHTTPRequestHandler
 
 
 from tob.objects import Object
+from tob.package import PATH
 from tob.threads import launch
 
 
 DEBUG = False
+PATH = os.path.join(PATH, "network")
 
 
 def init():
@@ -99,8 +101,8 @@ class HTTPHandler(BaseHTTPRequestHandler):
         if DEBUG:
             return
         if self.path == "/":
-            self.path = "/index.html"
-        self.path = "network" + os.sep + self.path
+            self.path = "index.html"
+        self.path = PATH + os.sep + self.path
         if not os.path.exists(self.path):
             self.write_header("text/html")
             self.send_response(404)
@@ -123,7 +125,7 @@ class HTTPHandler(BaseHTTPRequestHandler):
                 txt = file.read()
                 file.close()
             self.write_header("text/html")
-            self.send(html2(txt))
+            self.send(txt)
         except (TypeError, FileNotFoundError, IsADirectoryError):
             self.send_response(404)
             self.end_headers()
