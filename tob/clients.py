@@ -19,9 +19,13 @@ class Client(Handler):
     def __init__(self):
         Handler.__init__(self)
         self.olock = threading.RLock()
+        self.oqueue = queue.Queue()
+        self.silent = False
         Fleet.add(self)
 
     def announce(self, txt):
+        if self.silent:
+            return
         self.raw(txt)
 
     def display(self, event):
@@ -35,22 +39,6 @@ class Client(Handler):
     def dosay(self, channel, txt):
         self.say(channel, txt)
 
-    def raw(self, txt):
-        raise NotImplementedError("raw")
-
-    def say(self, channel, txt):
-        self.raw(txt)
-
-    def wait(self):
-        pass
-
-
-class Output(Client):
-
-    def __init__(self):
-        Client.__init__(self)
-        self.oqueue = queue.Queue()
-
     def oput(self, event):
         self.oqueue.put(event)
 
@@ -62,6 +50,12 @@ class Output(Client):
                 break
             self.display(event)
             self.oqueue.task_done()
+
+    def raw(self, txt):
+        raise NotImplementedError("raw")
+
+    def say(self, channel, txt):
+        self.raw(txt)
 
     def start(self):
         launch(self.output)
@@ -81,5 +75,4 @@ class Output(Client):
 def __dir__():
     return (
         'Client',
-        'Output'
-   )
+    )

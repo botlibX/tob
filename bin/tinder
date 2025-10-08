@@ -20,7 +20,7 @@ sys.path.insert(0, os.getcwd())
 
 
 from tob.brokers import Fleet
-from tob.clients import Client, Output
+from tob.clients import Client
 from tob.command import command, scanner
 from tob.handler import Event
 from tob.methods import parse
@@ -69,20 +69,6 @@ class CLI(Client):
 
     def __init__(self):
         Client.__init__(self)
-        self.register("command", command)
-
-    def dosay(self, channel, txt):
-        self.raw(txt)
-
-    def raw(self, txt):
-        if "v" in Config.opts:
-            print(txt)
-
-
-class Buffer(Output):
-
-    def __init__(self):
-        Output.__init__(self)
         self.register("command", command)
 
     def dosay(self, channel, txt):
@@ -193,9 +179,9 @@ def main():
     nrs = Config.index or 1
     thrs = []
     if "z" in Config.opts:
-        Pool.init(Buffer)
+        Pool.init(CLI)
     else:
-        Pool.init(Buffer, 1)
+        Pool.init(CLI, 1)
     for _nr in range(nrs):
         thrs.append(launch(payload, pre))
     for thr in thrs:

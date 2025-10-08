@@ -4,7 +4,6 @@
 "module management"
 
 
-import hashlib
 import inspect
 import logging
 import os
@@ -15,7 +14,7 @@ import _thread
 
 from .threads import launch
 from .utility import importer, md5sum
-from .workdir import Workdir, j
+from .workdir import Workdir, j, moddir
 
 
 NAME = Workdir.name
@@ -85,6 +84,15 @@ def modules():
     return sorted(mods)
 
 
+def setdirs(network=False, mods=False):
+    Mods.dir("modules")
+    Mods.dir("local", moddir())
+    if network:
+        Mods.dir("network")
+    if mods:
+        Mods.dir("mods", "mods")
+
+
 def sums(checksum):
     tbl = getmod("tbl")
     if not tbl:
@@ -102,5 +110,6 @@ def __dir__():
         'inits',
         'md5sum',
         'modules',
+        'setdirs',
         'sums'
     )

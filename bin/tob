@@ -18,7 +18,8 @@ from tob.command import Commands, command, scanner, table
 from tob.methods import parse
 from tob.handler import Event
 from tob.objects import update
-from tob.package import NAME, Mods, getmod, inits, md5sum, modules, sums
+from tob.package import NAME, Mods
+from tob.package import getmod, inits, md5sum, modules, setdirs, sums
 from tob.utility import level, spl
 from tob.workdir import Workdir, moddir, pidfile, pidname, setwd
 
@@ -55,17 +56,11 @@ class CLI(Client):
         Client.__init__(self)
         self.register("command", command)
 
-    def announce(self, txt):
-        self.raw(txt)
-
     def raw(self, txt):
         out(txt.encode('utf-8', 'replace').decode("utf-8"))
 
 
 class Console(CLI):
-
-    def announce(self, txt):
-        pass
 
     def callback(self, event):
         if not event.txt:
@@ -139,8 +134,7 @@ def boot(doparse=True):
         Mods.dir("mods", "mods")
     if "n" in Config.opts:
         Mods.dir("network")
-    Mods.dir("modules")
-    Mods.dir("mymods", moddir())
+    setdirs("n" in Config.opts, "m" in Config.opts)
     if "v" in Config.opts:
         banner()
     if "a" in Config.opts:

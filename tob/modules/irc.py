@@ -14,8 +14,9 @@ import threading
 import time
 
 
+from ..brokers import Fleet
 from ..caching import last, write
-from ..clients import Fleet, Output
+from ..clients import Client
 from ..command import command
 from ..handler import Event as IEvent
 from ..methods import edit, fmt
@@ -110,10 +111,10 @@ class TextWrap(textwrap.TextWrapper):
 wrapper = TextWrap()
 
 
-class IRC(Output):
+class IRC(Client):
 
     def __init__(self):
-        Output.__init__(self)
+        Client.__init__(self)
         self.buffer = []
         self.cache = {}
         self.cfg = Config()
@@ -485,7 +486,7 @@ class IRC(Output):
         self.events.ready.clear()
         self.events.connected.clear()
         self.events.joined.clear()
-        Output.start(self)
+        Client.start(self)
         if not self.state.keeprunning:
             launch(self.keep)
         launch(
@@ -497,7 +498,7 @@ class IRC(Output):
 
     def stop(self):
         self.state.stopkeep = True
-        Output.stop(self)
+        Client.stop(self)
 
     def wait(self):
         self.events.ready.wait()

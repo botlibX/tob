@@ -44,8 +44,8 @@ class Handler:
     def put(self, event):
         self.queue.put(event)
 
-    def register(self, typ, cbs):
-        self.cbs[typ] = cbs
+    def register(self, type, callback):
+        self.cbs[type] = callback
 
     def start(self):
         launch(self.loop)

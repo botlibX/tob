@@ -5,7 +5,6 @@
 
 
 import inspect
-import threading
 
 
 from .brokers import Fleet
@@ -55,7 +54,7 @@ def scan(module):
             Commands.add(cmdz)
 
 
-def scanner(names=None):
+def scanner(names=[]):
     res = []
     for nme in sorted(modules()):
         if names and nme not in names:
