@@ -16,4 +16,4 @@ PATH = p(d(d(__file__)), "network", "index.html")
 
 
 def pth(event):
-    event.reply(f"file://localhost{PATH}")
+    event.reply(f"file://{PATH}")
