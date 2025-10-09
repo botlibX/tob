@@ -62,7 +62,7 @@ class Config:
     otxt     = ""
     sets     = {}
     verbose  = False
-    version  = 102
+    version  = 122
 
 
 class CLI(Output):
