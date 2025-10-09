@@ -20,7 +20,7 @@ sys.path.insert(0, os.getcwd())
 
 
 from tob.brokers import Fleet
-from tob.clients import Client
+from tob.clients import Client, Output
 from tob.command import command, scanner
 from tob.handler import Event
 from tob.methods import parse
@@ -65,10 +65,10 @@ class Config:
     version  = 102
 
 
-class CLI(Client):
+class CLI(Output):
 
     def __init__(self):
-        Client.__init__(self)
+        Output.__init__(self)
         self.register("command", command)
 
     def dosay(self, channel, txt):

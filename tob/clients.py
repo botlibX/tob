@@ -47,7 +47,6 @@ class Client(Handler):
 
 class Output(Client):
 
-
     def output(self):
         while True:
             event = self.oqueue.get()
