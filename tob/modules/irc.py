@@ -125,6 +125,7 @@ class IRC(Client):
         self.events.joined = threading.Event()
         self.events.logon = threading.Event()
         self.events.ready = threading.Event()
+        self.silent = False
         self.sock = None
         self.state = Object()
         self.state.error = ""

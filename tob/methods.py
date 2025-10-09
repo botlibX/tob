@@ -4,7 +4,7 @@
 "object as the first argument"
 
 
-from .objects import Object, items, keys
+from .objects import items, keys
 
 
 def deleted(obj):
