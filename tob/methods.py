@@ -51,7 +51,7 @@ def fmt(obj, args=[], skip=[], plain=False, empty=False):
             txt += f"{value} "
         elif isinstance(value, str):
             txt += f'{key}="{value}" '
-        elif isinstance(value, (int, float, dict, bool)):
+        elif isinstance(value, (int, float, dict, bool, list)):
             txt += f"{key}={value} "
         else:
             txt += f"{key}={name(value, True)} "
