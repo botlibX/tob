@@ -8,7 +8,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "tob"
-version = "122"
+version = "123"
 authors = [
     {name = "Bart Thate", email = "bthate@dds.nl" },
 ]
