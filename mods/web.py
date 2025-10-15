@@ -19,7 +19,7 @@ from tob.threads import launch
 
 
 DEBUG = False
-PATH = os.path.join(PATH, "network")
+PATH = os.path.join(PATH, "network", "html")
 
 
 def init():

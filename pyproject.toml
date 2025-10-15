@@ -23,6 +23,10 @@ classifiers=[
 ]
 
 
+[project.scripts]
+"tob" = "tob.network.main:main"
+
+
 [project.urls]
 "home" = "https://pypi.org/project/tob"
 "bugs" = "https://github.com/botlibX/tob/issues"
@@ -33,5 +37,11 @@ classifiers=[
 packages = [
     'tob',
     'tob.modules',
-    'tob.network'
+    'tob.network',
+    'tob.network.html'
 ]
+include-package-data = true
+
+
+[tool.setuptools.package-data]
+"tob.network.html" = ["*"]
