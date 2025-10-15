@@ -1,4 +1,10 @@
-N A M E
+# This file is placed in the Public Domain.
+
+
+"manual"
+
+
+TXT = """N A M E
 
 
     TOB - bot in reverse
@@ -141,18 +147,20 @@ C O N F I G U R A T I O N
     $ tob imp <filename>
 
 
-**PROGRAMMING**
+P R O G R A M M I N G
 
 
     tob has it's modules in the ~/.tob/mods directory so for a hello world
     command you would  edit a file in ~/.tob/mods/hello.py and add the
     following
 
+
     def hello(event):
         event.reply("hello world !!")
 
 
     typing the hello command would result into a nice hello world !!
+
 
     $ tob hello
     hello world !!
@@ -179,4 +187,11 @@ A U T H O R
 
 C O P Y R I G H T
 
+
     TOB is Public Domain
+
+"""
+
+
+def man(event):
+    event.reply(TXT)
