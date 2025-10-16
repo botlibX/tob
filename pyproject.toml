@@ -8,7 +8,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "tob"
-version = "124"
+version = "130"
 authors = [
     {name = "Bart Thate", email = "bthate@dds.nl" },
 ]
@@ -32,12 +32,4 @@ classifiers=[
 [tool.setuptools]
 packages = [
     'tob',
-    'tob.modules',
-    'tob.network',
-    'tob.network.html'
 ]
-include-package-data = true
-
-
-[tool.setuptools.package-data]
-"tob.network.html" = ["*"]
