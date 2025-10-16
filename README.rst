@@ -45,7 +45,7 @@ installation is done with pip
 **AUTHOR**
 
 |
-| Bart Thate <``nixtniet@gmail.com``>
+| Bart Thate <``bthate@dds.nl``>
 |
 
 **COPYRIGHT**
