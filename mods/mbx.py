@@ -65,15 +65,17 @@ def eml(event):
         args.extend(event.args[1:])
     if event.gets:
         args.extend(keys(event.gets))
-    for key in spl(event.silent):
+    for key in event.silent:
         if key in args:
             args.remove(key)
     args = set(args)
     result = sorted(find("email", event.gets), key=lambda x: extract_date(todate(getattr(x[1], "Date", ""))))
     if event.index:
         obj = result[event.index]
-        tme = getattr(obj, "Date", "")
-        event.reply(f'{event.index} {fmt(obj, args, plain=True)} {elapsed(time.time() - extract_date(todate(tme)))}')
+        if obj:
+            obj = obj[-1]
+            tme = getattr(obj, "Date", "")
+            event.reply(f'{event.index} {fmt(obj, args, plain=True)} {elapsed(time.time() - extract_date(todate(tme)))}')
     else:
         for _fn, obj in result:
             nrs += 1
