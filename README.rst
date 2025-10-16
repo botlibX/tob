@@ -42,7 +42,7 @@ installation is done with pipx
 |
 | <new terminal>
 |
-| ``$ tob srv > rssbot.service``
+| ``$ tob srv > tob.service``
 | ``$ sudo mv tob.service /etc/systemd/system/``
 | ``$ sudo systemctl enable tob --now``
 |
