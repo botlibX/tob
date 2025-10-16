@@ -62,7 +62,7 @@ class Config:
     otxt     = ""
     sets     = {}
     verbose  = False
-    version  = 123
+    version  = 124
 
 
 class CLI(Output):
@@ -230,7 +230,7 @@ param.ver = [""]
 
 pre = Object()
 pre.cfg = ["nick=mekker", ""]
-pre.imp = ["tests/feeds.opml", ""]
+pre.imp = ["testing/feeds.opml", ""]
 pre.log = ["bla", ""]
 pre.rss = ["http://hnrss.org/newest", ""]
 pre.tdo = ["mekker", ""]
