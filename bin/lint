@@ -1,1 +1,0 @@
-pylint -d C,R,E0402,E0401 tob mods bin/tinder
