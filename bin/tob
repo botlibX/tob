@@ -96,6 +96,7 @@ def boot(doparse=True):
         banner()
     if "a" in Config.opts:
         Config.init = ",".join(modules())
+    Commands.add(ver)
     sums(CHECKSUM)
     table(CHECKSUM)
     logging.info("workdir is %s", Workdir.wdr)
@@ -132,6 +133,10 @@ def service():
     banner()
     inits(spl(Config.init or Config.default))
     forever()
+
+
+def ver(event):
+    event.reply(f"{NAME.upper()} {Config.version}")
 
 
 def wrapped(func):

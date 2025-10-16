@@ -48,10 +48,6 @@ def tbl(event):
     event.reply("}")
 
 
-def ver(event):
-    event.reply(f"{NAME.upper()} {Config.version}")
-
-
 TXT = """[Unit]
 Description=%s
 After=network-online.target

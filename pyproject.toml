@@ -33,3 +33,9 @@ classifiers=[
 packages = [
     'tob',
 ]
+include-package-data = true
+
+
+[tool.setuptools.package-data]
+"mods" = ["*"]
+
