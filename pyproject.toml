@@ -23,10 +23,6 @@ classifiers=[
 ]
 
 
-[project.scripts]
-"tob" = "tob.network.main:main"
-
-
 [project.urls]
 "home" = "https://pypi.org/project/tob"
 "bugs" = "https://github.com/botlibX/tob/issues"
