@@ -12,7 +12,7 @@ version = "123"
 authors = [
     {name = "Bart Thate", email = "bthate@dds.nl" },
 ]
-description = "bot in reverse"
+description = "bot in reverse !"
 readme = "README.rst"
 license = "Unlicense"
 classifiers=[

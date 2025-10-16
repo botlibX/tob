@@ -4,10 +4,11 @@
 "manual"
 
 
-TXT = """N A M E
+TXT = """
+N A M E
 
 
-    TOB - bot in reverse
+    TOB - bot in reverse !
 
 
 S Y N O P S I S
@@ -189,7 +190,6 @@ C O P Y R I G H T
 
 
     TOB is Public Domain
-
 """
 
 
