@@ -33,4 +33,7 @@ classifiers=[
 include-package-data = true
 packages=[
     'tob',
+    'tob.modules',
+    'tob.network',
+    'tob-stubs'
 ]

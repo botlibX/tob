@@ -42,6 +42,7 @@ def main():
     popen("rm -fR .*~ *~")
     popen("rm -fR store .venv uv.lock")
     popen("rm -fR env")
+    loop(".", "rm -fR *.egg-info")
     loop(".", "rm -fR *~")
     loop(".", "rm -fR __pycache__")
 
