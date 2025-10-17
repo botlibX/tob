@@ -10,7 +10,37 @@ import time
 import _thread
 
 
+from .brokers import Fleet
 from .threads import launch
+
+
+class Event:
+
+    def __init__(self):
+        self._ready = threading.Event()
+        self._thr = None
+        self.args = []
+        self.channel = ""
+        self.ctime = time.time()
+        self.orig = ""
+        self.rest = ""
+        self.result = {}
+        self.txt = ""
+        self.type = "event"
+
+    def ready(self):
+        self._ready.set()
+
+    def reply(self, txt):
+        self.result[time.time()] = txt
+
+    def wait(self, timeout=None):
+        try:
+            self._ready.wait()
+            if self._thr:
+                self._thr.join(timeout)
+        except (KeyboardInterrupt, EOFError):
+            _thread.interrupt_main()
 
 
 class Handler:
@@ -54,37 +84,40 @@ class Handler:
         self.queue.put(None)
 
 
-class Event:
+class Client(Handler):
 
     def __init__(self):
-        self._ready = threading.Event()
-        self._thr = None
-        self.args = []
-        self.channel = ""
-        self.ctime = time.time()
-        self.orig = ""
-        self.rest = ""
-        self.result = {}
-        self.txt = ""
-        self.type = "event"
+        Handler.__init__(self)
+        self.olock = threading.RLock()
+        self.oqueue = queue.Queue()
+        self.silent = True
+        Fleet.add(self)
 
-    def ready(self):
-        self._ready.set()
+    def announce(self, txt):
+        if not self.silent:
+            self.raw(txt)
 
-    def reply(self, txt):
-        self.result[time.time()] = txt
+    def display(self, event):
+        with self.olock:
+            for tme in sorted(event.result):
+                self.dosay(
+                           event.channel,
+                           event.result[tme]
+                          )
 
-    def wait(self, timeout=None):
-        try:
-            self._ready.wait()
-            if self._thr:
-                self._thr.join(timeout)
-        except (KeyboardInterrupt, EOFError):
-            _thread.interrupt_main()
+    def dosay(self, channel, txt):
+        self.say(channel, txt)
+
+    def raw(self, txt):
+        raise NotImplementedError("raw")
+
+    def say(self, channel, txt):
+        self.raw(txt)
 
 
 def __dir__():
     return (
+        'Client',
         'Event',
         'Handler'
    )
