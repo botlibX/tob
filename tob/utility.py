@@ -200,7 +200,6 @@ def spl(txt):
 
 def __dir__():
     return (
-        'cdir',
         'check',
         'daemon',
         'elapsed',
