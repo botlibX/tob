@@ -40,17 +40,6 @@ class Formatter(logging.Formatter):
         return logging.Formatter.format(self, record)
 
 
-def check(txt):
-    args = sys.argv[1:]
-    for arg in args:
-        if not arg.startswith("-"):
-            continue
-        for char in txt:
-            if char in arg:
-                return True
-    return False
-
-
 def daemon(verbose=False):
     pid = os.fork()
     if pid != 0:
@@ -200,7 +189,6 @@ def spl(txt):
 
 def __dir__():
     return (
-        'check',
         'daemon',
         'elapsed',
         'extract_date',

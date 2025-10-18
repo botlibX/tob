@@ -20,7 +20,7 @@ from tob.handler import Event
 from tob.objects import update
 from tob.package import NAME, Mods
 from tob.package import getmod, inits, md5sum, modules, setdirs, sums
-from tob.utility import check, daemon, forever, privileges, level, spl
+from tob.utility import daemon, forever, privileges, level, spl
 from tob.workdir import Workdir, moddir, pidfile, pidname, setwd
 
 
@@ -158,6 +158,17 @@ def wrap(func):
     finally:
         if old:
             termios.tcsetattr(sys.stdin.fileno(), termios.TCSADRAIN, old)
+
+
+def check(txt):
+    args = sys.argv[1:]
+    for arg in args:
+        if not arg.startswith("-"):
+            continue
+        for char in txt:
+            if char in arg:
+                return True
+    return False
 
 
 def main():
