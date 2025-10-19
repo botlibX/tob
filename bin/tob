@@ -73,9 +73,8 @@ def boot(doparse=True):
         Workdir.wdr = Config.wdr
     level(Config.level)
     setwd(Config.name)
-    if "m" in Config.opts:
-        Mods.dir("mods", "mods")
-    Mods.dir("modules", Config.mod)
+    if Config.mod:
+        Mods.dir("modules", Config.mod)
     if "v" in Config.opts:
         banner()
     if "a" in Config.opts:

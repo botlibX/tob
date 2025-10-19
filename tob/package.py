@@ -17,9 +17,6 @@ from tob.utility import importer, md5sum
 from tob.workdir import Workdir, getname, j, moddir
 
 
-NAME = getname(__file__, 1)
-
-
 lock = threading.RLock()
 
 

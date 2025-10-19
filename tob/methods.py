@@ -112,12 +112,6 @@ def parse(obj, txt=""):
             continue
         if "=" in spli:
             key, value = spli.split("=", maxsplit=1)
-            if key == "mod":
-                if obj.mod:
-                    obj.mod += f",{value}"
-                else:
-                    obj.mod = value
-                continue
             obj.sets[key] = value
             continue
         _nr += 1
