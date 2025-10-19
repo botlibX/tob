@@ -8,10 +8,8 @@ import threading
 import time
 
 
+from tob.modules import STARTTIME
 from tob.utility import elapsed
-
-
-STARTTIME = time.time()
 
 
 def thr(event):

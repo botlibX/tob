@@ -4,7 +4,13 @@
 "modules"
 
 
+import time
+
+
 from tob.workdir import d, getname
+
+
+STARTTIME = time.time()
 
 
 class Config:
@@ -24,3 +30,10 @@ class Config:
     verbose = False
     version = 132
     wdr = ""
+
+
+def __dir__():
+    return (
+        'STARTTIME',
+        'Config'
+    )

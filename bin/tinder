@@ -24,42 +24,22 @@ from tob.clients import Client, Output
 from tob.command import command, scanner
 from tob.handler import Event
 from tob.methods import parse
+from tob.modules import STARTTIME, Config
 from tob.objects import Object, keys
-from tob.package import NAME, Mods
+from tob.package import Mods
 from tob.threads import launch
 from tob.utility import elapsed, level
 from tob.workdir import Workdir, skel
 
 
-CHECKSUM = ""
-STARTTIME = time.time()
-
-
 Mods.debug = True
 Mods.dir("mods", "mods")
-
 Workdir.wdr = ".test"
 
 
-events  = queue.Queue()
+events = queue.Queue()
 paylock = _thread.allocate_lock()
-rand    = random.SystemRandom()
-
-
-class Config:
-
-    debug    = False
-    gets     = {}
-    index    = None
-    init     = ""
-    level    = "warn"
-    md5      = True
-    moddir   = "mods"
-    opts     = ""
-    otxt     = ""
-    sets     = {}
-    verbose  = False
-    version  = 132
+rand = random.SystemRandom()
 
 
 class CLI(Output):
@@ -110,7 +90,7 @@ class Pool:
 
 def banner():
     tme = time.ctime(time.time()).replace("  ", " ")
-    print(f"{NAME[::-1].upper()} {Config.version} TINDER since {tme} ({Config.level.upper()})")
+    print(f"{Config.name.upper()} {Config.version} TINDER since {tme} ({Config.level.upper()})")
 
 
 def consume():
