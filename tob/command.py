@@ -7,8 +7,10 @@
 import inspect
 
 
-from .brokers import Fleet
-from .methods import parse
+from tob.brokers import Fleet
+from tob.methods import parse
+
+
 from .package import getmod, modules
 
 

@@ -12,13 +12,9 @@ import threading
 import _thread
 
 
-from .threads import launch
-from .utility import importer, md5sum
-from .workdir import Workdir, j, moddir
-
-
-NAME = Workdir.name
-PATH = os.path.dirname(inspect.getfile(Workdir))
+from tob.threads import launch
+from tob.utility import importer, md5sum
+from tob.workdir import Workdir, j, moddir
 
 
 lock = threading.RLock()
@@ -31,11 +27,8 @@ class Mods:
     md5s = {}
 
     @staticmethod
-    def dir(name, path=None):
-        if path is not None:
-            Mods.dirs[name] = path
-        else:
-            Mods.dirs[NAME + "." + name] = j(PATH, name)
+    def dir(name, path):
+        Mods.dirs[name] = path
 
 
 def getmod(name):
@@ -84,15 +77,6 @@ def modules():
     return sorted(mods)
 
 
-def setdirs(network=False, mods=False):
-    Mods.dir("modules")
-    Mods.dir("local", moddir())
-    if network:
-        Mods.dir("network")
-    if mods:
-        Mods.dir("mods", "mods")
-
-
 def sums(checksum):
     tbl = getmod("tbl")
     if not tbl:
@@ -110,6 +94,5 @@ def __dir__():
         'inits',
         'md5sum',
         'modules',
-        'setdirs',
         'sums'
     )

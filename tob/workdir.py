@@ -9,12 +9,12 @@ import os
 import pathlib
 
 
+d = os.path.dirname
 j = os.path.join
 
 
 class Workdir:
 
-    name = __file__.rsplit(os.sep, maxsplit=2)[-2]
     wdr  = ""
 
 
@@ -28,6 +28,10 @@ def fqn(obj):
     if kin == "type":
         kin = f"{obj.__module__}.{obj.__name__}"
     return kin
+
+
+def getname(path):
+    return d(d(path)).split(os.sep)[-1]
 
 
 def getpath(obj):
@@ -102,7 +106,9 @@ def __dir__():
     return (
         'Workdir',
         'cdir',
+        'd',
         'fqn',
+        'getname',
         'getpath',
         'ident',
         'j',
