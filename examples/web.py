@@ -14,11 +14,12 @@ from http.server import HTTPServer, BaseHTTPRequestHandler
 
 
 from tob.objects import Object
-from tob.package import PATH
 from tob.threads import launch
+from tob.workdir import d
 
 
 DEBUG = False
+PATH = d(d(__file__))
 PATH = os.path.join(PATH, "network", "html")
 
 

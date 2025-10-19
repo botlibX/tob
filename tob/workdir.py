@@ -30,8 +30,8 @@ def fqn(obj):
     return kin
 
 
-def getname(path):
-    return d(d(path)).split(os.sep)[-1]
+def getname(path, nr):
+    return path.split(os.sep)[-nr]
 
 
 def getpath(obj):

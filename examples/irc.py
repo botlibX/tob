@@ -20,14 +20,14 @@ from tob.clients import Output
 from tob.command import command
 from tob.handler import Event as IEvent
 from tob.methods import edit, fmt
+from tob.modules import Config
 from tob.objects import Object, keys
 from tob.threads import launch
 from tob.utility import LEVELS
-from tob.workdir import Workdir, getpath
+from tob.workdir import Workdir, d, getname, getpath
 
 
-IGNORE = ["PING", "PONG", "PRIVMSG"]
-NAME   = Workdir.name
+IGNORE = ["PING", "PONG", "PRIVMSG"] 
 
 
 initlock = threading.RLock()
@@ -57,18 +57,18 @@ def rlog(loglevel, txt, ignore=None):
 
 class Config:
 
-    channel = f"#{NAME}"
+    channel = f"#{Config.name}"
     commands = True
     control = "!"
-    nick = NAME
+    nick = Config.name
     password = ""
     port = 6667
-    realname = NAME
+    realname = Config.name
     sasl = False
     server = "localhost"
     servermodes = ""
     sleep = 60
-    username = NAME
+    username = Config.name
     users = False
 
     def __init__(self):
@@ -561,7 +561,7 @@ def cb_001(evt):
 def cb_notice(evt):
     bot = Fleet.get(evt.orig)
     if evt.txt.startswith("VERSION"):
-        txt = f"\001VERSION {NAME.upper()} 140 - {bot.cfg.username}\001"
+        txt = f"\001VERSION {Config.name.upper()} 140 - {bot.cfg.username}\001"
         bot.docommand("NOTICE", evt.channel, txt)
 
 

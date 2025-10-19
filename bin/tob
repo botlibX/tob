@@ -16,32 +16,15 @@ sys.path.insert(0, os.getcwd())
 from tob.clients import Client
 from tob.command import Commands, command, scanner, table
 from tob.methods import parse
+from tob.modules import Config
 from tob.handler import Event
 from tob.objects import update
-from tob.package import NAME, Mods
-from tob.package import getmod, inits, md5sum, modules, setdirs, sums
+from tob.package import Mods, getmod, inits, md5sum, modules, sums
 from tob.utility import daemon, forever, privileges, level, spl
 from tob.workdir import Workdir, moddir, pidfile, pidname, setwd
 
 
-CHECKSUM = ""
-
-
-class Config:
-
-    debug = False
-    default = ""
-    gets = {}
-    index = None
-    init  = ""
-    level = "warn"
-    mod = ""
-    opts = ""
-    otxt = ""
-    sets = {}
-    verbose = False
-    version = 132
-    wdr = ""
+Config.name = "tob"
 
 
 class CLI(Client):
@@ -71,14 +54,14 @@ class Console(CLI):
 
 def banner():
     tme = time.ctime(time.time()).replace("  ", " ")
-    print("%s %s since %s (%s)" % (NAME.upper(), Config.version, tme, Config.level.upper()))
+    print("%s %s since %s (%s)" % (Config.name.upper(), Config.version, tme, Config.level.upper()))
 
 
 def background():
     daemon("-v" in sys.argv)
     privileges()
     boot(False)
-    pidfile(pidname(NAME))
+    pidfile(pidname(Config.name))
     inits(spl(Config.init or Config.default))
     forever()
 
@@ -89,16 +72,17 @@ def boot(doparse=True):
         update(Config, Config.sets, empty=False)
         Workdir.wdr = Config.wdr
     level(Config.level)
-    setwd(NAME)
-    Mods.dir("mods", "mods")
-    setdirs("n" in Config.opts, "m" in Config.opts)
+    setwd(Config.name)
+    if "m" in Config.opts:
+        Mods.dir("mods", "mods")
+    Mods.dir("modules", Config.mod)
     if "v" in Config.opts:
         banner()
     if "a" in Config.opts:
         Config.init = ",".join(modules())
     Commands.add(ver)
-    sums(CHECKSUM)
-    table(CHECKSUM)
+    sums(Config.sum)
+    table(Config.sum)
     logging.info("workdir is %s", Workdir.wdr)
 
 
@@ -129,14 +113,14 @@ def control():
 def service():
     privileges()
     boot(False)
-    pidfile(pidname(NAME))
+    pidfile(pidname(Config.name))
     banner()
     inits(spl(Config.init or Config.default))
     forever()
 
 
 def ver(event):
-    event.reply(f"{NAME.upper()} {Config.version}")
+    event.reply(f"{Config.name.upper()} {Config.version}")
 
 
 def wrapped(func):
