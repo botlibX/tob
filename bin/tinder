@@ -35,11 +35,8 @@ CHECKSUM = ""
 STARTTIME = time.time()
 
 
-Mods.dir("mods", "mods")
-Mods.dir("modules")
-Mods.dir("network")
 Mods.debug = True
-
+Mods.dir("mods", "mods")
 
 Workdir.wdr = ".test"
 

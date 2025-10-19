@@ -24,6 +24,3 @@ class Config:
     verbose = False
     version = 132
     wdr = ""
-
-print(Config.mod)
-print(Config.name)
