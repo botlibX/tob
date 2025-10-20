@@ -20,7 +20,7 @@ sys.path.insert(0, os.getcwd())
 
 
 from tob.brokers import Fleet
-from tob.clients import Client, Output
+from tob.clients import Output
 from tob.command import command, scanner
 from tob.handler import Event
 from tob.methods import parse
