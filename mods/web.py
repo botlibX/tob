@@ -15,15 +15,18 @@ from http.server import HTTPServer, BaseHTTPRequestHandler
 
 from tob.objects import Object
 from tob.threads import launch
-from tob.workdir import d
+from tob.workdir import d, j
 
 
 DEBUG = False
 PATH = d(d(__file__))
-PATH = os.path.join(PATH, "network", "html")
+PATH = j(PATH, "network", "html")
 
 
 def init():
+    if not os.path.exists(j(PATH, 'index.html')):
+        logging.warning("no index.html")
+        return
     try:
         server = HTTP((Cfg.hostname, int(Cfg.port)), HTTPHandler)
         server.start()
