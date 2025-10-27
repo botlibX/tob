@@ -10,8 +10,8 @@ import time
 
 
 from tob.objects import Object, fmt, keys, update
-from tob.persist import read, write
-from tob.repeats import elapsed, extract_date, spl
+from tob.persist import find, write
+from tob.repeats import elapsed, extract_date
 
 
 class Email(Object):

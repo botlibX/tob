@@ -9,6 +9,7 @@ import os
 
 
 from tob.brokers import Fleet
+from tob.objects import Default, Object
 from tob.package import getmod, modules
 
 
@@ -52,14 +53,14 @@ def parse(obj, txt):
     data = {
         "args": [],
         "cmd": "",
-        "gets": {},
+        "gets": Default(),
         "index": None,
         "init": "",
         "opts": "",
         "otxt": txt,
         "rest": "",
-        "silent": {},
-        "sets": {},
+        "silent": Default(),
+        "sets": Default(),
         "txt": ""
     }
     for k, v in data.items():

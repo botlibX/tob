@@ -9,6 +9,30 @@ class Object:
     def __contains__(self, key):
         return key in dir(self)
 
+    def __getitem__(self, key):
+        return self.__dict__.get(key)
+
+    def __iter__(self):
+        return iter(self.__dict__)
+
+    def __len__(self):
+        return len(self.__dict__)
+
+    def __setitem__(self, key, value):
+        self.__dict__[key] =value
+
+    def __str__(self):
+        return str(self.__dict__)
+
+
+class Default(Object):
+
+    def __contains__(self, key):
+        return key in dir(self)
+
+    def __getattr__(self, key):
+        return self.__dict__.get(key, "")
+
     def __iter__(self):
         return iter(self.__dict__)
 
@@ -90,10 +114,6 @@ def fmt(obj, args=[], skip=[], plain=False, empty=False):
     return txt.strip()
 
 
-def ident(obj):
-    return os.path.join(fqn(obj), *str(datetime.datetime.now()).split())
-
-
 def items(obj):
     if isinstance(obj, dict):
         return obj.items()
@@ -104,6 +124,24 @@ def keys(obj):
     if isinstance(obj, dict):
         return obj.keys()
     return obj.__dict__.keys()
+
+
+def name(obj, short=False):
+    typ = type(obj)
+    res = ""
+    if "__builtins__" in dir(typ):
+        res = obj.__name__
+    elif "__self__" in dir(obj):
+        res = f"{obj.__self__.__class__.__name__}.{obj.__name__}"
+    elif "__class__" in dir(obj) and "__name__" in dir(obj):
+        res = f"{obj.__class__.__name__}.{obj.__name__}"
+    elif "__class__" in dir(obj):
+        res =  f"{obj.__class__.__module__}.{obj.__class__.__name__}"
+    elif "__name__" in dir(obj):
+        res = f"{obj.__class__.__name__}.{obj.__name__}"
+    if short:
+        res = res.split(".")[-1]
+    return res
 
 
 def search(obj, selector, matching=False):
@@ -137,6 +175,7 @@ def values(obj):
 
 def __dir__():
     return (
+        'Default',
         'Object',
         'construct',
         'deleted',

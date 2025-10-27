@@ -12,11 +12,11 @@ import threading
 import time
 
 
-lock = threading.RLock()
-
-
 from tob.marshal import dump, load
 from tob.objects import Object, deleted, fqn, search, update
+
+
+lock = threading.RLock()
 
 
 class Workdir:

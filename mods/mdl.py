@@ -13,7 +13,7 @@ import time
 from tob.brokers import Fleet
 from tob.handler import Event
 from tob.objects import Object, construct, keys
-from tob.repeats import STARTTIME, Repeater, elapsed
+from tob.repeats import Repeater, elapsed
 
 
 def init():

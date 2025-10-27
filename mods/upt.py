@@ -7,7 +7,7 @@
 import time
 
 
-from . import STARTTIME, elapsed
+from tob.repeats import STARTTIME, elapsed
 
 
 def upt(event):

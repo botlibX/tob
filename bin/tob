@@ -13,13 +13,11 @@ sys.path.insert(0, os.getcwd())
 from tob.clients import Client
 from tob.command import Commands, Config, command, parse, scanner
 from tob.handler import Event
+from tob.objects import Default, fmt
 from tob.package import Mods, inits, modules
 from tob.persist import Workdir, pidname
 from tob.logging import level
  
-
-"clients"
-
 
 class CLI(Client):
 
@@ -45,18 +43,17 @@ class Console(CLI):
         evt.type = "command"
         return evt
 
-"boot"
-
 
 def boot(doparse=True):
     Mods.dirs["mods"] = "mods"
     Mods.dirs["tob.modules"] = os.path.join(os.path.dirname(__file__), "modules")
     parse(Config, " ".join(sys.argv[1:]))
+    print(fmt(Config))
     level(Config.level)
     if "v" in Config.opts:
         banner()
     if "a" in Config.opts:
-        Config.init = ",".join(modules())
+        Config.sets.init = ",".join(modules())
     Workdir.wdr = os.path.expanduser(f"~/.{Config.name}")
     scanner()
     Commands.add(cmd)
@@ -71,14 +68,14 @@ def background():
     privileges()
     boot(False)
     pidfile(pidname(Config.name))
-    inits(spl(Config.init or Config.default))
+    inits(spl(Config.sets.init or Config.default))
     forever()
 
 
 def console():
     import readline # noqa: F401
     boot()
-    for _mod, thr in inits(spl(Config.init)):
+    for _mod, thr in inits(spl(Config.sets.init or Config.default)):
         if "w" in Config.opts:
             thr.join(30.0)
     csl = Console()
@@ -104,7 +101,7 @@ def service():
     privileges()
     boot(False)
     pidfile(pidname(Config.name))
-    inits(spl(Config.init or Config.default))
+    inits(spl(Config.sets.init or Config.default))
     forever()
 
 
@@ -112,7 +109,7 @@ def service():
 
 
 def cmd(event):
-    event.reply(",".join(Commands.cmds))
+    event.reply(",".join(sorted(Commands.cmds)))
 
 
 def ver(event):

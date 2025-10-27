@@ -18,12 +18,14 @@ from tob.threads import launch
 
 def init():
     nrs = 0
-    for fnm, obj in find("timer"):
+    for fnm, obj in find("timed"):
+        print(fnm, obj)
         if "time" not in dir(obj):
             continue
         nrs += 1
         diff = float(obj.time) - time.time()
         if diff > 0:
+            print("ok")
             timer = Timed(diff, Fleet.announce, obj.txt)
             timer.start()
         else:
@@ -141,7 +143,7 @@ def tmr(event):
     result = ""
     if not event.rest:
         nmr = 0
-        for _fn, obj in find('timer'):
+        for _fn, obj in find('timed'):
             if "time" not in dir(obj):
                 continue
             lap = float(obj.time) - time.time()
