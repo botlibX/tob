@@ -22,7 +22,7 @@ class Config:
     name = "tob"
     opts = ""
     verbose = False
-    version = 102
+    version = 134
 
 
 class Commands:
