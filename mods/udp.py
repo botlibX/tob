@@ -12,7 +12,7 @@ import threading
 import time
 
 
-from tob.clients import Fleet
+from tob.brokers import Fleet
 from tob.objects import Object
 from tob.threads import launch
 

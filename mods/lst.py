@@ -4,7 +4,7 @@
 "available types"
 
 
-from tob.workdir import types
+from tob.persist import types
 
 
 def lst(event):

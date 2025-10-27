@@ -7,8 +7,7 @@
 import time
 
 
-from tob.modules import STARTTIME
-from tob.utility import elapsed
+from . import STARTTIME, elapsed
 
 
 def upt(event):

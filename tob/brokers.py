@@ -1,7 +1,7 @@
 # This file is placed in the Public Domain.
 
 
-"client for a string"
+"rendezvous"
 
 
 class Fleet:
@@ -45,4 +45,4 @@ class Fleet:
 def __dir__():
     return (
         'Fleet',
-    )
+   )

@@ -15,7 +15,10 @@ from http.server import HTTPServer, BaseHTTPRequestHandler
 
 from tob.objects import Object
 from tob.threads import launch
-from tob.workdir import d, j
+
+
+d = os.path.dirname
+j = os.path.join
 
 
 DEBUG = False

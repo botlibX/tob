@@ -2,10 +2,7 @@
 # This file is placed in the Public Domain.
 
 
-import json
-import logging
 import os
-import os.path
 import sys
 import time
 
@@ -14,17 +11,14 @@ sys.path.insert(0, os.getcwd())
 
 
 from tob.clients import Client
-from tob.command import Commands, command, scanner, table
-from tob.methods import parse
-from tob.modules import Config
+from tob.command import Commands, Config, command, parse, scanner
 from tob.handler import Event
-from tob.objects import update
-from tob.package import Mods, getmod, inits, md5sum, modules, sums
-from tob.utility import daemon, forever, privileges, level, spl
-from tob.workdir import Workdir, moddir, pidfile, pidname, setwd
+from tob.package import Mods, inits, modules
+from tob.persist import Workdir, pidname
+from tob.logging import level
+ 
 
-
-Config.name = "tob"
+"clients"
 
 
 class CLI(Client):
@@ -51,10 +45,25 @@ class Console(CLI):
         evt.type = "command"
         return evt
 
+"boot"
 
-def banner():
-    tme = time.ctime(time.time()).replace("  ", " ")
-    print("%s %s since %s (%s)" % (Config.name.upper(), Config.version, tme, Config.level.upper()))
+
+def boot(doparse=True):
+    Mods.dirs["mods"] = "mods"
+    Mods.dirs["tob.modules"] = os.path.join(os.path.dirname(__file__), "modules")
+    parse(Config, " ".join(sys.argv[1:]))
+    level(Config.level)
+    if "v" in Config.opts:
+        banner()
+    if "a" in Config.opts:
+        Config.init = ",".join(modules())
+    Workdir.wdr = os.path.expanduser(f"~/.{Config.name}")
+    scanner()
+    Commands.add(cmd)
+    Commands.add(ver)
+
+
+"scripts"
 
 
 def background():
@@ -64,25 +73,6 @@ def background():
     pidfile(pidname(Config.name))
     inits(spl(Config.init or Config.default))
     forever()
-
-
-def boot(doparse=True):
-    if doparse:
-        parse(Config, " ".join(sys.argv[1:]))
-        update(Config, Config.sets, empty=False)
-        Workdir.wdr = Config.wdr
-    level(Config.level)
-    setwd(Config.name)
-    if Config.mod:
-        Mods.dir("modules", Config.mod)
-    if "v" in Config.opts:
-        banner()
-    if "a" in Config.opts:
-        Config.init = ",".join(modules())
-    Commands.add(ver)
-    sums(Config.sum)
-    table(Config.sum)
-    logging.info("workdir is %s", Workdir.wdr)
 
 
 def console():
@@ -104,7 +94,8 @@ def control():
     evt = Event()
     evt.orig = repr(csl)
     evt.type = "command"
-    evt.txt = Config.otxt
+    evt.txt = " ".join(sys.argv[1:])
+    evt.cmd  = evt.txt.split()[0]
     command(evt)
     evt.wait()
 
@@ -113,13 +104,97 @@ def service():
     privileges()
     boot(False)
     pidfile(pidname(Config.name))
-    banner()
     inits(spl(Config.init or Config.default))
     forever()
 
 
+"commands"
+
+
+def cmd(event):
+    event.reply(",".join(Commands.cmds))
+
+
 def ver(event):
     event.reply(f"{Config.name.upper()} {Config.version}")
+
+
+
+"utility"
+
+
+def banner():
+    tme = time.ctime(time.time()).replace("  ", " ")
+    print("%s %s since %s (%s)" % (Config.name.upper(), Config.version, tme, Config.level.upper()))
+
+
+def check(txt):
+    args = sys.argv[1:]
+    for arg in args:
+        if not arg.startswith("-"):
+            continue
+        for char in txt:
+            if char in arg:
+                return True
+    return False
+
+
+def daemon(verbose=False):
+    pid = os.fork()
+    if pid != 0:
+        os._exit(0)
+    os.setsid()
+    pid2 = os.fork()
+    if pid2 != 0:
+        os._exit(0)
+    if not verbose:
+        with open('/dev/null', 'r', encoding="utf-8") as sis:
+            os.dup2(sis.fileno(), sys.stdin.fileno())
+        with open('/dev/null', 'a+', encoding="utf-8") as sos:
+            os.dup2(sos.fileno(), sys.stdout.fileno())
+        with open('/dev/null', 'a+', encoding="utf-8") as ses:
+            os.dup2(ses.fileno(), sys.stderr.fileno())
+    os.umask(0)
+    os.chdir("/")
+    os.nice(10)
+
+
+def forever():
+    while True:
+        try:
+            time.sleep(0.1)
+        except (KeyboardInterrupt, EOFError):
+            break
+
+
+def pidfile(filename):
+    if os.path.exists(filename):
+        os.unlink(filename)
+    path2 = pathlib.Path(filename)
+    path2.parent.mkdir(parents=True, exist_ok=True)
+    with open(filename, "w", encoding="utf-8") as fds:
+        fds.write(str(os.getpid()))
+
+
+def privileges():
+    import getpass
+    import pwd
+    pwnam2 = pwd.getpwnam(getpass.getuser())
+    os.setgid(pwnam2.pw_gid)
+    os.setuid(pwnam2.pw_uid)
+
+
+def spl(txt):
+    try:
+        result = txt.split(",")
+    except (TypeError, ValueError):
+        result = [
+            txt,
+        ]
+    return [x for x in result if x]
+
+
+"runtime"
 
 
 def wrapped(func):
@@ -143,17 +218,6 @@ def wrap(func):
             termios.tcsetattr(sys.stdin.fileno(), termios.TCSADRAIN, old)
 
 
-def check(txt):
-    args = sys.argv[1:]
-    for arg in args:
-        if not arg.startswith("-"):
-            continue
-        for char in txt:
-            if char in arg:
-                return True
-    return False
-
-
 def main():
     if check("c"):
         wrap(console)
@@ -163,6 +227,9 @@ def main():
         wrapped(service)
     else:
         wrapped(control)
+
+
+"trampoline"
 
 
 if __name__ == "__main__":

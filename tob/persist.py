@@ -1,22 +1,27 @@
 # This file is placed in the Public Domain.
 
 
-"object for a string"
+"persistence"
 
 
-import json.decoder
+import datetime
+import json
 import os
+import pathlib
 import threading
-
-
-from .methods import deleted, search
-from .objects import Object, update
-from .serials import dump, load
-from .workdir import cdir, fqn, getpath, j, long, store
-from .utility import fntime
+import time
 
 
 lock = threading.RLock()
+
+
+from tob.marshal import dump, load
+from tob.objects import Object, deleted, fqn, search, update
+
+
+class Workdir:
+
+    wdr = ""
 
 
 class Cache:
@@ -39,11 +44,43 @@ class Cache:
             Cache.add(path, obj)
 
 
-def find(clz, selector=None, removed=False, matching=False):
-    clz = long(clz)
+def cdir(path):
+    pth = pathlib.Path(path)
+    pth.parent.mkdir(parents=True, exist_ok=True)
+
+
+def getpath(obj):
+    return store(ident(obj))
+
+
+def pidname(name):
+    assert Workdir.wdr
+    return os.path.join(Workdir.wdr, f"{name}.pid")
+
+
+def skel(path):
+    pth = pathlib.Path(path)
+    pth.mkdir(parents=True, exist_ok=True)
+    return str(pth)
+
+
+def store(fnm=""):
+    return os.path.join(Workdir.wdr, "store", fnm)
+
+
+def types():
+    path = store()
+    skel(path)
+    return os.listdir(path)
+
+
+"find"
+
+
+def find(type=None, selector=None, removed=False, matching=False):
     if selector is None:
         selector = {}
-    for pth in fns(clz):
+    for pth in fns(type):
         obj = Cache.get(pth)
         if not obj:
             obj = Object()
@@ -56,13 +93,33 @@ def find(clz, selector=None, removed=False, matching=False):
         yield pth, obj
 
 
-def fns(clz):
-    pth = store(clz)
-    for rootdir, dirs, _files in os.walk(pth, topdown=False):
+def fns(type=None):
+    if type is not None:
+        type = type.lower()
+    path = store()
+    for rootdir, dirs, _files in os.walk(path, topdown=True):
         for dname in dirs:
-            ddd = j(rootdir, dname)
+            if dname.count("-") != 2:
+                continue
+            ddd = os.path.join(rootdir, dname)
+            if type and type not in ddd.lower():
+                continue
             for fll in os.listdir(ddd):
-                yield j(ddd, fll)
+                yield os.path.join(ddd, fll)
+
+
+def fntime(daystr):
+    datestr = " ".join(daystr.split(os.sep)[-2:])
+    datestr = datestr.replace("_", " ")
+    if "." in datestr:
+        datestr, rest = datestr.rsplit(".", 1)
+    else:
+        rest = ""
+    timed = time.mktime(time.strptime(datestr, "%Y-%m-%d %H:%M:%S"))
+    if rest:
+        timed += float("." + rest)
+    return float(timed)
+
 
 
 def last(obj, selector=None):
@@ -78,6 +135,9 @@ def last(obj, selector=None):
         update(obj, inp[-1])
         res = inp[0]
     return res
+
+
+"disk"
 
 
 def read(obj, path):
@@ -101,11 +161,22 @@ def write(obj, path=None):
         return path
 
 
+"utility"
+
+
+def ident(obj):
+    return os.path.join(fqn(obj), *str(datetime.datetime.now()).split())
+
+
 def __dir__():
     return (
         'Cache',
+        'Workdir',
+        'cdir',
         'find',
-        'last',
+        'fntime',
         'read',
+        'skel',
+        'types',
         'write'
     )

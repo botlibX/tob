@@ -10,7 +10,7 @@ import time
 import _thread
 
 
-from .threads import launch
+from tob.threads import launch
 
 
 class Event:
@@ -18,11 +18,9 @@ class Event:
     def __init__(self):
         self._ready = threading.Event()
         self._thr = None
-        self.args = []
         self.channel = ""
         self.ctime = time.time()
         self.orig = ""
-        self.rest = ""
         self.result = {}
         self.txt = ""
         self.type = "event"

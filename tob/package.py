@@ -4,32 +4,21 @@
 "module management"
 
 
-import inspect
+import importlib
+import importlib.util
 import logging
 import os
 import sys
-import threading
 import _thread
 
 
 from tob.threads import launch
-from tob.utility import importer, md5sum
-from tob.workdir import Workdir, getname, j, moddir
-
-
-lock = threading.RLock()
 
 
 class Mods:
 
-    debug = False
     dirs = {}
-    md5s = {}
-
-    @staticmethod
-    def dir(name, path):
-        Mods.dirs[name] = path
-
+    
 
 def getmod(name):
     for nme, path in Mods.dirs.items():
@@ -37,16 +26,29 @@ def getmod(name):
         module = sys.modules.get(mname, None)
         if module:
             return module
-        pth = j(path, f"{name}.py")
-        if Mods.md5s:
-            if os.path.exists(pth) and name != "tbl":
-                md5 = Mods.md5s.get(name, None)
-                if md5sum(pth) != md5:
-                    file = pth.split(os.sep)[-1]
-                    logging.info("md5 error %s", file)
+        pth = os.path.join(path, f"{name}.py")
         mod = importer(mname, pth)
         if mod:
             return mod
+
+
+def importer(name, pth):
+    if not os.path.exists(pth):
+        return
+    try:
+        spec = importlib.util.spec_from_file_location(name, pth)
+        if not spec or not spec.loader:
+            return
+        mod = importlib.util.module_from_spec(spec)
+        if not mod:
+            return
+        sys.modules[name] = mod
+        spec.loader.exec_module(mod)
+        logging.info("load %s", pth)
+        return mod
+    except Exception as ex:
+        logging.exception(ex)
+        _thread.interrupt_main()
 
 
 def inits(names):
@@ -77,22 +79,11 @@ def modules():
     return sorted(mods)
 
 
-def sums(checksum):
-    tbl = getmod("tbl")
-    if not tbl:
-        logging.info("no table")
-        return
-    if "MD5" in dir(tbl):
-        Mods.md5s.update(tbl.MD5)
-
-
 def __dir__():
     return (
         'Mods',
         'getmod',
         'importer',
         'inits',
-        'md5sum',
-        'modules',
-        'sums'
+        'modules'
     )

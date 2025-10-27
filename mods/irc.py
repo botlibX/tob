@@ -9,22 +9,19 @@ import logging
 import os
 import socket
 import ssl
+import sys
 import textwrap
 import threading
 import time
 
 
 from tob.brokers import Fleet
-from tob.caching import last, write
 from tob.clients import Output
 from tob.command import command
-from tob.handler import Event as IEvent
-from tob.methods import edit, fmt
-from tob.modules import Config
-from tob.objects import Object, keys
+from tob.logging import LEVELS
+from tob.objects import Object, edit, fmt, keys
+from tob.persist import getpath, last, write
 from tob.threads import launch
-from tob.utility import LEVELS
-from tob.workdir import Workdir, d, getname, getpath
 
 
 IGNORE = ["PING", "PONG", "PRIVMSG"] 
@@ -32,6 +29,14 @@ IGNORE = ["PING", "PONG", "PRIVMSG"]
 
 initlock = threading.RLock()
 saylock  = threading.RLock()
+
+
+def getmain():
+   return sys.modules["__main__"]
+
+
+Config = getattr(getmain(), 'Config', None)
+Event = getattr(getmain(), 'Event', None)
 
 
 def init():
@@ -81,7 +86,7 @@ class Config:
         self.username = Config.username
 
 
-class Event(IEvent):
+class Event(Event):
 
     def __init__(self):
         super().__init__()
@@ -89,11 +94,17 @@ class Event(IEvent):
         self.arguments = []
         self.command = ""
         self.channel = ""
+        self.gets = {}
         self.nick = ""
         self.origin = ""
         self.rawstr = ""
         self.rest = ""
+        self.sets = {}
         self.txt = ""
+
+    def dosay(self, txt):
+        bot = Fleet.get(self.orig)
+        bot.dosay(self.channel, txt)
 
 
 class TextWrap(textwrap.TextWrapper):
@@ -481,7 +492,6 @@ class IRC(Output):
         self.state.lastline = splitted[-1]
 
     def start(self):
-        last(self.cfg)
         if self.cfg.channel not in self.channels:
             self.channels.append(self.cfg.channel)
         self.events.ready.clear()
@@ -610,6 +620,7 @@ def cfg(event):
     else:
         edit(config, event.sets)
         write(config, fnm or getpath(config))
+        event.reply("ok")
 
 
 def mre(event):

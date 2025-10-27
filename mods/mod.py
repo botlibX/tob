@@ -4,7 +4,7 @@
 "show modules"
 
 
-from tob.package import modules
+from tob.command import modules
 
 
 def mod(event):

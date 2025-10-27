@@ -14,8 +14,8 @@ from http.server import HTTPServer, BaseHTTPRequestHandler
 
 
 from tob.objects import Object
+from tob.persist import store, types
 from tob.threads import launch
-from tob.workdir import Workdir, types
 
 
 DEBUG = False
@@ -97,7 +97,7 @@ class RESTHandler(BaseHTTPRequestHandler):
                 txt += f'<a href="http://{Config.hostname}:{Config.port}/{fnm}">{fnm}</a><br>\n'
             self.send(html(txt.strip()))
             return
-        fnm = Workdir.wdr + os.sep + "store" + self.path
+        fnm = store() + self.path
         fnm = os.path.abspath(fnm)
         if os.path.isdir(fnm):
             self.write_header("text/html")

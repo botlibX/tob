@@ -9,10 +9,9 @@ import os
 import time
 
 
-from tob.caching import find, write
-from tob.methods import fmt
-from tob.objects import Object, keys, update
-from tob.utility import elapsed, extract_date, spl
+from tob.objects import Object, fmt, keys, update
+from tob.persist import read, write
+from tob.repeats import elapsed, extract_date, spl
 
 
 class Email(Object):

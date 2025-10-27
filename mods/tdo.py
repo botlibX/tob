@@ -7,9 +7,9 @@
 import time
 
 
-from tob.caching import find, write
 from tob.objects import Object
-from tob.utility import elapsed, fntime
+from tob.persist import find, fntime, write
+from tob.repeats import elapsed
 
 
 class Todo(Object):

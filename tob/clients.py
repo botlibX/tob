@@ -1,17 +1,16 @@
 # This file is placed in the Public Domain.
 
 
-"client events"
+"clientele"
 
 
 import queue
 import threading
-import _thread
 
 
-from .brokers import Fleet
-from .handler import Handler
-from .threads import launch
+from tob.brokers import Fleet
+from tob.handler import Handler
+from tob.threads import launch
 
 
 class Client(Handler):
@@ -75,4 +74,4 @@ def __dir__():
     return (
         'Client',
         'Output'
-    )
+   )

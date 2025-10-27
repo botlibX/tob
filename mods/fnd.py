@@ -7,14 +7,13 @@
 import time
 
 
-from tob.caching import find
-from tob.methods import fmt
-from tob.utility import elapsed, fntime
-from tob.workdir import long, skel, types
+from tob.objects import fmt
+from tob.persist import find, fntime, skel, store, types
+from tob.repeats import elapsed
 
 
 def fnd(event):
-    skel()
+    skel(store())
     if not event.rest:
         res = sorted([x.split('.')[-1].lower() for x in types()])
         if res:
@@ -23,9 +22,8 @@ def fnd(event):
             event.reply("no data yet.")
         return
     otype = event.args[0]
-    clz = long(otype)
     nmr = 0
-    for fnm, obj in list(find(clz, event.gets)):
+    for fnm, obj in list(find(otype, event.gets)):
         event.reply(f"{nmr} {fmt(obj)} {elapsed(time.time()-fntime(fnm))}")
         nmr += 1
     if not nmr:
