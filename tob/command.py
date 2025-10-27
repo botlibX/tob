@@ -15,7 +15,8 @@ from tob.package import getmod, modules
 class Config:
 
     debug = False
-    init  = "irc,rss"
+    default = "irc,rss"
+    init  = ""
     level = "warn"
     name = os.path.dirname(__file__).split(os.sep)[-1]
     verbose = False
