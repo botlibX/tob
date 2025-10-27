@@ -53,6 +53,10 @@ def getpath(obj):
     return store(ident(obj))
 
 
+def moddir():
+    return os.path.join(Workdir.wdr, "mods")
+
+
 def pidname(name):
     assert Workdir.wdr
     return os.path.join(Workdir.wdr, f"{name}.pid")
@@ -140,6 +144,10 @@ def last(obj, selector=None):
 "disk"
 
 
+def ident(obj):
+    return os.path.join(fqn(obj), *str(datetime.datetime.now()).split())
+
+
 def read(obj, path):
     with lock:
         with open(path, "r", encoding="utf-8") as fpt:
@@ -159,13 +167,6 @@ def write(obj, path=None):
             dump(obj, fpt, indent=4)
         Cache.update(path, obj)
         return path
-
-
-"utility"
-
-
-def ident(obj):
-    return os.path.join(fqn(obj), *str(datetime.datetime.now()).split())
 
 
 def __dir__():

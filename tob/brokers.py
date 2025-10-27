@@ -1,7 +1,7 @@
 # This file is placed in the Public Domain.
 
 
-"rendezvous"
+"ckient for a string"
 
 
 class Fleet:
