@@ -5,11 +5,9 @@
 
 
 import inspect
-import os
 
 
 from tob.brokers import Fleet
-from tob.objects import Default, Object
 from tob.package import getmod, modules
 from tob.utility import parse
 

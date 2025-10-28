@@ -4,6 +4,12 @@
 "utilities"
 
 
+import time
+
+
+from tob.objects import Default
+
+
 FORMATS = [
     "%Y-%M-%D %H:%M:%S",
     "%Y-%m-%d %H:%M:%S",
@@ -12,6 +18,9 @@ FORMATS = [
     "%d-%m",
     "%m-%d",
 ]
+
+
+STARTTIME = time.time()
 
 
 def elapsed(seconds, short=True):
@@ -62,6 +71,37 @@ def extract_date(daystr):
             break
         except ValueError:
             pass
+    return res
+
+
+def spl(txt):
+    try:
+        result = txt.split(",")
+    except (TypeError, ValueError):
+        result = [
+            txt,
+        ]
+    return [x for x in result if x]
+
+
+"methods"
+
+
+def name(obj, short=False):
+    typ = type(obj)
+    res = ""
+    if "__builtins__" in dir(typ):
+        res = obj.__name__
+    elif "__self__" in dir(obj):
+        res = f"{obj.__self__.__class__.__name__}.{obj.__name__}"
+    elif "__class__" in dir(obj) and "__name__" in dir(obj):
+        res = f"{obj.__class__.__name__}.{obj.__name__}"
+    elif "__class__" in dir(obj):
+        res =  f"{obj.__class__.__module__}.{obj.__class__.__name__}"
+    elif "__name__" in dir(obj):
+        res = f"{obj.__class__.__name__}.{obj.__name__}"
+    if short:
+        res = res.split(".")[-1]
     return res
 
 
@@ -117,20 +157,15 @@ def parse(obj, txt):
         obj.txt = obj.cmd or ""
 
 
-def spl(txt):
-    try:
-        result = txt.split(",")
-    except (TypeError, ValueError):
-        result = [
-            txt,
-        ]
-    return [x for x in result if x]
+"interface"
 
 
 def __dir__():
     return (
+        'STARTTIME',
         'elapsed',
         'extract_date',
+        'name',
         'parse',
         'spl'
    )

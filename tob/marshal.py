@@ -24,24 +24,20 @@ class Encoder(json.JSONEncoder):
 
 
 def dump(*args, **kw):
-    ""
     kw["cls"] = Encoder
     return json.dump(*args, **kw)
 
 
 def dumps(*args, **kw):
-    ""
     kw["cls"] = Encoder
     return json.dumps(*args, **kw)
 
 
 def load(s, *args, **kw):
-    ""
     return json.load(s, *args, **kw)
 
 
 def loads(s, *args, **kw):
-    ""
     return json.loads(s, *args, **kw)
 
 

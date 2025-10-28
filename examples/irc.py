@@ -9,7 +9,6 @@ import logging
 import os
 import socket
 import ssl
-import sys
 import textwrap
 import threading
 import time
@@ -17,7 +16,8 @@ import time
 
 from tob.brokers import Fleet
 from tob.clients import Output
-from tob.command import command
+from tob.command import Config, command
+from tob.handler import Event
 from tob.logging import LEVELS
 from tob.objects import Object, edit, fmt, keys
 from tob.persist import getpath, last, write
@@ -31,14 +31,6 @@ initlock = threading.RLock()
 saylock  = threading.RLock()
 
 
-def getmain():
-   return sys.modules["__main__"]
-
-
-Config = getattr(getmain(), 'Config', None)
-Event = getattr(getmain(), 'Event', None)
-
-
 def init():
     with initlock:
         irc = IRC()
@@ -49,15 +41,6 @@ def init():
         else:
             irc.stop()
         return irc
-
-
-def rlog(loglevel, txt, ignore=None):
-    if ignore is None:
-        ignore = []
-    for ign in ignore:
-        if ign in str(txt):
-            return
-    logging.log(LEVELS.get(loglevel), txt)
 
 
 class Config:
@@ -653,3 +636,15 @@ def pwd(event):
     base = base64.b64encode(enc)
     dcd = base.decode("ascii")
     event.reply(dcd)
+
+
+"utility"
+
+
+def rlog(loglevel, txt, ignore=None):
+    if ignore is None:
+        ignore = []
+    for ign in ignore:
+        if ign in str(txt):
+            return
+    logging.log(LEVELS.get(loglevel), txt)

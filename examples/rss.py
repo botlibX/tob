@@ -25,8 +25,8 @@ from urllib.parse import quote_plus, urlencode
 from tob.brokers import Fleet
 from tob.objects import Object, fmt, update
 from tob.persist import find, fntime, getpath, last, write
-from tob.repeats import Repeater, elapsed, spl
-from tob.threads import launch
+from tob.threads import Repeater, launch
+from tob.utility import elapsed, spl
 
 
 def init():

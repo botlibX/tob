@@ -11,10 +11,9 @@ from tob.clients import Client
 from tob.command import Commands, Config, command, parse, scanner
 from tob.handler import Event
 from tob.logging import level
-from tob.objects import Default, fmt
 from tob.package import Mods, inits, modules
 from tob.persist import Workdir, moddir, pidname, skel
-from tob.repeats import spl
+from tob.utility import spl
  
 
 class CLI(Client):
