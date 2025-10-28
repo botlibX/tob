@@ -10,12 +10,18 @@ import sys
 import unittest
 
 
+import tob.brokers
+import tob.clients
+import tob.command
+import tob.handler
 import tob.logging
 import tob.marshal
 import tob.objects
+import tob.package
 import tob.persist
-import tob.repeats
+import tob.runtime
 import tob.threads
+import tob.utility
 
 
 from tob.objects import *
@@ -28,12 +34,18 @@ TODO = tob
 
 
 PACKAGE = [
+    'brokers',
+    'clients',
+    'command',
+    'handler',
     'logging',
     'marshal',
     'objects',
+    'package',
     'persist',
-    'repeats',
-    'threads'
+    'runtime',
+    'threads',
+    'utility'
 ]
 
 

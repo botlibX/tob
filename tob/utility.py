@@ -4,6 +4,7 @@
 "utilities"
 
 
+import hashlib
 import time
 
 
@@ -72,6 +73,12 @@ def extract_date(daystr):
         except ValueError:
             pass
     return res
+
+
+def md5sum(path):
+    with open(path, "r", encoding="utf-8") as file:
+        txt = file.read().encode("utf-8")
+        return hashlib.md5(txt).hexdigest()
 
 
 def spl(txt):

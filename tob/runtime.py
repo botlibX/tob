@@ -1,6 +1,7 @@
 # This file is placed in the Public Domain.
 
 
+import json
 import os
 import pathlib
 import sys
@@ -8,12 +9,15 @@ import time
 
 
 from tob.clients import Client
-from tob.command import Commands, Config, command, parse, scanner
+from tob.command import Commands, Config, command, parse, scanner, table
 from tob.handler import Event
 from tob.logging import level
-from tob.package import Mods, inits, modules
+from tob.package import Mods, getmod, inits, modules, sums
 from tob.persist import Workdir, moddir, pidname, skel
-from tob.utility import spl
+from tob.utility import md5sum, spl
+
+
+CHECKSUM = "c1265b9235ba8d2d058c15d67dc3ff7a"
 
 
 d = os.path.dirname
@@ -50,6 +54,7 @@ def boot(doparse=True):
     Mods.dirs["tob.modules"] = j(d(__file__), "modules")
     if doparse:
         parse(Config, " ".join(sys.argv[1:]))
+        Config.level = Config.sets.level or Config.level
     level(Config.level)
     if "e" in Config.opts:
         sys.path.insert(0, os.getcwd())
@@ -60,10 +65,11 @@ def boot(doparse=True):
         banner()
     if "a" in Config.opts:
         Config.sets.init = ",".join(modules())
-    skel()
-    scanner()
     Commands.add(cmd)
     Commands.add(ver)
+    skel()
+    sums(CHECKSUM)
+    table()
 
 
 "scripts"
@@ -82,7 +88,7 @@ def background():
 def console():
     import readline # noqa: F401
     boot()
-    for _mod, thr in inits(spl(Config.sets.init or Config.default)):
+    for _mod, thr in inits(spl(Config.sets.init)):
         if "w" in Config.opts:
             thr.join(30.0)
     csl = Console()
@@ -94,6 +100,9 @@ def control():
     if len(sys.argv) == 1:
         return
     boot()
+    Commands.add(md5)
+    Commands.add(srv)
+    Commands.add(tbl)
     csl = CLI()
     evt = Event()
     evt.orig = repr(csl)
@@ -112,17 +121,6 @@ def service():
     banner()
     inits(spl(Config.default))
     forever()
-
-
-"commands"
-
-
-def cmd(event):
-    event.reply(",".join(sorted(Commands.cmds)))
-
-
-def ver(event):
-    event.reply(f"{Config.name.upper()} {Config.version}")
 
 
 "utility"
@@ -187,6 +185,63 @@ def privileges():
     pwnam2 = pwd.getpwnam(getpass.getuser())
     os.setgid(pwnam2.pw_gid)
     os.setuid(pwnam2.pw_uid)
+
+
+"commands"
+
+
+def cmd(event):
+    event.reply(",".join(sorted(Commands.cmds)))
+
+
+def md5(event):
+    tbl = getmod("tbl")
+    if tbl:
+        event.reply(md5sum(tbl.__file__))
+    else:
+        event.reply("table is not there.")
+
+
+def srv(event):
+    import getpass
+    name = getpass.getuser()
+    event.reply(TXT % (Config.name.upper(), name, name, name, Config.name))
+
+
+def tbl(event):
+    Commands.names = {}
+    scanner()
+    event.reply("# This file is placed in the Public Domain.")
+    event.reply("")
+    event.reply("")
+    event.reply('"lookup tables"')
+    event.reply("")
+    event.reply("")
+    event.reply(f"NAMES = {json.dumps(Commands.names, indent=4, sort_keys=True)}")
+    event.reply("")
+    event.reply("")
+    event.reply("MD5 = {")
+    for module in scanner():
+        event.reply(f'    "{module.__name__.split(".")[-1]}": "{md5sum(module.__file__)}",')
+    event.reply("}")
+
+
+def ver(event):
+    event.reply(f"{Config.name.upper()} {Config.version}")
+
+
+TXT = """[Unit]
+Description=%s
+After=network-online.target
+
+[Service]
+Type=simple
+User=%s
+Group=%s
+ExecStart=/home/%s/.local/bin/%s -s
+
+[Install]
+WantedBy=multi-user.target"""
 
 
 "runtime"

@@ -37,6 +37,14 @@ class Commands:
 
     @staticmethod
     def get(cmd):
+        func = Commands.cmds.get(cmd, None)
+        if func:
+            return func
+        name = Commands.names.get(cmd, None)
+        if name:
+            module = getmod(name)
+            if module:
+                scan(module)
         return Commands.cmds.get(cmd, None)
 
 
@@ -70,6 +78,14 @@ def scanner(names=[]):
     return res
 
 
+def table():
+    tbl = getmod("tbl")
+    if tbl and "NAMES" in dir(tbl):
+        Commands.names.update(tbl.NAMES)
+    else:
+        scanner()
+
+
 def __dir__():
     return (
         'Comamnds',
@@ -77,5 +93,6 @@ def __dir__():
         'command',
         'parse',
         'scan',
-        'scanner'
+        'scanner',
+        'table'
     )

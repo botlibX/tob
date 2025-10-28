@@ -13,12 +13,14 @@ import _thread
 
 
 from tob.threads import launch
+from tob.utility import md5sum
 
 
 class Mods:
 
     dirs = {}
-    
+    md5s = {}
+
 
 def getmod(name):
     for nme, path in Mods.dirs.items():
@@ -27,6 +29,11 @@ def getmod(name):
         if module:
             return module
         pth = os.path.join(path, f"{name}.py")
+        if Mods.md5s:
+            if os.path.exists(pth) and name != "tbl":
+                md5 = Mods.md5s.get(name, None)
+                if md5sum(pth) != md5:
+                    logging.info("md5 error %s", name)
         mod = importer(mname, pth)
         if mod:
             return mod
@@ -79,11 +86,26 @@ def modules():
     return sorted(mods)
 
 
+def sums(checksum):
+    tbl = getmod("tbl")
+    if not tbl:
+        logging.info("no table")
+        return
+    print(tbl.__file__, checksum)
+    print(md5sum(tbl.__file__))
+    if checksum and md5sum(tbl.__file__) != checksum:
+        logging.info("table checksum error")
+        return
+    if "MD5" in dir(tbl):
+        Mods.md5s.update(tbl.MD5)
+
+
 def __dir__():
     return (
         'Mods',
         'getmod',
         'importer',
         'inits',
-        'modules'
+        'modules',
+        'sums'
     )
