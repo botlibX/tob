@@ -14,6 +14,10 @@ from tob.logging import level
 from tob.package import Mods, inits, modules
 from tob.persist import Workdir, moddir, pidname, skel
 from tob.utility import spl
+
+
+d = os.path.dirname
+j = os.path.join
  
 
 class CLI(Client):
@@ -43,12 +47,14 @@ class Console(CLI):
 
 def boot(doparse=True):
     Workdir.wdr = os.path.expanduser(f"~/.{Config.name}")
-    Mods.dirs["tob.modules"] = os.path.join(os.path.dirname(__file__), "modules")
+    Mods.dirs["tob.modules"] = j(d(__file__), "modules")
     if doparse:
         parse(Config, " ".join(sys.argv[1:]))
     level(Config.level)
-    if "m" in Config.opts:
+    if "e" in Config.opts:
         sys.path.insert(0, os.getcwd())
+        Mods.dirs["mods"] = "examples"
+    if "m" in Config.opts:
         Mods.dirs["mods"] = moddir()
     if "v" in Config.opts:
         banner()
@@ -216,9 +222,6 @@ def main():
         wrapped(service)
     else:
         wrapped(control)
-
-
-"trampoline"
 
 
 if __name__ == "__main__":

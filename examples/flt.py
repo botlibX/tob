@@ -2,8 +2,7 @@
 
 
 from tob.brokers import Fleet
-from tob.objects import fmt
-from tob.threads import name
+from tob.utility import fmt, name
 
 
 def flt(event):

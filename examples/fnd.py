@@ -7,13 +7,11 @@
 import time
 
 
-from tob.objects import fmt
-from tob.persist import find, fntime, skel, store, types
-from tob.utility import elapsed
+from tob.persist import find, fntime, types
+from tob.utility import elapsed, fmt
 
 
 def fnd(event):
-    skel(store())
     if not event.rest:
         res = sorted([x.split('.')[-1].lower() for x in types()])
         if res:

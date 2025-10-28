@@ -11,7 +11,7 @@ import time
 import _thread
 
 
-from tob.utlity import name
+from tob.utility import name
 
 
 class Thread(threading.Thread):
@@ -105,6 +105,5 @@ def launch(func, *args, **kwargs):
 def __dir__():
     return (
         'Thread',
-        'launch',
-        'name'
+        'launch'
    )

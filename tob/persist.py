@@ -169,9 +169,6 @@ def write(obj, path=None):
         return path
 
 
-"interface"
-
-
 def __dir__():
     return (
         'Cache',

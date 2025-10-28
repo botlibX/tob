@@ -21,12 +21,12 @@ from tob.handler import Event
 from tob.command import Config, command, parse, scanner
 from tob.package import Mods
 from tob.persist import Workdir
-from tob.threads import launch, name
-from tob.repeats import elapsed
+from tob.threads import launch
+from tob.utility import elapsed, name
 
 
 path = inspect.getfile(Config)
-Mods.dirs["mods"] = "mods"
+Mods.dirs["mods"] = "examples"
 Workdir.wdr = ".test"
 
 
