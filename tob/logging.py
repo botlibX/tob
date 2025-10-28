@@ -17,6 +17,10 @@ LEVELS = {
 }
 
 
+datefmt = "%H:%M:%S"
+format_short = "%(module).3s %(message)-76s"
+
+
 class Formatter(logging.Formatter):
 
     def format(self, record):
@@ -26,13 +30,14 @@ class Formatter(logging.Formatter):
 
 def level(loglevel="debug"):
     if loglevel != "none":
-        datefmt = "%H:%M:%S"
-        format_short = "%(module).3s %(message)-76s"
         ch = logging.StreamHandler()
-        ch.setLevel(LEVELS.get(loglevel))
         formatter = Formatter(fmt=format_short, datefmt=datefmt)
         ch.setFormatter(formatter)
         logger = logging.getLogger()
+        lvl = LEVELS.get(loglevel)
+        if not lvl:
+            return
+        logger.setLevel(LEVELS.get(loglevel))
         logger.addHandler(ch)
 
 

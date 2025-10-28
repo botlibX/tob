@@ -33,7 +33,7 @@ class Commands:
     def add(func) -> None:
         name = func.__name__
         Commands.cmds[name] = func
-        Commands.names[name] = func.__module__
+        Commands.names[name] = func.__module__.split(".")[-1]
 
     @staticmethod
     def get(cmd):

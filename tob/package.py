@@ -21,6 +21,9 @@ class Mods:
     dirs = {}
     md5s = {}
 
+    def add(name, path):
+        Mods.dirs[name] = path
+
 
 def getmod(name):
     for nme, path in Mods.dirs.items():
@@ -51,7 +54,6 @@ def importer(name, pth):
             return
         sys.modules[name] = mod
         spec.loader.exec_module(mod)
-        logging.info("load %s", pth)
         return mod
     except Exception as ex:
         logging.exception(ex)
@@ -80,19 +82,18 @@ def modules():
         if not os.path.exists(path):
             continue
         mods.extend([
-            x[:-3] for x in os.listdir(path)
+            x[:-3].split(".")[-1] for x in os.listdir(path)
             if x.endswith(".py") and not x.startswith("__")
            ])
     return sorted(mods)
 
 
 def sums(checksum):
+    logging.info(checksum)
     tbl = getmod("tbl")
     if not tbl:
         logging.info("no table")
         return
-    print(tbl.__file__, checksum)
-    print(md5sum(tbl.__file__))
     if checksum and md5sum(tbl.__file__) != checksum:
         logging.info("table checksum error")
         return

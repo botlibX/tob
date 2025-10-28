@@ -410,7 +410,7 @@ class IRC(Output):
 
     def raw(self, txt):
         txt = txt.rstrip()
-        rlog("info", txt, IGNORE)
+        rlog("debug", txt, IGNORE)
         txt = txt[:500]
         txt += "\r\n"
         txt = bytes(txt, "utf-8")

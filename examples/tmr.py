@@ -13,7 +13,8 @@ import time
 from tob.brokers import Fleet
 from tob.persist import find, write
 from tob.utility import elapsed, extract_date
-from tob.threads import Timed, launch
+from tob.repeats import Timed
+from tob.threads import launch
 
 
 def init():
