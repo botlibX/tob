@@ -1,14 +1,7 @@
 # This file is placed in the Public Domain.
 
 
-"polling"
-
-
-import threading
-import time
-
-
-from .threads import launch, name
+"utilities"
 
 
 FORMATS = [
@@ -19,54 +12,6 @@ FORMATS = [
     "%d-%m",
     "%m-%d",
 ]
-
-
-STARTTIME = time.time()
-
-
-class Timy(threading.Timer):
-
-    def __init__(self, sleep, func, *args, **kwargs):
-        super().__init__(sleep, func)
-        self.name = kwargs.get("name", name(func))
-        self.sleep = sleep
-        self.state = {}
-        self.state["latest"] = time.time()
-        self.state["starttime"] = time.time()
-        self.starttime = time.time()
-
-
-class Timed:
-
-    def __init__(self, sleep, func, *args, thrname="", **kwargs):
-        self.args = args
-        self.func = func
-        self.kwargs = kwargs
-        self.sleep = sleep
-        self.name = thrname or kwargs.get("name", name(func))
-        self.target = time.time() + self.sleep
-        self.timer = None
-
-    def run(self):
-        self.timer.latest = time.time()
-        self.func(*self.args)
-
-    def start(self):
-        self.kwargs["name"] = self.name
-        timer = Timy(self.sleep, self.run, *self.args, **self.kwargs)
-        timer.start()
-        self.timer = timer
-
-    def stop(self):
-        if self.timer:
-            self.timer.cancel()
-
-
-class Repeater(Timed):
-
-    def run(self):
-        launch(self.start)
-        super().run()
 
 
 def elapsed(seconds, short=True):
@@ -120,6 +65,58 @@ def extract_date(daystr):
     return res
 
 
+def parse(obj, txt):
+    data = {
+        "args": [],
+        "cmd": "",
+        "gets": Default(),
+        "index": None,
+        "init": "",
+        "opts": "",
+        "otxt": txt,
+        "rest": "",
+        "silent": Default(),
+        "sets": Default(),
+        "txt": ""
+    }
+    for k, v in data.items():
+        setattr(obj, k, getattr(obj, k, v))
+    args = []
+    nr = -1
+    for spli in txt.split():
+        if spli.startswith("-"):
+            try:
+                obj.index = int(spli[1:])
+            except ValueError:
+                obj.opts += spli[1:]
+            continue
+        if "-=" in spli:
+            key, value = spli.split("-=", maxsplit=1)
+            obj.silent[key] = value
+            obj.gets[key] = value
+            continue
+        if "==" in spli:
+            key, value = spli.split("==", maxsplit=1)
+            obj.gets[key] = value
+            continue
+        if "=" in spli:
+            key, value = spli.split("=", maxsplit=1)
+            obj.sets[key] = value
+            continue
+        nr += 1
+        if nr == 0:
+            obj.cmd = spli
+            continue
+        args.append(spli)
+    if args:
+        obj.args = args
+        obj.txt  = obj.cmd or ""
+        obj.rest = " ".join(obj.args)
+        obj.txt  = obj.cmd + " " + obj.rest
+    else:
+        obj.txt = obj.cmd or ""
+
+
 def spl(txt):
     try:
         result = txt.split(",")
@@ -132,10 +129,8 @@ def spl(txt):
 
 def __dir__():
     return (
-        'STARTTIME',
-        'Repeater',
-        'Timed',
         'elapsed',
         'extract_date',
+        'parse',
         'spl'
    )

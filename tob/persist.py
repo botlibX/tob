@@ -62,8 +62,10 @@ def pidname(name):
     return os.path.join(Workdir.wdr, f"{name}.pid")
 
 
-def skel(path):
-    pth = pathlib.Path(path)
+def skel():
+    pth = pathlib.Path(store())
+    pth.mkdir(parents=True, exist_ok=True)
+    pth = pathlib.Path(moddir())
     pth.mkdir(parents=True, exist_ok=True)
     return str(pth)
 
@@ -73,9 +75,7 @@ def store(fnm=""):
 
 
 def types():
-    path = store()
-    skel(path)
-    return os.listdir(path)
+    return os.listdir(store())
 
 
 "find"

@@ -1,7 +1,7 @@
 # This file is placed in the Public Domain.
 
 
-"ckient for a string"
+"client for a string"
 
 
 class Fleet:

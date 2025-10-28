@@ -13,7 +13,7 @@ from tob.handler import Event
 from tob.logging import level
 from tob.objects import Default, fmt
 from tob.package import Mods, inits, modules
-from tob.persist import Workdir, moddir, pidname
+from tob.persist import Workdir, moddir, pidname, skel
 from tob.repeats import spl
  
 
@@ -43,18 +43,19 @@ class Console(CLI):
 
 
 def boot(doparse=True):
+    Workdir.wdr = os.path.expanduser(f"~/.{Config.name}")
     Mods.dirs["tob.modules"] = os.path.join(os.path.dirname(__file__), "modules")
     if doparse:
         parse(Config, " ".join(sys.argv[1:]))
     level(Config.level)
     if "m" in Config.opts:
+        sys.path.insert(0, os.getcwd())
         Mods.dirs["mods"] = moddir()
-        Mods.dirs["mods"] = "examples"
     if "v" in Config.opts:
         banner()
     if "a" in Config.opts:
         Config.sets.init = ",".join(modules())
-    Workdir.wdr = os.path.expanduser(f"~/.{Config.name}")
+    skel()
     scanner()
     Commands.add(cmd)
     Commands.add(ver)
@@ -66,6 +67,7 @@ def boot(doparse=True):
 def background():
     daemon("-v" in sys.argv)
     privileges()
+    Config.opts += "m"
     boot(False)
     pidfile(pidname(Config.name))
     inits(spl(Config.default))
@@ -99,9 +101,10 @@ def control():
 
 def service():
     privileges()
+    Config.opts += "m"
     boot(False)
-    banner()
     pidfile(pidname(Config.name))
+    banner()
     inits(spl(Config.default))
     forever()
 
