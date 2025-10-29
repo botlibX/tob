@@ -29,7 +29,7 @@ from tob.utility import elapsed, name
 import examples as MODS
 
 
-Config.name = "tobot"
+Config.name = "tob"
 Workdir.wdr = ".test"
 
 
