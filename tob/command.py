@@ -5,24 +5,11 @@
 
 
 import inspect
-import os
 
 
 from .brokers import Fleet
 from .package import getmod, modules
 from .utility import parse
-
-
-class Config:
-
-    debug = False
-    default = "irc,rss"
-    init  = ""
-    level = "warn"
-    name = os.path.dirname(__file__).split(os.sep)[-1]
-    opts = ""
-    verbose = False
-    version = 136
 
 
 class Commands:
@@ -31,10 +18,11 @@ class Commands:
     names = {}
 
     @staticmethod
-    def add(func) -> None:
-        name = func.__name__
-        Commands.cmds[name] = func
-        Commands.names[name] = func.__module__.split(".")[-1]
+    def add(*args) -> None:
+        for func in args:
+            name = func.__name__
+            Commands.cmds[name] = func
+            Commands.names[name] = func.__module__.split(".")[-1]
 
     @staticmethod
     def get(cmd):
@@ -90,7 +78,6 @@ def table():
 def __dir__():
     return (
         'Comamnds',
-        'Config',
         'command',
         'parse',
         'scan',

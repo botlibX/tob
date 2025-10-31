@@ -11,22 +11,30 @@ import sys
 import time
 
 
-from .clients import Client
-from .command import Commands, Config, command, table
-from .handler import Event
+from .command import parse, table
 from .logging import level
-from .package import Mods, inits, modules, sums
-from .persist import Workdir, moddir, pidname, skel
-from .utility import parse, spl
+from .package import Mods, modules, sums
+from .persist import Workdir, moddir, skel
 
 
-CHECKSUM = "74c8e52fc1ef4d1f5dc90eae4f2200c4"
+STARTTIME = time.time()
 
 
-"in the beginning"
+class Config:
+
+    debug = False
+    default = "irc,rss"
+    init  = ""
+    level = "warn"
+    name = os.path.dirname(__file__).split(os.sep)[-1]
+    opts = ""
+    verbose = False
+    version = 136
 
 
-def boot(doparse=True):
+def boot(mods, checksum, doparse=True):
+    Mods.add("modules", os.path.dirname(inspect.getfile(mods)))
+    Mods.add("mods", moddir())
     if doparse:
         parse(Config, " ".join(sys.argv[1:]))
         Config.level = Config.sets.level or Config.level
@@ -36,66 +44,7 @@ def boot(doparse=True):
         Config.sets.init = ",".join(modules())
     skel()
     table()
-    sums(CHECKSUM)
-
-
-"scripts"
-
-
-def background(clt):
-    daemon("-v" in sys.argv)
-    privileges()
-    boot(False)
-    pidfile(pidname(Config.name))
-    inits(spl(Config.default))
-    forever()
-
-
-def console(clt):
-    import readline # noqa: F401
-    boot()
-    for _mod, thr in inits(spl(Config.sets.init)):
-        if "w" in Config.opts:
-            thr.join(30.0)
-    csl = clt()
-    csl.start()
-    forever()
-
-
-def control(clt):
-    if len(sys.argv) == 1:
-        return
-    boot()
-    csl = clt()
-    evt = Event()
-    evt.orig = repr(csl)
-    evt.type = "command"
-    evt.txt = " ".join(sys.argv[1:])
-    evt.cmd  = evt.txt.split()[0]
-    command(evt)
-    evt.wait()
-
-
-def service(clt):
-    privileges()
-    boot(False)
-    pidfile(pidname(Config.name))
-    inits(spl(Config.default))
-    forever()
-
-
-"utility"
-
-
-def check(txt):
-    args = sys.argv[1:]
-    for arg in args:
-        if not arg.startswith("-"):
-            continue
-        for char in txt:
-            if char in arg:
-                return True
-    return False
+    sums(checksum)
 
 
 def daemon(verbose=False):
@@ -143,14 +92,14 @@ def privileges():
     os.setuid(pwnam2.pw_uid)
 
 
-def wrapped(func, clt):
+def wrapped(func):
     try:
-        func(clt)
+        func()
     except (KeyboardInterrupt, EOFError):
         pass
 
 
-def wrap(func, clt):
+def wrap(func):
     import termios
     old = None
     try:
@@ -158,7 +107,7 @@ def wrap(func, clt):
     except termios.error:
         pass
     try:
-        wrapped(func, clt)
+        wrapped(func)
     finally:
         if old:
             termios.tcsetattr(sys.stdin.fileno(), termios.TCSADRAIN, old)
@@ -166,15 +115,13 @@ def wrap(func, clt):
 
 def __dir__():
     return (
-        'background',
+        'STARTTIME',
+        'Config',
         'boot',
-        'console',
-        'control',
         'daemon',
         'forever',
         'pidfile',
         'privileges',
-        'service',
         'wrap',
         'wrapped'
     )
