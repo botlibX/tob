@@ -9,6 +9,9 @@ class Object:
     def __contains__(self, key):
         return key in dir(self)
 
+    def __delitem__(self, key):
+        del self.__dict__[key]
+
     def __getitem__(self, key):
         return self.__dict__.get(key)
 
@@ -87,6 +90,7 @@ def update(obj, data, empty=True):
     for key, value in items(data):
         if not empty and not value:
             continue
+        #obj[key] = value
         setattr(obj, key, value)
 
 

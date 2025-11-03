@@ -64,6 +64,7 @@ class Output(Client):
         self.oqueue.put(None)
         super().stop()
 
+
     def wait(self):
         try:
             self.oqueue.join()

@@ -45,22 +45,18 @@ def getmod(name):
 def importer(name, pth):
     if not os.path.exists(pth):
         return
-    try:
-        spec = importlib.util.spec_from_file_location(name, pth)
-        if not spec or not spec.loader:
-            return
-        mod = importlib.util.module_from_spec(spec)
-        if not mod:
-            return
-        sys.modules[name] = mod
-        spec.loader.exec_module(mod)
-        return mod
-    except Exception as ex:
-        logging.exception(ex)
-        _thread.interrupt_main()
+    spec = importlib.util.spec_from_file_location(name, pth)
+    if not spec or not spec.loader:
+        return
+    mod = importlib.util.module_from_spec(spec)
+    if not mod:
+        return
+    sys.modules[name] = mod
+    spec.loader.exec_module(mod)
+    return mod
 
 
-def inits(names):
+def inits(names, config):
     modz = []
     for name in modules():
         if name not in names:
@@ -68,7 +64,7 @@ def inits(names):
         try:
             module = getmod(name)
             if module and "init" in dir(module):
-                thr = launch(module.init)
+                thr = launch(module.init, config)
                 modz.append((module, thr))
         except Exception as ex:
             logging.exception(ex)
@@ -89,7 +85,6 @@ def modules():
 
 
 def sums(checksum):
-    logging.info(checksum)
     tbl = getmod("tbl")
     if not tbl:
         logging.info("no table")
@@ -99,6 +94,7 @@ def sums(checksum):
         return
     if "MD5" in dir(tbl):
         Mods.md5s.update(tbl.MD5)
+    logging.info(checksum)
 
 
 def __dir__():

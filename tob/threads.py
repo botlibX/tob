@@ -11,7 +11,7 @@ import time
 import _thread
 
 
-from .utility import name
+from .methods import name
 
 
 class Thread(threading.Thread):

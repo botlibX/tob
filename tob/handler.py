@@ -56,14 +56,11 @@ class Handler:
 
     def loop(self):
         while True:
-            try:
-                event = self.poll()
-                if event is None:
-                    break
-                event.orig = repr(self)
-                self.callback(event)
-            except (KeyboardInterrupt, EOFError):
-                _thread.interrupt_main()
+            event = self.poll()
+            if event is None:
+                break
+            event.orig = repr(self)
+            self.callback(event)
 
     def poll(self):
         return self.queue.get()

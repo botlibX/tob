@@ -4,47 +4,39 @@
 "runtime"
 
 
-import inspect
+
+import logging 
 import os
 import pathlib
 import sys
 import time
 
 
-from .command import parse, table
-from .logging import level
-from .package import Mods, modules, sums
-from .persist import Workdir, moddir, skel
-
-
+NAME = os.path.dirname(__file__).split(os.sep)[-1]
 STARTTIME = time.time()
 
 
-class Config:
-
-    debug = False
-    default = "irc,rss"
-    init  = ""
-    level = "warn"
-    name = os.path.dirname(__file__).split(os.sep)[-1]
-    opts = ""
-    verbose = False
-    version = 137
+LEVELS = {
+    'debug': logging.DEBUG,
+    'info': logging.INFO,
+    'warning': logging.WARNING,
+    'warn': logging.WARNING,
+    'error': logging.ERROR,
+    'critical': logging.CRITICAL
+}
 
 
-def boot(mods, checksum, doparse=True):
-    Mods.add("modules", os.path.dirname(inspect.getfile(mods)))
-    Mods.add("mods", moddir())
-    if doparse:
-        parse(Config, " ".join(sys.argv[1:]))
-        Config.level = Config.sets.level or Config.level
-    Workdir.wdr = Workdir.wdr or os.path.expanduser(f"~/.{Config.name}")
-    level(Config.level)
-    if "a" in Config.opts:
-        Config.sets.init = ",".join(modules())
-    skel()
-    table()
-    sums(checksum)
+class Logging:
+
+    datefmt = "%H:%M:%S"
+    format = "%(module).3s %(message).76s"
+
+
+class Formatter(logging.Formatter):
+
+    def format(self, record):
+        record.module = record.module.upper()
+        return logging.Formatter.format(self, record)
 
 
 def daemon(verbose=False):
@@ -73,6 +65,21 @@ def forever():
             time.sleep(0.1)
         except (KeyboardInterrupt, EOFError):
             break
+
+
+def level(loglevel="debug"):
+    if loglevel != "none":
+        lvl = LEVELS.get(loglevel)
+        if not lvl:
+            return
+        logger = logging.getLogger()
+        for handler in logger.handlers:
+            logger.removeHandler(handler)
+        logger.setLevel(lvl)
+        formatter = Formatter(Logging.format, datefmt=Logging.datefmt)
+        ch = logging.StreamHandler()
+        ch.setFormatter(formatter)
+        logger.addHandler(ch)
 
 
 def pidfile(filename):
@@ -116,10 +123,10 @@ def wrap(func):
 def __dir__():
     return (
         'STARTTIME',
-        'Config',
         'boot',
         'daemon',
         'forever',
+        'level',
         'pidfile',
         'privileges',
         'wrap',

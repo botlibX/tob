@@ -8,8 +8,8 @@ import inspect
 
 
 from .brokers import Fleet
+from .methods import parse
 from .package import getmod, modules
-from .utility import parse
 
 
 class Commands:
@@ -27,14 +27,14 @@ class Commands:
     @staticmethod
     def get(cmd):
         func = Commands.cmds.get(cmd, None)
-        if func:
-            return func
-        name = Commands.names.get(cmd, None)
-        if name:
-            module = getmod(name)
-            if module:
-                scan(module)
-        return Commands.cmds.get(cmd, None)
+        if not func:
+            name = Commands.names.get(cmd, None)
+            if name:
+                module = getmod(name)
+                if module:
+                    scan(module)
+            func =  Commands.cmds.get(cmd, None)
+        return func
 
 
 def command(evt):

@@ -18,52 +18,51 @@ from tob.brokers import Fleet
 from tob.clients import Output
 from tob.command import command
 from tob.handler import Event
-from tob.logging import LEVELS
+from tob.methods import edit, fmt
 from tob.objects import Object, keys
 from tob.persist import getpath, last, write
-from tob.runtime import Config
+from tob.runtime import LEVELS, NAME
 from tob.threads import launch
-from tob.utility import edit, fmt
 
 
 IGNORE = ["PING", "PONG", "PRIVMSG"] 
 
 
-initlock = threading.RLock()
-saylock  = threading.RLock()
+lock = threading.RLock()
 
 
-def init():
-    with initlock:
-        irc = IRC()
-        irc.start()
-        irc.events.joined.wait(30.0)
-        if irc.events.joined.is_set():
-            logging.warning(fmt(irc.cfg, skip=["password", "realname", "username"]))
-        else:
-            irc.stop()
-        return irc
+def  init(config):
+    irc = IRC(config.name)
+    irc.start()
+    irc.events.joined.wait(30.0)
+    if irc.events.joined.is_set():
+        logging.warning(fmt(irc.cfg, skip=["password", "realname", "username"]))
+    else:
+        irc.stop()
+    return irc
 
 
 class Config:
 
-    channel = f"#{Config.name}"
+    channel = f"#{NAME}"
     commands = True
     control = "!"
-    nick = Config.name
+    name = NAME
+    nick = NAME
     password = ""
     port = 6667
-    realname = Config.name
+    realname = NAME
     sasl = False
     server = "localhost"
     servermodes = ""
     sleep = 60
-    username = Config.name
+    username = NAME
     users = False
 
     def __init__(self):
         self.channel = Config.channel
         self.commands = Config.commands
+        self.name = Config.name
         self.nick = Config.nick
         self.port = Config.port
         self.realname = Config.realname
@@ -109,7 +108,7 @@ wrapper = TextWrap()
 
 class IRC(Output):
 
-    def __init__(self):
+    def __init__(self, name):
         Output.__init__(self)
         self.buffer = []
         self.cache = {}
@@ -180,7 +179,7 @@ class IRC(Output):
         return False
 
     def direct(self, txt):
-        with saylock:
+        with lock:
             time.sleep(2.0)
             self.raw(txt)
 
@@ -211,7 +210,7 @@ class IRC(Output):
                 self.say(event.channel, f"use !mre to show more (+{length})")
 
     def docommand(self, cmd, *args):
-        with saylock:
+        with lock:
             if not args:
                 self.raw(cmd)
             elif len(args) == 1:
@@ -324,7 +323,7 @@ class IRC(Output):
         rawstr = str(txt)
         rawstr = rawstr.replace("\u0001", "")
         rawstr = rawstr.replace("\001", "")
-        logging.debug(txt)
+        rlog("debug", txt, IGNORE)
         obj = Event()
         obj.args = []
         obj.rawstr = rawstr
