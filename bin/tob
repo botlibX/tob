@@ -15,7 +15,7 @@ sys.path.insert(0, os.getcwd())
 
 
 from tob.clients import Client
-from tob.command import Commands, command, scan, scanner
+from tob.command import Commands, Config, command, scan, scanner
 from tob.handler import Event
 from tob.methods import parse
 from tob.persist import Workdir, moddir, pidname, skel
@@ -27,6 +27,9 @@ from tob.utility import md5sum, spl
 
 
 import examples as MODS
+
+
+TXT = " ".join(sys.argv[1:])
 
 
 class CLI(Client):
@@ -61,7 +64,6 @@ def cmd(event):
 def background():
     daemon(check("v"))
     privileges()
-    scanner(MODS)
     Commands.add(cmd)
     pidfile(pidname(NAME))
     inits(MODS, checkspl() or "irc,rss")
@@ -72,14 +74,16 @@ def console():
     import readline # noqa: F401
     if check("v"):
         banner()
-    scanner(MODS)
-    Commands.add(cmd)
-    csl = Console()
     if check("a"):
         mods = MODS.modules()
     else:
-        mods = checkspl()
-    for _mod, thr in inits(MODS, mods):
+        mods = []
+    parse(Config, TXT)
+    level(Config.sets.level or "warn")    
+    scanner(MODS, mods)
+    Commands.add(cmd)
+    csl = Console()
+    for _mod, thr in inits(MODS, Config.sets.init):
         thr.join(30.0)
     csl.start()
     forever()

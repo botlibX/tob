@@ -4,11 +4,22 @@
 "write your own commands"
 
 
+import importlib
+import importlib.util
 import inspect
+import os
+import sys
 
 
-from .brokers import Fleet
+from .clients import Fleet
 from .methods import parse
+
+
+class Config:
+
+    level = "warn"
+    name = os.path.dirname(__file__).split(os.sep)[-1]
+    version = 137
 
 
 class Commands:
@@ -17,7 +28,7 @@ class Commands:
     names = {}
 
     @staticmethod
-    def add(*args) -> None:
+    def add(*args):
         for func in args:
             name = func.__name__
             Commands.cmds[name] = func
@@ -25,15 +36,7 @@ class Commands:
 
     @staticmethod
     def get(cmd):
-        func = Commands.cmds.get(cmd, None)
-        if not func:
-            name = Commands.names.get(cmd, None)
-            if name:
-                module = getmod(name)
-                if module:
-                    scan(module)
-            func =  Commands.cmds.get(cmd, None)
-        return func
+        return Commands.cmds.get(cmd, None)
 
 
 def command(evt):
@@ -43,6 +46,29 @@ def command(evt):
         func(evt)
         Fleet.display(evt)
     evt.ready()
+
+
+def importer(name, pth):
+    if not os.path.exists(pth):
+        return
+    spec = importlib.util.spec_from_file_location(name, pth)
+    if not spec or not spec.loader:
+        return
+    mod = importlib.util.module_from_spec(spec)
+    if not mod:
+        return
+    sys.modules[name] = mod
+    spec.loader.exec_module(mod)
+    return mod
+
+
+def modules(path):
+    if not os.path.exists(path):
+        return []
+    return sorted([
+                   x[:-3].split(".")[-1] for x in os.listdir(path)
+                   if x.endswith(".py") and not x.startswith("__")
+                  ])
 
 
 def scan(module):
@@ -55,10 +81,13 @@ def scan(module):
 
 def scanner(pkg, names=[]):
     for modname in dir(pkg):
+        if modname.startswith("__"):
+            continue
         if names and modname not in names:
             continue
         nme = pkg.__name__ + "." + modname
-        mod = getattr(pkg, modname, None)
+        path = os.path.join(pkg.__path__[0], modname + ".py")
+        mod = importer(nme, path)
         if mod:
             scan(mod)
 
@@ -67,8 +96,14 @@ def __dir__():
     return (
         'Comamnds',
         'command',
-        'parse',
+        'importer',
+        'modules',
         'scan',
         'scanner',
         'table'
     )
+
+
+
+
+

@@ -10,7 +10,7 @@ import logging
 from random import SystemRandom
 
 
-from tob.brokers import Fleet
+from tob.clients import Fleet
 from tob.handler import Event
 from tob.repeats import Repeater
 
