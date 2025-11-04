@@ -9,7 +9,6 @@ import inspect
 
 from .brokers import Fleet
 from .methods import parse
-from .package import getmod, modules
 
 
 class Commands:
@@ -54,25 +53,14 @@ def scan(module):
             Commands.add(cmdz)
 
 
-def scanner(names=[]):
-    res = []
-    for nme in modules():
-        if names and nme not in names:
+def scanner(pkg, names=[]):
+    for modname in dir(pkg):
+        if names and modname not in names:
             continue
-        module = getmod(nme)
-        if not module:
-            continue
-        scan(module)
-        res.append(module)
-    return res
-
-
-def table():
-    tbl = getmod("tbl")
-    if tbl and "NAMES" in dir(tbl):
-        Commands.names.update(tbl.NAMES)
-    else:
-        scanner()
+        nme = pkg.__name__ + "." + modname
+        mod = getattr(pkg, modname, None)
+        if mod:
+            scan(mod)
 
 
 def __dir__():

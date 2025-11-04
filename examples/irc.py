@@ -21,7 +21,7 @@ from tob.handler import Event
 from tob.methods import edit, fmt
 from tob.objects import Object, keys
 from tob.persist import getpath, last, write
-from tob.runtime import LEVELS, NAME
+from tob.runtime import LEVELS, NAME, VERSION
 from tob.threads import launch
 
 
@@ -31,8 +31,8 @@ IGNORE = ["PING", "PONG", "PRIVMSG"]
 lock = threading.RLock()
 
 
-def  init(config):
-    irc = IRC(config.name)
+def init():
+    irc = IRC()
     irc.start()
     irc.events.joined.wait(30.0)
     if irc.events.joined.is_set():
@@ -108,7 +108,7 @@ wrapper = TextWrap()
 
 class IRC(Output):
 
-    def __init__(self, name):
+    def __init__(self):
         Output.__init__(self)
         self.buffer = []
         self.cache = {}
@@ -555,7 +555,7 @@ def cb_001(evt):
 def cb_notice(evt):
     bot = Fleet.get(evt.orig)
     if evt.txt.startswith("VERSION"):
-        txt = f"\001VERSION {Config.name.upper()} 140 - {bot.cfg.username}\001"
+        txt = f"\001VERSION {NAME.upper()} {VERSION} - {bot.cfg.username}\001"
         bot.docommand("NOTICE", evt.channel, txt)
 
 

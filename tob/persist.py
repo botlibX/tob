@@ -14,14 +14,14 @@ import time
 
 from .marshal import dump, load
 from .objects import Object, deleted, fqn, search, update
-
+from .runtime import NAME
 
 lock = threading.RLock()
 
 
 class Workdir:
 
-    wdr = ""
+    wdr = os.path.expanduser(f"~/.{NAME}")
 
 
 class Cache:

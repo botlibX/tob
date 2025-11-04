@@ -10,10 +10,16 @@ import os
 import pathlib
 import sys
 import time
+import _thread
+
+
+from .threads import launch
+from .utility import spl
 
 
 NAME = os.path.dirname(__file__).split(os.sep)[-1]
 STARTTIME = time.time()
+VERSION = 137
 
 
 LEVELS = {
@@ -29,7 +35,7 @@ LEVELS = {
 class Logging:
 
     datefmt = "%H:%M:%S"
-    format = "%(module).3s %(message).76s"
+    format = "%(module).3s %(message)s"
 
 
 class Formatter(logging.Formatter):
@@ -37,6 +43,44 @@ class Formatter(logging.Formatter):
     def format(self, record):
         record.module = record.module.upper()
         return logging.Formatter.format(self, record)
+
+
+def banner():
+    tme = time.ctime(time.time()).replace("  ", " ")
+    logger = logging.getLogger()
+    logging.warn("%s %s since %s (%s)" % (NAME.upper(), VERSION, tme, logging.getLevelName(logger.getEffectiveLevel())))
+
+
+def check(txt):
+    args = sys.argv[1:]
+    for arg in args:
+        if not arg.startswith("-"):
+            continue
+        for char in txt:
+            if char in arg:
+                return True
+    return False
+
+
+def checknr():
+    args = sys.argv[1:]
+    for arg in args:
+        if not arg.startswith("-"):
+            continue
+        try:
+            return int(arg)
+        except ValueError:
+            pass
+    return 1
+
+
+def checkspl():
+    args = sys.argv[1:]
+    for arg in args:
+        splitted = spl(arg)
+        if splitted:
+            return splitted
+    return ""
 
 
 def daemon(verbose=False):
@@ -65,6 +109,23 @@ def forever():
             time.sleep(0.1)
         except (KeyboardInterrupt, EOFError):
             break
+
+
+def inits(pkg, names):
+    modz = []
+    for name in pkg.modules():
+        if name not in names:
+            continue
+        try:
+            nme = pkg.__name__ + "." + name
+            module = sys.modules.get(nme, None)
+            if module and "init" in dir(module):
+                thr = launch(module.init)
+                modz.append((module, thr))
+        except Exception as ex:
+            logging.exception(ex)
+            _thread.interrupt_main()
+    return modz
 
 
 def level(loglevel="debug"):
@@ -124,8 +185,12 @@ def __dir__():
     return (
         'STARTTIME',
         'boot',
+        'check',
+        'checknr',
+        'checkspl',
         'daemon',
         'forever',
+        'inits',
         'level',
         'pidfile',
         'privileges',
