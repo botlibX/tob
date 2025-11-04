@@ -62,7 +62,8 @@ def importer(name, pth):
     return mod
 
 
-def modules(path):
+def modules(pkg):
+    path = pkg.__path__[0]
     if not os.path.exists(path):
         return []
     return sorted([
@@ -102,8 +103,3 @@ def __dir__():
         'scanner',
         'table'
     )
-
-
-
-
-

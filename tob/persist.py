@@ -16,6 +16,7 @@ from .marshal import dump, load
 from .objects import Object, deleted, fqn, search, update
 from .runtime import NAME
 
+
 lock = threading.RLock()
 
 

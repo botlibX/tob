@@ -15,12 +15,13 @@ sys.path.insert(0, os.getcwd())
 
 
 from tob.clients import Client
-from tob.command import Commands, Config, command, scan, scanner
+from tob.command import Commands, Config, command, modules, scan, scanner
 from tob.handler import Event
+from tob.logging import level
 from tob.methods import parse
 from tob.persist import Workdir, moddir, pidname, skel
-from tob.runtime import NAME, VERSION, checknr, checkspl, inits, level
-from tob.runtime import banner, check, daemon, forever, pidfile, privileges
+from tob.runtime import NAME, banner, inits
+from tob.runtime import check, daemon, forever, pidfile, privileges
 from tob.runtime import wrap, wrapped
 from tob.threads import launch
 from tob.utility import md5sum, spl
@@ -66,24 +67,23 @@ def background():
     privileges()
     Commands.add(cmd)
     pidfile(pidname(NAME))
-    inits(MODS, checkspl() or "irc,rss")
+    inits(MODS, Config.sets.init or "irc,rss")
     forever()
 
 
 def console():
     import readline # noqa: F401
-    if check("v"):
-        banner()
-    if check("a"):
-        mods = MODS.modules()
-    else:
-        mods = []
     parse(Config, TXT)
     level(Config.sets.level or "warn")    
+    if "v" in Config.opts:
+        banner(Config.name, Config.version)
+    mods = []
+    if "a" in Config.opts:
+        mods = modules(MODS)
     scanner(MODS, mods)
     Commands.add(cmd)
     csl = Console()
-    for _mod, thr in inits(MODS, Config.sets.init):
+    for _mod, thr in inits(MODS, Config.sets.init or mods):
         thr.join(30.0)
     csl.start()
     forever()
@@ -105,16 +105,15 @@ def control():
 
 def service():
     privileges()
-    banner()
-    scanner(MODS, checkspl())
+    banner(Confg.name, Config.version)
+    scanner(MODS)
     Commands.add(cmd)
     pidfile(pidname(NAME))
-    inits(MODS, checkspl() or "irc.rss")
+    inits(MODS, Config.sets.init or "irc.rss")
     forever()
 
 
 def main():
-    level("warn")
     if check("c"):
         wrap(console)
     elif check("d"):

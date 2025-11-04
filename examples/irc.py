@@ -15,12 +15,12 @@ import time
 
 
 from tob.clients import Fleet, Output
-from tob.command import command
+from tob.command import Config, command
 from tob.handler import Event
+from tob.logging import LEVELS
 from tob.methods import edit, fmt
 from tob.objects import Object, keys
 from tob.persist import getpath, last, write
-from tob.runtime import LEVELS, NAME, VERSION
 from tob.threads import launch
 
 
@@ -43,19 +43,19 @@ def init():
 
 class Config:
 
-    channel = f"#{NAME}"
+    channel = f"#{Config.name}"
     commands = True
     control = "!"
-    name = NAME
-    nick = NAME
+    name = Config.name
+    nick = Config.name
     password = ""
     port = 6667
-    realname = NAME
+    realname = Config.name
     sasl = False
     server = "localhost"
     servermodes = ""
     sleep = 60
-    username = NAME
+    username = Config.name
     users = False
 
     def __init__(self):
@@ -554,7 +554,7 @@ def cb_001(evt):
 def cb_notice(evt):
     bot = Fleet.get(evt.orig)
     if evt.txt.startswith("VERSION"):
-        txt = f"\001VERSION {NAME.upper()} {VERSION} - {bot.cfg.username}\001"
+        txt = f"\001VERSION {NAME.upper()} 137 - {bot.cfg.username}\001"
         bot.docommand("NOTICE", evt.channel, txt)
 
 

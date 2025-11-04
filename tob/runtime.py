@@ -13,42 +13,19 @@ import time
 import _thread
 
 
+from .command import modules
 from .threads import launch
 from .utility import spl
 
 
 NAME = os.path.dirname(__file__).split(os.sep)[-1]
 STARTTIME = time.time()
-VERSION = 137
 
 
-LEVELS = {
-    'debug': logging.DEBUG,
-    'info': logging.INFO,
-    'warning': logging.WARNING,
-    'warn': logging.WARNING,
-    'error': logging.ERROR,
-    'critical': logging.CRITICAL
-}
-
-
-class Logging:
-
-    datefmt = "%H:%M:%S"
-    format = "%(module).3s %(message)s"
-
-
-class Formatter(logging.Formatter):
-
-    def format(self, record):
-        record.module = record.module.upper()
-        return logging.Formatter.format(self, record)
-
-
-def banner():
+def banner(name, version):
     tme = time.ctime(time.time()).replace("  ", " ")
     logger = logging.getLogger()
-    logging.warn("%s %s since %s (%s)" % (NAME.upper(), VERSION, tme, logging.getLevelName(logger.getEffectiveLevel())))
+    logging.warning("%s %s since %s (%s)", name.upper(), version, tme, logging.getLevelName(logger.getEffectiveLevel()))
 
 
 def check(txt):
@@ -60,27 +37,6 @@ def check(txt):
             if char in arg:
                 return True
     return False
-
-
-def checknr():
-    args = sys.argv[1:]
-    for arg in args:
-        if not arg.startswith("-"):
-            continue
-        try:
-            return int(arg)
-        except ValueError:
-            pass
-    return 1
-
-
-def checkspl():
-    args = sys.argv[1:]
-    for arg in args:
-        splitted = spl(arg)
-        if splitted:
-            return splitted
-    return ""
 
 
 def daemon(verbose=False):
@@ -113,7 +69,7 @@ def forever():
 
 def inits(pkg, names):
     modz = []
-    for name in pkg.modules():
+    for name in modules(pkg):
         if name not in names:
             continue
         try:
@@ -126,21 +82,6 @@ def inits(pkg, names):
             logging.exception(ex)
             _thread.interrupt_main()
     return modz
-
-
-def level(loglevel="debug"):
-    if loglevel != "none":
-        lvl = LEVELS.get(loglevel)
-        if not lvl:
-            return
-        logger = logging.getLogger()
-        for handler in logger.handlers:
-            logger.removeHandler(handler)
-        logger.setLevel(lvl)
-        formatter = Formatter(Logging.format, datefmt=Logging.datefmt)
-        ch = logging.StreamHandler()
-        ch.setFormatter(formatter)
-        logger.addHandler(ch)
 
 
 def pidfile(filename):
@@ -184,6 +125,7 @@ def wrap(func):
 def __dir__():
     return (
         'STARTTIME',
+        'banner',
         'boot',
         'check',
         'checknr',
