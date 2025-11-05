@@ -22,7 +22,7 @@ from tob.command import Config, command, parse, scan, scanner
 from tob.handler import Event
 from tob.logging import level
 from tob.persist import Workdir, moddir, skel
-from tob.runtime import banner, check
+from tob.runtime import check
 from tob.threads import launch
 from tob.utility import elapsed
 
@@ -79,6 +79,18 @@ class Pool:
             clt = Pool.clients[Pool.nrlast]
             clt.put(evt)
             Pool.nrlast += 1
+
+
+def banner(name, version):
+    tme = time.ctime(time.time()).replace("  ", " ")
+    logger = logging.getLogger()
+    print("%s %s since %s (%s)" % (
+                                   name.upper(),
+                                   version,
+                                   tme,
+                                   logging.getLevelName(logger.getEffectiveLevel())
+                                  ))
+    sys.stdout.flush()
 
 
 def consume():

@@ -126,7 +126,6 @@ def fntime(daystr):
     return float(timed)
 
 
-
 def last(obj, selector=None):
     if selector is None:
         selector = {}

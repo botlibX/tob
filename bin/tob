@@ -20,9 +20,8 @@ from tob.handler import Event
 from tob.logging import level
 from tob.methods import parse
 from tob.persist import Workdir, moddir, pidname, skel
-from tob.runtime import NAME, banner, inits
-from tob.runtime import check, daemon, forever, pidfile, privileges
-from tob.runtime import wrap, wrapped
+from tob.runtime import NAME, check, daemon, forever, inits, pidfile
+from tob.runtime import privileges, wrap, wrapped
 from tob.threads import launch
 from tob.utility import md5sum, spl
 
@@ -60,6 +59,18 @@ class Console(CLI):
 
 def cmd(event):
     event.reply(",".join(sorted(Commands.names or Commands.cmds)))
+
+
+def banner(name, version):
+    tme = time.ctime(time.time()).replace("  ", " ")
+    logger = logging.getLogger()
+    print("%s %s since %s (%s)" % (
+                                   name.upper(),
+                                   version,
+                                   tme,
+                                   logging.getLevelName(logger.getEffectiveLevel())
+                                  ))
+    sys.stdout.flush()
 
 
 def background():

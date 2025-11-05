@@ -23,12 +23,6 @@ NAME = os.path.dirname(__file__).split(os.sep)[-1]
 STARTTIME = time.time()
 
 
-def banner(name, version):
-    tme = time.ctime(time.time()).replace("  ", " ")
-    logger = logging.getLogger()
-    logging.warning("%s %s since %s (%s)", name.upper(), version, tme, logging.getLevelName(logger.getEffectiveLevel()))
-
-
 def check(txt):
     args = sys.argv[1:]
     for arg in args:
@@ -138,7 +132,6 @@ sys.excepthook = threading.excepthook = excepthook
 def __dir__():
     return (
         'STARTTIME',
-        'banner',
         'boot',
         'check',
         'checknr',
