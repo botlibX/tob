@@ -79,17 +79,12 @@ def inits(pkg, names):
     for name in sorted(modules(pkg)):
         if name not in names:
             continue
-        try:
-            nme = pkg.__name__ + "." + name
-            module = sys.modules.get(nme, None)
-            if not module or not "init" in dir(module):
-                continue
-            thr = launch(module.init)
-            res.append((module, thr))
-        except Exception as ex:
-            logging.exception(ex)
-            _thread.interrupt_main()
-
+        nme = pkg.__name__ + "." + name
+        module = sys.modules.get(nme, None)
+        if not module or not "init" in dir(module):
+            continue
+        thr = launch(module.init)
+        res.append((module, thr))
     return res
 
 
@@ -136,8 +131,6 @@ def __dir__():
         'STARTTIME',
         'boot',
         'check',
-        'checknr',
-        'checkspl',
         'daemon',
         'forever',
         'inits',
