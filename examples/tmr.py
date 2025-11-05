@@ -50,11 +50,11 @@ class Timers:
 
     @staticmethod
     def add(tme, orig, channel,  txt):
-        Timers.timers[tme] = (orig, channel, txt)
+        setattr(Timers.timers, str(tme), (orig, channel, txt))
 
     @staticmethod
     def delete(tme):
-        del Timers.timers[tme]
+        delattr(Timers.timers, str(tme))
 
 
 def get_day(daystr):

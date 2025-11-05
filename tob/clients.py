@@ -65,7 +65,10 @@ class Output(Client):
 
 
     def wait(self):
-        self.oqueue.join()
+        try:
+            self.oqueue.join()
+        except Exception:
+            _thread.interrupt_main()
 
 
 class Fleet:
@@ -98,7 +101,7 @@ class Fleet:
     def like(orig):
         for origin in Fleet.clients:
             if orig.split()[0] in origin.split()[0]:
-                yield orig
+                yield origin
 
     @staticmethod
     def say(orig, channel, txt):

@@ -1,7 +1,7 @@
 # This file is placed in the Public Domain.
 
 
-"run non-blocking"
+"non-blocking"
 
 
 import logging
@@ -9,9 +9,6 @@ import queue
 import threading
 import time
 import _thread
-
-
-from .methods import name
 
 
 class Thread(threading.Thread):
@@ -33,12 +30,67 @@ class Thread(threading.Thread):
 
     def join(self, timeout=None):
         result = None
-        super().join(timeout)
-        return self.result
+        try:
+            super().join(timeout)
+            result = self.result
+        except (KeyboardInterrupt, EOFError):
+            _thread.interrupt_main()
+        return result
 
     def run(self):
         func, args = self.queue.get()
-        self.result = func(*args)
+        try:
+            self.result = func(*args)
+        except (KeyboardInterrupt, EOFError):
+            _thread.interrupt_main()
+        except Exception as ex:
+            logging.exception(ex)
+            _thread.interrupt_main()
+
+
+class Timy(threading.Timer):
+
+    def __init__(self, sleep, func, *args, **kwargs):
+        super().__init__(sleep, func)
+        self.name = kwargs.get("name", name(func))
+        self.sleep = sleep
+        self.state = {}
+        self.state["latest"] = time.time()
+        self.state["starttime"] = time.time()
+        self.starttime = time.time()
+
+
+class Timed:
+
+    def __init__(self, sleep, func, *args, thrname="", **kwargs):
+        self.args = args
+        self.func = func
+        self.kwargs = kwargs
+        self.sleep = sleep
+        self.name = thrname or kwargs.get("name", name(func))
+        self.target = time.time() + self.sleep
+        self.timer = None
+
+    def run(self):
+        self.timer.latest = time.time()
+        self.func(*self.args)
+
+    def start(self):
+        self.kwargs["name"] = self.name
+        timer = Timy(self.sleep, self.run, *self.args, **self.kwargs)
+        timer.start()
+        self.timer = timer
+
+    def stop(self):
+        if self.timer:
+            self.timer.cancel()
+
+
+class Repeater(Timed):
+
+    def run(self):
+        launch(self.start)
+        super().run()
 
 
 def launch(func, *args, **kwargs):
@@ -47,8 +99,28 @@ def launch(func, *args, **kwargs):
     return thread
 
 
+def name(obj, short=False):
+    typ = type(obj)
+    res = ""
+    if "__builtins__" in dir(typ):
+        res = obj.__name__
+    elif "__self__" in dir(obj):
+        res = f"{obj.__self__.__class__.__name__}.{obj.__name__}"
+    elif "__class__" in dir(obj) and "__name__" in dir(obj):
+        res = f"{obj.__class__.__name__}.{obj.__name__}"
+    elif "__class__" in dir(obj):
+        res =  f"{obj.__class__.__module__}.{obj.__class__.__name__}"
+    elif "__name__" in dir(obj):
+        res = f"{obj.__class__.__name__}.{obj.__name__}"
+    if short:
+        res = res.split(".")[-1]
+    return res
+
+
 def __dir__():
     return (
+        'Repeater',
         'Thread',
-        'launch'
+        'launch',
+        'name'
    )

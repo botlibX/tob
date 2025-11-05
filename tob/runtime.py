@@ -79,12 +79,17 @@ def inits(pkg, names):
     for name in sorted(modules(pkg)):
         if name not in names:
             continue
-        nme = pkg.__name__ + "." + name
-        module = sys.modules.get(nme, None)
-        if not module or not "init" in dir(module):
-            continue
-        thr = launch(module.init)
-        res.append((module, thr))
+        try:
+            nme = pkg.__name__ + "." + name
+            module = sys.modules.get(nme, None)
+            if not module or not "init" in dir(module):
+                continue
+            thr = launch(module.init)
+            res.append((module, thr))
+        except Exception as ex:
+            logging.exception(ex)
+            _thread.interrupt_main()
+
     return res
 
 
@@ -124,9 +129,6 @@ def wrap(func):
     finally:
         if old:
             termios.tcsetattr(sys.stdin.fileno(), termios.TCSADRAIN, old)
-
-
-sys.excepthook = threading.excepthook = excepthook
 
 
 def __dir__():
