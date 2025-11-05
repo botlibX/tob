@@ -33,22 +33,12 @@ class Thread(threading.Thread):
 
     def join(self, timeout=None):
         result = None
-        try:
-            super().join(timeout)
-            result = self.result
-        except (KeyboardInterrupt, EOFError):
-            _thread.interrupt_main()
-        return result
+        super().join(timeout)
+        return self.result
 
     def run(self):
         func, args = self.queue.get()
-        try:
-            self.result = func(*args)
-        except (KeyboardInterrupt, EOFError):
-            _thread.interrupt_main()
-        except Exception as ex:
-            logging.exception(ex)
-            _thread.interrupt_main()
+        self.result = func(*args)
 
 
 def launch(func, *args, **kwargs):

@@ -22,7 +22,7 @@ from tob.command import Config, command, parse, scan, scanner
 from tob.handler import Event
 from tob.logging import level
 from tob.persist import Workdir, moddir, skel
-from tob.runtime import banner, check, checknr
+from tob.runtime import banner, check
 from tob.threads import launch
 from tob.utility import elapsed
 
@@ -107,7 +107,7 @@ def main():
     clt = CLI()
     parse(Config, " ".join(sys.argv[1:]))
     if "v" in Config.opts:
-        banner()
+        banner(Config.name, Config.version)
     scanner(MODS)
     args = sys.argv[1:]
     if "z" in Config.opts:

@@ -10,6 +10,7 @@ import os
 import pathlib
 import sys
 import time
+import threading
 import _thread
 
 
@@ -59,6 +60,18 @@ def daemon(verbose=False):
     os.nice(10)
 
 
+def excepthook(*args):
+    try:
+       type, value, trace = args
+    except ValueError:
+       print(args)
+       type = args[0][0]
+       value = args[0][1]
+    if type not in (KeyboardInterrupt, EOFError):
+        logging.exception(value)
+    os._exit(0)
+
+
 def forever():
     while True:
         try:
@@ -68,20 +81,17 @@ def forever():
 
 
 def inits(pkg, names):
-    modz = []
-    for name in modules(pkg):
+    res = []
+    for name in sorted(modules(pkg)):
         if name not in names:
             continue
-        try:
-            nme = pkg.__name__ + "." + name
-            module = sys.modules.get(nme, None)
-            if module and "init" in dir(module):
-                thr = launch(module.init)
-                modz.append((module, thr))
-        except Exception as ex:
-            logging.exception(ex)
-            _thread.interrupt_main()
-    return modz
+        nme = pkg.__name__ + "." + name
+        module = sys.modules.get(nme, None)
+        if not module or not "init" in dir(module):
+            continue
+        thr = launch(module.init)
+        res.append((module, thr))
+    return res
 
 
 def pidfile(filename):
@@ -120,6 +130,9 @@ def wrap(func):
     finally:
         if old:
             termios.tcsetattr(sys.stdin.fileno(), termios.TCSADRAIN, old)
+
+
+sys.excepthook = threading.excepthook = excepthook
 
 
 def __dir__():
