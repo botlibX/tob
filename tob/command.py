@@ -78,59 +78,6 @@ def modules(path):
     return sorted(mods)
 
 
-
-def parse(obj, txt):
-    data = {
-        "args": [],
-        "cmd": "",
-        "gets": Default(),
-        "index": None,
-        "init": "",
-        "opts": "",
-        "otxt": txt,
-        "rest": "",
-        "silent": Default(),
-        "sets": Default(),
-        "txt": ""
-    }
-    for k, v in data.items():
-        setattr(obj, k, getattr(obj, k, v))
-    args = []
-    nr = -1
-    for spli in txt.split():
-        if spli.startswith("-"):
-            try:
-                obj.index = int(spli[1:])
-            except ValueError:
-                obj.opts += spli[1:]
-            continue
-        if "-=" in spli:
-            key, value = spli.split("-=", maxsplit=1)
-            obj.silent[key] = value
-            obj.gets[key] = value
-            continue
-        if "==" in spli:
-            key, value = spli.split("==", maxsplit=1)
-            obj.gets[key] = value
-            continue
-        if "=" in spli:
-            key, value = spli.split("=", maxsplit=1)
-            obj.sets[key] = value
-            continue
-        nr += 1
-        if nr == 0:
-            obj.cmd = spli
-            continue
-        args.append(spli)
-    if args:
-        obj.args = args
-        obj.txt  = obj.cmd or ""
-        obj.rest = " ".join(obj.args)
-        obj.txt  = obj.cmd + " " + obj.rest
-    else:
-        obj.txt = obj.cmd or ""
-
-
 def scan(module):
     for key, cmdz in inspect.getmembers(module, inspect.isfunction):
         if key.startswith("cb"):
@@ -148,7 +95,6 @@ def scanner(names=[]):
             pkgname = path.split(os.sep)[-1]
             modname = ".".join((pkgname, nme))
             mod = importer(modname, modpath)
-            print(mod, modname, modpath)
             if mod:
                 scan(mod)
 
