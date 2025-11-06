@@ -4,19 +4,15 @@
 "runtime"
 
 
-
 import logging 
 import os
 import pathlib
 import sys
 import time
-import threading
-import _thread
 
 
 from .command import modules
 from .threads import launch
-from .utility import spl
 
 
 NAME = os.path.dirname(__file__).split(os.sep)[-1]
@@ -58,7 +54,6 @@ def excepthook(*args):
     try:
        type, value, trace = args
     except ValueError:
-       print(args)
        type = args[0][0]
        value = args[0][1]
     if type not in (KeyboardInterrupt, EOFError):
@@ -81,7 +76,7 @@ def inits(pkg, names):
             continue
         nme = pkg.__name__ + "." + name
         module = sys.modules.get(nme, None)
-        if not module or not "init" in dir(module):
+        if not module or "init" not in dir(module):
             continue
         thr = launch(module.init)
         res.append((module, thr))

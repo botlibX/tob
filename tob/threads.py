@@ -4,13 +4,12 @@
 "non-blocking"
 
 
-import logging
-import os
 import queue
-import sys
 import threading
 import time
-import _thread
+
+
+from .methods import name
 
 
 class Thread(threading.Thread):
@@ -39,49 +38,15 @@ class Thread(threading.Thread):
         self.result = func(*args)
 
 
-def excepthook(*args):
-    try:
-       type, value, trace = args
-    except ValueError:
-       print(args)
-       type = args[0][0]
-       value = args[0][1]
-    if type not in (KeyboardInterrupt, EOFError):
-        logging.exception(value)
-    os._exit(0)
-
-
-sys.excepthook = threading.excepthook = excepthook
-
-
 def launch(func, *args, **kwargs):
     thread = Thread(func, *args, **kwargs)
     thread.start()
     return thread
 
 
-def name(obj, short=False):
-    typ = type(obj)
-    res = ""
-    if "__builtins__" in dir(typ):
-        res = obj.__name__
-    elif "__self__" in dir(obj):
-        res = f"{obj.__self__.__class__.__name__}.{obj.__name__}"
-    elif "__class__" in dir(obj) and "__name__" in dir(obj):
-        res = f"{obj.__class__.__name__}.{obj.__name__}"
-    elif "__class__" in dir(obj):
-        res =  f"{obj.__class__.__module__}.{obj.__class__.__name__}"
-    elif "__name__" in dir(obj):
-        res = f"{obj.__class__.__name__}.{obj.__name__}"
-    if short:
-        res = res.split(".")[-1]
-    return res
-
-
 def __dir__():
     return (
         'Repeater',
         'Thread',
-        'launch',
-        'name'
+        'launch'
    )
