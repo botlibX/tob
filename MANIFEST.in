@@ -1,2 +1,0 @@
-include bin/tob
-recursive-include examples *
