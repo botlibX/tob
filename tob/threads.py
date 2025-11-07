@@ -5,12 +5,11 @@
 
 
 import logging
+import os
 import queue
 import threading
 import time
-
-
-from .methods import name
+import _thread
 
 
 class Thread(threading.Thread):
@@ -39,55 +38,28 @@ class Thread(threading.Thread):
         self.result = func(*args)
 
 
-class Timy(threading.Timer):
-
-    def __init__(self, sleep, func, *args, **kwargs):
-        super().__init__(sleep, func)
-        self.name = kwargs.get("name", name(func))
-        self.sleep = sleep
-        self.state = {}
-        self.state["latest"] = time.time()
-        self.state["starttime"] = time.time()
-        self.starttime = time.time()
-
-
-class Timed:
-
-    def __init__(self, sleep, func, *args, thrname="", **kwargs):
-        self.args = args
-        self.func = func
-        self.kwargs = kwargs
-        self.sleep = sleep
-        self.name = thrname or kwargs.get("name", name(func))
-        self.target = time.time() + self.sleep
-        self.timer = None
-
-    def run(self):
-        self.timer.latest = time.time()
-        self.func(*self.args)
-
-    def start(self):
-        self.kwargs["name"] = self.name
-        timer = Timy(self.sleep, self.run, *self.args, **self.kwargs)
-        timer.start()
-        self.timer = timer
-
-    def stop(self):
-        if self.timer:
-            self.timer.cancel()
-
-
-class Repeater(Timed):
-
-    def run(self):
-        launch(self.start)
-        super().run()
-
-
 def launch(func, *args, **kwargs):
     thread = Thread(func, *args, **kwargs)
     thread.start()
     return thread
+
+
+def name(obj, short=False):
+    typ = type(obj)
+    res = ""
+    if "__builtins__" in dir(typ):
+        res = obj.__name__
+    elif "__self__" in dir(obj):
+        res = f"{obj.__self__.__class__.__name__}.{obj.__name__}"
+    elif "__class__" in dir(obj) and "__name__" in dir(obj):
+        res = f"{obj.__class__.__name__}.{obj.__name__}"
+    elif "__class__" in dir(obj):
+        res =  f"{obj.__class__.__module__}.{obj.__class__.__name__}"
+    elif "__name__" in dir(obj):
+        res = f"{obj.__class__.__name__}.{obj.__name__}"
+    if short:
+        res = res.split(".")[-1]
+    return res
 
 
 def threadhook(args):
@@ -95,7 +67,7 @@ def threadhook(args):
     exc = value.with_traceback(trace)
     if type not in (KeyboardInterrupt, EOFError):
         logging.exception(exc)
-    os._exit(0)
+    _thread.interrupt_main()
 
 
 threading.excepthook = threadhook
@@ -103,9 +75,7 @@ threading.excepthook = threadhook
 
 def __dir__():
     return (
-        'Repeater',
         'Thread',
-        'Timed',
         'launch',
         'name'
    )
