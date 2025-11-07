@@ -8,7 +8,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "tob"
-version = "137"
+version = "138"
 authors = [
     {name = "Bart Thate", email = "bthate@dds.nl" },
 ]
@@ -23,10 +23,6 @@ classifiers=[
 ]
 
 
-[project.scripts]
-"tob" = "tob.runtime:main"
-
-
 [project.urls]
 "home" = "https://pypi.org/project/tob"
 "bugs" = "https://github.com/botlibX/tob/issues"
@@ -37,6 +33,4 @@ classifiers=[
 include-package-data = true
 packages=[
     'tob',
-    'tob.modules',
-    'tob.network'
 ]
