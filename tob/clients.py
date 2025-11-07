@@ -8,8 +8,12 @@ import queue
 import threading
 
 
-from .handler import Handler
-from .threads import launch
+from typing import List
+
+
+from tob.handler import Handler
+from tob.objects import Object
+from tob.threads import launch
 
 
 class Client(Handler):
@@ -21,9 +25,9 @@ class Client(Handler):
         self.silent = True
         Fleet.add(self)
 
-    def announce(self, txt):
+    def announce(self, text):
         if not self.silent:
-            self.raw(txt)
+            self.raw(text)
 
     def display(self, event):
         with self.olock:
@@ -33,13 +37,13 @@ class Client(Handler):
                            event.result[tme]
                           )
 
-    def dosay(self, channel, txt):
-        self.say(channel, txt)
+    def dosay(self, channel, text):
+        self.say(channel, text)
 
-    def raw(self, txt):
+    def raw(self, text):
         raise NotImplementedError("raw")
 
-    def say(self, channel, txt):
+    def say(self, channel, text):
         self.raw(txt)
 
 
@@ -68,35 +72,35 @@ class Output(Client):
 
 class Fleet:
 
-    clients = {}
+    clients = Object()
 
     @staticmethod
     def add(client):
-        Fleet.clients[repr(client)] = client
+        setattr(Fleet.clients, repr(client), client)
 
     @staticmethod
     def all():
-        return Fleet.clients.values()
+        return values(Fleet.clients)
 
     @staticmethod
-    def announce(txt):
+    def announce(text):
         for client in Fleet.all():
-            client.announce(txt)
+            client.announce(text)
 
     @staticmethod
-    def display(evt):
-        client = Fleet.get(evt.orig)
-        client.display(evt)
+    def display(event):
+        client = Fleet.get(event.orig)
+        client.display(event)
 
     @staticmethod
-    def get(orig):
-        return Fleet.clients.get(orig, None)
+    def get(origin):
+        return getattr(Fleet.clients, origin, None)
 
     @staticmethod
-    def like(orig):
-        for origin in Fleet.clients:
-            if orig.split()[0] in origin.split()[0]:
-                yield origin
+    def like(origin):
+        for orig in Fleet.clients:
+            if origin.split()[0] in orig.split()[0]:
+                yield orig
 
     @staticmethod
     def say(orig, channel, txt):
@@ -112,14 +116,14 @@ class Fleet:
 
 class Pool:
 
-    clients = []
+    clients: List[Client] = []
     lock = threading.RLock()
     nrcpu = 1
     nrlast = 0
 
     @staticmethod
-    def add(clt):
-        Pool.clients.append(clt)
+    def add(client):
+        Pool.clients.append(client)
 
     @staticmethod
     def init(cls, nr=None, verbose=False):
@@ -130,12 +134,12 @@ class Pool:
             Pool.add(clt)
 
     @staticmethod
-    def put(evt):
+    def put(event):
         with Pool.lock:
             if Pool.nrlast >= Pool.nrcpu-1:
                 Pool.nrlast = 0
             clt = Pool.clients[Pool.nrlast]
-            clt.put(evt)
+            clt.put(event)
             Pool.nrlast += 1
 
 

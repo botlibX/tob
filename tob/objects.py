@@ -44,7 +44,7 @@ def keys(obj):
     return obj.__dict__.keys()
 
 
-def update(obj, data, empty=True):
+def update(obj, data={}, empty=True):
     for key, value in items(data):
         if not empty and not value:
             continue

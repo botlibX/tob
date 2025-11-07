@@ -8,7 +8,7 @@ import threading
 import time
 
 
-from .threads import launch, name
+from tob.threads import launch, name
 
 
 class Timy(threading.Timer):
