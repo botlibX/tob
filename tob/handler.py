@@ -25,13 +25,13 @@ class Event:
         self.text = ""
         self.type = "event"
 
-    def ready(self):
+    def ready(self) -> None:
         self._ready.set()
 
-    def reply(self, text):
+    def reply(self, text) -> None:
         self.result[time.time()] = text
 
-    def wait(self, timeout=None):
+    def wait(self, timeout=None) -> None:
         self._ready.wait()
         if self._thr:
             self._thr.join(timeout)
@@ -43,7 +43,7 @@ class Handler:
         self.cbs = Object()
         self.queue = queue.Queue()
 
-    def callback(self, event):
+    def callback(self, event) -> None:
         func = self.cbs.get(event.type, None)
         if func:
             name = event.text and event.text.split()[0]
@@ -51,7 +51,7 @@ class Handler:
         else:
             event.ready()
 
-    def loop(self):
+    def loop(self) -> None:
         while True:
             event = self.poll()
             if event is None:
@@ -59,19 +59,19 @@ class Handler:
             event.orig = repr(self)
             self.callback(event)
 
-    def poll(self):
+    def poll(self) -> Event:
         return self.queue.get()
 
-    def put(self, event):
+    def put(self, event) -> None:
         self.queue.put(event)
 
-    def register(self, type, callback):
-        setattr(self.cbs, type. callback)
+    def register(self, type, callback) -> None:
+        setattr(self.cbs, type, callback)
 
-    def start(self):
+    def start(self) -> None:
         launch(self.loop)
 
-    def stop(self):
+    def stop(self) -> None:
         self.queue.put(None)
 
 
