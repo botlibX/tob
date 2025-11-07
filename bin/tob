@@ -36,7 +36,7 @@ def control():
     if len(sys.argv) == 1:
         return
     parse(Config, " ".join(sys.argv[1:]))
-    scanner(Config.sets.mods or "mods")
+    scanner()
     Commands.add(cmd)
     csl = CLI()
     evt = Event()

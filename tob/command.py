@@ -14,6 +14,7 @@ import sys
 from .clients import Fleet
 from .methods import parse
 from .objects import Default
+from .threads import launch
 
 
 class Mods:
@@ -67,14 +68,31 @@ def importer(name, pth):
     return mod
 
 
-def modules(path):
+def inits(names):
+    modz = []
+    for name in names:
+        for modname, path in Mods.dirs.items():
+            modpath = os.path.join(path, name + ".py")
+            if not os.path.exists(modpath):
+                continue
+        pkgname = path.split(os.sep)[-1]
+        mname = ".".join((pkgname, name))
+        mod = importer(mname, modpath)
+        if mod and "init" in dir(mod):
+            thr = launch(mod.init)
+            modz.append((mod, thr))
+    return modz
+
+
+def modules():
     mods = []
-    if not os.path.exists(path):
-        return mods
-    mods.extend([
+    for name, path in Mods.dirs.items():
+        if not os.path.exists(path):
+            continue
+        mods.extend([
             x[:-3] for x in os.listdir(path)
             if x.endswith(".py") and not x.startswith("__")
-           ])
+        ])
     return sorted(mods)
 
 
@@ -87,16 +105,18 @@ def scan(module):
 
 
 def scanner(names=[]):
-    for name, path in Mods.dirs.items():
-        if names and name not in names:
-            continue
-        for nme in modules(path):
-            modpath = os.path.join(path, nme + ".py")
-            pkgname = path.split(os.sep)[-1]
-            modname = ".".join((pkgname, nme))
-            mod = importer(modname, modpath)
-            if mod:
-                scan(mod)
+    if not names:
+        names = modules()
+    for name in names:
+        for modname, path in Mods.dirs.items():
+            modpath = os.path.join(path, name + ".py")
+            if not os.path.exists(modpath):
+                continue
+        pkgname = path.split(os.sep)[-1]
+        mname = ".".join((pkgname, name))
+        mod = importer(mname, modpath)
+        if mod:
+            scan(mod)
 
 
 def __dir__():
