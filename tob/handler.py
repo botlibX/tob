@@ -44,7 +44,7 @@ class Handler:
         self.queue = queue.Queue()
 
     def callback(self, event) -> None:
-        func = self.cbs.get(event.type, None)
+        func = getattr(self.cbs, event.type, None)
         if func:
             name = event.text and event.text.split()[0]
             event._thr = launch(func, event, name=name)
