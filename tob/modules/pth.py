@@ -12,7 +12,7 @@ d = os.path.dirname
 p = os.path.join
 
 
-PATH = p(d(d(__file__)), "network", "index.html")
+PATH = p(d(d(__file__)), "network", "html","index.html")
 
 
 def pth(event):

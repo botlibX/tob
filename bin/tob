@@ -19,25 +19,27 @@ from tob.loggers import level
 from tob.methods import parse
 from tob.storage import Workdir, moddir, pidname
 from tob.threads import threadhook
-from tob.utility import daemon, forever, pidfile, privileges
+from tob.utility import daemon, forever, pidfile, privileges, wrap
+from tob.utility import check, wrapped
 
 
 import tob.modules as MODS
 
 
-threading.excepthook = threadhook
-
 Config.name = "tob"
-Config.version = 140
+Config.version = 141
 
 
+Mods.ignore = ["udp", "rst"]
 Mods.add("local", "mods")
 Mods.add("mods", moddir())
 Mods.add("modules", MODS.__path__[0])
-Mods.ignore = ["udp", "web", "rst"]
 
 
 Workdir.wdr = os.path.expanduser(f"~/.{Config.name}")
+
+
+threading.excepthook = threadhook
 
 
 class CLI(Client):
@@ -77,10 +79,13 @@ def banner(name, version):
     sys.stdout.flush()
 
 
+"scripts"
+
+
 def background():
     daemon(check("v"))
     privileges()
-    level("debug")
+    level("info")
     scanner()
     Commands.add(cmd, ver)
     pidfile(pidname(Config.name))
@@ -91,7 +96,7 @@ def background():
 def console():
     import readline # noqa: F401
     parse(Config, " ".join(sys.argv[1:]))
-    level(Config.sets.level or "warn")    
+    level(Config.sets.level or "info")    
     if "v" in Config.opts:
         banner(Config.name, Config.version)
     mods = []
@@ -123,13 +128,16 @@ def control():
 
 def service():
     privileges()
-    level("warn")
+    level("info")
     banner(Config.name, Config.version)
     scanner()
     Commands.add(cmd, ver)
     pidfile(pidname(Config.name))
     inits(modules())
     forever()
+
+
+"commands"
 
 
 def cmd(event):
@@ -160,36 +168,7 @@ def ver(event):
     event.reply(f"{Config.name.upper()} {Config.version}")
 
 
-def wrapped(func):
-    try:
-        func()
-    except (KeyboardInterrupt, EOFError):
-        pass
-
-
-def wrap(func):
-    import termios
-    old = None
-    try:
-        old = termios.tcgetattr(sys.stdin.fileno())
-    except termios.error:
-        pass
-    try:
-        wrapped(func)
-    finally:
-        if old:
-            termios.tcsetattr(sys.stdin.fileno(), termios.TCSADRAIN, old)
-
-
-def check(text):
-    args = sys.argv[1:]
-    for arg in args:
-        if not arg.startswith("-"):
-            continue
-        for char in text:
-            if char in arg:
-                return True
-    return False
+"runtime"
 
 
 def main():

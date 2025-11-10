@@ -24,6 +24,17 @@ FORMATS = [
 STARTTIME = time.time()
 
 
+def check(text):
+    args = sys.argv[1:]
+    for arg in args:
+        if not arg.startswith("-"):
+            continue
+        for char in text:
+            if char in arg:
+                return True
+    return False
+
+
 def daemon(verbose=False):
     pid = os.fork()
     if pid != 0:
@@ -137,9 +148,32 @@ def spl(txt):
     return [x for x in result if x]
 
 
+def wrapped(func):
+    try:
+        func()
+    except (KeyboardInterrupt, EOFError):
+        pass
+
+
+def wrap(func):
+    import termios
+    old = None
+    try:
+        old = termios.tcgetattr(sys.stdin.fileno())
+    except termios.error:
+        pass
+    try:
+        wrapped(func)
+    finally:
+        if old:
+            termios.tcsetattr(sys.stdin.fileno(), termios.TCSADRAIN, old)
+
+
 def __dir__():
     return (
         'STARTTIME',
+        'check',
+        'daemon',
         'elapsed',
         'extract_date',
         'daemon',
@@ -147,5 +181,7 @@ def __dir__():
         'md5sum',
         'pidfile',
         'privileges',
-        'spl'
+        'spl',
+        'wrap',
+        'wrapped'
    )
