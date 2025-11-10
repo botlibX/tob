@@ -30,7 +30,7 @@ Config.name = "tob"
 Config.version = 141
 
 
-Mods.ignore = ["udp", "rst"]
+Mods.ignore = ["udp", "web", "rst"]
 Mods.add("local", "mods")
 Mods.add("mods", moddir())
 Mods.add("modules", MODS.__path__[0])

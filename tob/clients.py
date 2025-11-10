@@ -15,10 +15,10 @@ from .threads import launch
 
 class Config(Default):
 
-    name = "genocide"
+    name = "tob"
     opts = ""
     sets = Default()
-    version = 220
+    version = 141
 
 
 class Client(Handler):

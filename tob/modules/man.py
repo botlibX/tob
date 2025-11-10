@@ -49,7 +49,7 @@ I N S T A L L
 
     <new terminal>
 
-    $ tob srv > genocide.service
+    $ tob srv > tob.service
     $ sudo mv tob.service /etc/systemd/system/
     $ sudo systemctl enable tob --now
 
@@ -151,7 +151,7 @@ C O N F I G U R A T I O N
 P R O G R A M M I N G
 
 
-    tob has it's modules in the ~/.genocide/mods directory so for a hello world
+    tob has it's modules in the ~/.tob/mods directory so for a hello world
     command you would  edit a file in ~/.tob/mods/hello.py and add the
     following
 
