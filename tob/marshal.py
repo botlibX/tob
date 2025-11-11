@@ -1,13 +1,8 @@
 # This file is placed in the Public Domain.
 
 
-"serializer"
-
-
 import json
 import types
-
-
 
 
 class Encoder(json.JSONEncoder):

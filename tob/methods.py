@@ -1,9 +1,6 @@
 # This file is placed in the Public Domain.
 
 
-"methods"
-
-
 import datetime
 import os
 

@@ -1,9 +1,6 @@
 # This file is placed in the Public Domain.
 
 
-"write your own commands"
-
-
 import importlib
 import importlib.util
 import inspect

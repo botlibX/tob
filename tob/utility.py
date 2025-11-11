@@ -1,9 +1,6 @@
 # This file is placed in the Public Domain.
 
 
-"utilities"
-
-
 import hashlib
 import inspect
 import os
