@@ -8,7 +8,6 @@ import json
 import types
 
 
-from .objects import Object, items
 
 
 class Encoder(json.JSONEncoder):

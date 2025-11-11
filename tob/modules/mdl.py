@@ -6,11 +6,11 @@ import logging
 import time
 
 
-from ..clients import Fleet
-from ..handler import Event
-from ..objects import Object, construct, keys
-from ..repeats import Repeater
-from ..utility import elapsed
+from tob.clients import Fleet
+from tob.handler import Event
+from tob.objects import Object, construct, keys
+from tob.repeats import Repeater
+from tob.utility import elapsed
 
 
 def init():

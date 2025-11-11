@@ -1,7 +1,7 @@
 # This file is placed in the Public Domain.
 
 
-from ..command import modules
+from tob.command import modules
 
 
 def mod(event):

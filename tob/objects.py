@@ -58,7 +58,7 @@ def keys(obj):
 def update(obj, data={}, empty=True):
     if isinstance(obj, type):
         for k, v in items(data):
-            if type(getattr(obj, k, None)) == types.MethodType:
+            if isinstance(getattr(obj, k, None), types.MethodType):
                 continue
             setattr(obj, k, v)
     elif isinstance(obj, dict):
