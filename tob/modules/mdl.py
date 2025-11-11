@@ -1,8 +1,4 @@
-
 # This file is placed in the Public Domain.
-
-
-"Genocide model of the Netherlands since 4 March 2019."
 
 
 import datetime
@@ -10,13 +6,11 @@ import logging
 import time
 
 
-from tob.clients import Fleet
-from tob.handler import Event
-from tob.objects import Object, construct, keys
-from tob.repeats import Repeater
-
-
-from tob.utility import elapsed
+from ..clients import Fleet
+from ..handler import Event
+from ..objects import Object, construct, keys
+from ..repeats import Repeater
+from ..utility import elapsed
 
 
 def init():
@@ -40,7 +34,7 @@ def init():
 
 DAY = 24*60*60
 YEAR = 365*DAY
-SOURCE = "https://github.com/bthate/tob"
+SOURCE = "https://github.com/bthate/."
 STARTDATE = "2019-03-04 00:00:00"
 STARTTIME = time.mktime(time.strptime(STARTDATE, "%Y-%m-%d %H:%M:%S"))
 
@@ -143,7 +137,7 @@ def cbnow(_evt):
             continue
         nrtimes = int(delta/needed)
         txt += f"{getalias(nme)} {nrtimes} | "
-    txt += "https://pypi.org/project/tob"
+    txt += "https://pypi.org/project/."
     Fleet.announce(txt)
 
 
@@ -181,7 +175,7 @@ def dis(event):
             continue
         nrtimes = int(delta/needed)
         txt += f"{getalias(nme)} {nrtimes} | "
-    txt += "https://pypi.org/project/tob"
+    txt += "https://pypi.org/project/."
     event.reply(txt)
 
 

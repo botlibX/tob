@@ -1,9 +1,6 @@
 # This file is placed in the Public Domain.
 
 
-"UDP to IRC relay"
-
-
 import logging
 import select
 import socket
@@ -12,9 +9,9 @@ import threading
 import time
 
 
-from tob.clients import Fleet
-from tob.objects import Object
-from tob.threads import launch
+from ..clients import Fleet
+from ..objects import Object
+from ..threads import launch
 
 
 DEBUG = False

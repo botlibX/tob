@@ -1,9 +1,6 @@
 # This file is placed in the Public Domain.
 
 
-"web"
-
-
 import logging
 import os
 import sys
@@ -13,15 +10,17 @@ import time
 from http.server import HTTPServer, BaseHTTPRequestHandler
 
 
-from tob.objects import Object
-from tob.threads import launch
+from ..objects import Object
+from ..threads import launch
+
+
+DEBUG = False
 
 
 d = os.path.dirname
 j = os.path.join
 
 
-DEBUG = False
 PATH = d(d(__file__))
 PATH = j(PATH, "network", "html")
 

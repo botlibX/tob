@@ -1,9 +1,6 @@
 # This file is placed in the Public Domain.
 
 
-"internet relay chat"
-
-
 import base64
 import logging
 import os
@@ -14,15 +11,15 @@ import threading
 import time
 
 
-from tob.clients import Fleet, Output
-from tob.clients import Config as MConfig
-from tob.command import command
-from tob.handler import Event as IEvent
-from tob.loggers import LEVELS
-from tob.methods import edit, fmt, getpath
-from tob.objects import Object, keys
-from tob.persist import last, write
-from tob.threads import launch
+from ..clients import Fleet, Output
+from ..clients import Config as MConfig
+from ..command import command
+from ..handler import Event as IEvent
+from ..loggers import LEVELS
+from ..methods import edit, fmt, getpath
+from ..objects import Object, keys
+from ..persist import last, write
+from ..threads import launch
 
 
 IGNORE = ["PING", "PONG", "PRIVMSG"] 

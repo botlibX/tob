@@ -1,19 +1,16 @@
 # This file is placed in the Public Domain.
 
 
-"find"
-
-
 import time
 
 
-from tob.methods import fmt
-from tob.persist import find, fntime
-from tob.storage import types
-from tob.utility import elapsed
+from ..methods import fmt
+from ..persist import find, fntime
+from ..storage import types
+from ..utility import elapsed
 
 
-def fn(event):
+def fnd(event):
     if not event.rest:
         res = sorted([x.split('.')[-1].lower() for x in types()])
         if res:

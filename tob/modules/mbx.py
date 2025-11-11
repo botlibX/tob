@@ -1,20 +1,15 @@
 # This file is placed in the Public Domain.
 
 
-"mailbox"
-
-
 import mailbox
 import os
 import time
 
 
-from tob.objects import Object, keys, update
-
-
-from tob.methods import fmt
-from tob.persist import find, write
-from tob.utility import elapsed, extract_date
+from ..methods import fmt
+from ..objects import Object, keys, update
+from ..persist import find, write
+from ..utility import elapsed, extract_date
 
 
 class Email(Object):

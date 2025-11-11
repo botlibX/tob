@@ -1,10 +1,7 @@
 # This file is been placed in the Public Domain.
 
 
-"available types"
-
-
-from tob.storage import types
+from ..storage import types
 
 
 def lst(event):

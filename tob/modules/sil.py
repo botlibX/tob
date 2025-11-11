@@ -1,10 +1,7 @@
 # This file is placed in the Public Domain.
 
 
-"enable silence mode"
-
-
-from tob.clients import Fleet
+from ..clients import Fleet
 
 
 def sil(event):

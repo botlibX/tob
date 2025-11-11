@@ -1,9 +1,6 @@
 # This file is placed in the Public Domain.
 
 
-"timers"
-
-
 import datetime
 import logging
 import random
@@ -11,12 +8,12 @@ import re
 import time
 
 
-from tob.clients import Fleet
-from tob.methods import fmt, getpath
-from tob.objects import Object, items
-from tob.persist import last, write
-from tob.repeats import Timed
-from tob.utility import elapsed, extract_date
+from ..clients import Fleet
+from ..methods import fmt, getpath
+from ..objects import Object, items
+from ..persist import last, write
+from ..repeats import Timed
+from ..utility import elapsed, extract_date
 
 
 def init():

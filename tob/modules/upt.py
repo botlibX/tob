@@ -1,13 +1,10 @@
 # This file is placed in the Public Domain.
 
 
-"uptime"
-
-
 import time
 
 
-from tob.utility import STARTTIME, elapsed
+from ..utility import STARTTIME, elapsed
 
 
 def upt(event):

@@ -1,9 +1,6 @@
 # This file is placed in the Public Domain.
 
 
-"REST"
-
-
 import logging
 import os
 import sys
@@ -13,9 +10,9 @@ import time
 from http.server import HTTPServer, BaseHTTPRequestHandler
 
 
-from tob.objects import Object
-from tob.storage import store, types
-from tob.threads import launch
+from ..objects import Object
+from ..storage import store, types
+from ..threads import launch
 
 
 DEBUG = False

@@ -1,9 +1,6 @@
 # This file is placed in the Public Domain.
 
 
-"rich site syndicate"
-
-
 import html
 import html.parser
 import http.client
@@ -22,13 +19,16 @@ from urllib.error import HTTPError, URLError
 from urllib.parse import quote_plus, urlencode
 
 
-from tob.clients import Fleet
-from tob.methods import fmt, getpath
-from tob.objects import Object, update
-from tob.persist import find, fntime, last, write
-from tob.repeats import Repeater
-from tob.threads import launch
-from tob.utility import elapsed, spl
+from ..clients import Fleet
+from ..methods import fmt, getpath
+from ..objects import Object, update
+from ..persist import find, fntime, last, write
+from ..repeats import Repeater
+from ..threads import launch
+from ..utility import elapsed, spl
+
+
+DEBUG = False
 
 
 def init():
@@ -39,9 +39,6 @@ def init():
     else:
         logging.warning("since %s", time.ctime(time.time()))
     return fetcher
-
-
-DEBUG = False
 
 
 fetchlock = _thread.allocate_lock()

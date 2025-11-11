@@ -1,14 +1,11 @@
 # This file is placed in the Public Domain.
 
 
-"show running threads"
-
-
 import threading
 import time
 
 
-from tob.utility import STARTTIME, elapsed
+from ..utility import STARTTIME, elapsed
 
 
 def thr(event):

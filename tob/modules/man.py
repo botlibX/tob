@@ -1,10 +1,7 @@
 # This file is placed in the Public Domain.
 
 
-"manual"
-
-
-TXT = """
+"""
 N A M E
 
 
@@ -14,10 +11,10 @@ N A M E
 S Y N O P S I S
 
 
-    tob <cmd> [key=val] [key==val]
-    tob -cvaw [init=mod1,mod2]
-    tob -d
-    tob -s
+    . <cmd> [key=val] [key==val]
+    . -cvaw [init=mod1,mod2]
+    . -d
+    . -s
 
 
 D E S C R I P T I O N
@@ -44,57 +41,57 @@ I N S T A L L
 
     installation is done with pipx
 
-    $ pipx install tob
+    $ pipx install .
     $ pipx ensurepath
 
     <new terminal>
 
-    $ tob srv > tob.service
-    $ sudo mv tob.service /etc/systemd/system/
-    $ sudo systemctl enable tob --now
+    $ . srv > tob.service
+    $ sudo mv ..service /etc/systemd/system/
+    $ sudo systemctl enable . --now
 
-    joins #tob on localhost
+    joins #. on localhost
 
 
 U S A G E 
 
 
-    use tob to control the program, default it does nothing
+    use . to control the program, default it does nothing
 
-    $ tob
+    $ .
     $
 
     see list of commands
 
 
-    $ tob cmd
+    $ . cmd
     cfg,cmd,dne,dpl,err,exp,imp,log,mod,mre,nme,
     pwd,rem,req,res,rss,srv,syn,tdo,thr,upt
 
 
     start console
 
-    $ tob -c
+    $ . -c
 
 
     start console and run irc and rss 
 
-    $ tob -c init=irc,rss
+    $ . -c init=irc,rss
 
     list available modules
 
-    $ tob mod
+    $ . mod
     err,flt,fnd,irc,llm,log,mbx,mdl,mod,req,rss,
     rst,slg,tdo,thr,tmr,udp,upt``
 
     start daemon
 
-    $ tob -d
+    $ . -d
     $
 
     start service
 
-    $ tob -s
+    $ . -s
 
     <runs until ctrl-c>
 
@@ -126,33 +123,33 @@ C O N F I G U R A T I O N
 
     irc
 
-    $ tob cfg server=<server>
-    $ tob cfg channel=<channel>
-    $ tob cfg nick=<nick>
+    $ . cfg server=<server>
+    $ . cfg channel=<channel>
+    $ . cfg nick=<nick>
 
     sasl
 
-    $ tob pwd <nsnick> <nspass>
-    $ tob cfg password=<frompwd>
+    $ . pwd <nsnick> <nspass>
+    $ . cfg password=<frompwd>
 
     rss
 
-    $ tob rss <url>
-    $ tob dpl <url> <item1,item2>
-    $ tob rem <url>
-    $ tob nme <url> <name>
+    $ . rss <url>
+    $ . dpl <url> <item1,item2>
+    $ . rem <url>
+    $ . nme <url> <name>
 
     opml
 
-    $ tob exp
-    $ tob imp <filename>
+    $ . exp
+    $ . imp <filename>
 
 
 P R O G R A M M I N G
 
 
-    tob has it's modules in the ~/.tob/mods directory so for a hello world
-    command you would  edit a file in ~/.tob/mods/hello.py and add the
+    . has it's modules in the ~/.tob/mods directory so for a hello world
+    command you would  edit a file in ~/../mods/hello.py and add the
     following
 
 
@@ -163,7 +160,7 @@ P R O G R A M M I N G
     typing the hello command would result into a nice hello world !!
 
 
-    $ tob hello
+    $ . hello
     hello world !!
 
 
@@ -175,9 +172,9 @@ P R O G R A M M I N G
 F I L E S
 
 
-    ~/.tob
-    ~/.local/bin/tob
-    ~/.local/pipx/venvs/tob/*
+    ~/..
+    ~/.local/bin/.
+    ~/.local/pipx/venvs/./*
 
 
 A U T H O R
@@ -194,4 +191,4 @@ C O P Y R I G H T
 
 
 def man(event):
-    event.reply(TXT)
+    event.reply(__doc__)

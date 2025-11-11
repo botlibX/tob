@@ -1,18 +1,15 @@
 # This file is placed in the Public Domain.
 
 
-"wijs, wijsheid, wijs!"
-
-
 import logging
 
 
 from random import SystemRandom
 
 
-from tob.clients import Fleet
-from tob.handler import Event
-from tob.repeats import Repeater
+from ..clients import Fleet
+from ..handler import Event
+from ..repeats import Repeater
 
 
 rand = SystemRandom()
