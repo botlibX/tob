@@ -87,7 +87,7 @@ def console():
         banner(Config.name, Config.version)
     mods = []
     if "a" in Config.opts:
-        mods = spl(modules())
+        mods = modules()
     else:
         mods = spl(Config.sets.init)
     scanner(mods)

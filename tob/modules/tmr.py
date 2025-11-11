@@ -21,8 +21,6 @@ from tob.utility import elapsed, extract_date
 
 def init():
     Timers.path = last(Timers) or getpath(Timers)
-    print(fmt(Timers))
-    print(Timers.timers)
     remove = []
     for tme, args in Timers.timers.items():
         orig, channel, txt = args
