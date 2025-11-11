@@ -2,9 +2,6 @@
 # This file is placed in the Public Domain.
 
 
-"objects"
-
-
 import inspect
 import logging
 import os
@@ -24,18 +21,14 @@ from tob.handler import Event
 from tob.loggers import level
 from tob.storage import Workdir, moddir, skel
 from tob.threads import launch, threadhook
-from tob.utility import elapsed
+from tob.utility import elapsed, where
 
 
-import tob.modules as MODS
-
-
-Mods.add("modules", MODS.__path__[0])
+Mods.add(f"{Config.name}.modules", os.path.join(where(), "modules"))
 Workdir.wdr = ".test"
 
 
 events = queue.Queue()
-threading.excepthook = threadhook
 
 
 class CLI(Output):
@@ -85,6 +78,8 @@ def main():
     if os.path.exists(Workdir.wdr):
         shutil.rmtree(Workdir.wdr)
     parse(Config, " ".join(sys.argv[1:]))
+    if "b" in Config.opts:
+        threading.excepthook = threadhook
     if "v" in Config.opts:
         banner(Config.name, Config.version)
     scanner()

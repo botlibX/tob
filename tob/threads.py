@@ -51,9 +51,6 @@ def threadhook(args):
     _thread.interrupt_main()
 
 
-# threading.excepthook = threadhook
-
-
 def __dir__():
     return (
         'Thread',

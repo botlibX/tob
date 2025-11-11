@@ -33,7 +33,6 @@ class Cache:
         setattr(Cache.objs, path, obj)
 
 
-
 def find(type=None, selector=None, removed=False, matching=False):
     if selector is None:
         selector = {}

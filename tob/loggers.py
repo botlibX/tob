@@ -13,6 +13,7 @@ LEVELS = {
     'critical': logging.CRITICAL
 }
 
+
 class Logging:
 
     datefmt = "%H:%M:%S"
