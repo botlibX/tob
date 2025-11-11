@@ -47,5 +47,6 @@ def level(loglevel="debug") -> None:
 def __dir__():
     return (
         'LEVELS',
+        'Logging',
         'level'
    )
