@@ -5,6 +5,7 @@
 
 
 import hashlib
+import inspect
 import os
 import pathlib
 import sys
@@ -53,7 +54,6 @@ def daemon(verbose=False):
     os.umask(0)
     os.chdir("/")
     os.nice(10)
-
 
 
 def elapsed(seconds, short=True):
@@ -139,13 +139,15 @@ def privileges():
 
 
 def spl(txt):
-    if txt.find(",") == -1:
-        return []
     try:
         result = txt.split(",")
     except (TypeError, ValueError):
         result = []
     return [x for x in result if x]
+
+
+def where():
+    return os.path.dirname(inspect.getfile(wrap))
 
 
 def wrapped(func):

@@ -5,6 +5,10 @@
 
 
 import json
+import types
+
+
+from .objects import Object, items
 
 
 class Encoder(json.JSONEncoder):
@@ -14,6 +18,10 @@ class Encoder(json.JSONEncoder):
             return o.items()
         if isinstance(o, list):
             return iter(o)
+        #if isinstance(o, Object):
+        #    return items(o)
+        if isinstance(o, types.MappingProxyType):
+            return dict(o)
         try:
             return json.JSONEncoder.default(self, o)
         except TypeError:

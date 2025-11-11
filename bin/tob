@@ -17,13 +17,11 @@ from tob.command import Commands, Mods, command, inits, modules, scanner
 from tob.handler import Event
 from tob.loggers import level
 from tob.methods import parse
+from tob.objects import update
 from tob.storage import Workdir, moddir, pidname
 from tob.threads import threadhook
 from tob.utility import daemon, forever, pidfile, privileges, wrap
-from tob.utility import check, wrapped
-
-
-import tob.modules as MODS
+from tob.utility import check, spl, where, wrapped
 
 
 Config.name = "tob"
@@ -33,13 +31,13 @@ Config.version = 141
 Mods.ignore = ["udp", "web", "rst"]
 Mods.add("local", "mods")
 Mods.add("mods", moddir())
-Mods.add("modules", MODS.__path__[0])
+Mods.add(f"{Config.name}.modules", os.path.join(where(), "modules"))
 
 
 Workdir.wdr = os.path.expanduser(f"~/.{Config.name}")
 
 
-threading.excepthook = threadhook
+"clients"
 
 
 class CLI(Client):
@@ -67,18 +65,6 @@ class Console(CLI):
         return evt
 
 
-def banner(name, version):
-    tme = time.ctime(time.time()).replace("  ", " ")
-    logger = logging.getLogger()
-    print("%s %s since %s (%s)" % (
-                                   name.upper(),
-                                   version,
-                                   tme,
-                                   logging.getLevelName(logger.getEffectiveLevel())
-                                  ))
-    sys.stdout.flush()
-
-
 "scripts"
 
 
@@ -101,11 +87,13 @@ def console():
         banner(Config.name, Config.version)
     mods = []
     if "a" in Config.opts:
-        mods = modules()
+        mods = spl(modules())
+    else:
+        mods = spl(Config.sets.init)
     scanner(mods)
     Commands.add(cmd, ver)
     csl = Console()
-    for _mod, thr in inits(Config.sets.init or mods):
+    for _mod, thr in inits(mods):
         thr.join(30.0)
     csl.start()
     forever()
@@ -169,6 +157,21 @@ def ver(event):
 
 
 "runtime"
+
+
+threading.excepthook = threadhook
+
+
+def banner(name, version):
+    tme = time.ctime(time.time()).replace("  ", " ")
+    logger = logging.getLogger()
+    print("%s %s since %s (%s)" % (
+                                   name.upper(),
+                                   version,
+                                   tme,
+                                   logging.getLevelName(logger.getEffectiveLevel())
+                                  ))
+    sys.stdout.flush()
 
 
 def main():

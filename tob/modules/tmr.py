@@ -12,7 +12,7 @@ import time
 
 
 from tob.clients import Fleet
-from tob.methods import getpath
+from tob.methods import fmt, getpath
 from tob.objects import Object, items
 from tob.persist import last, write
 from tob.repeats import Timed
@@ -20,9 +20,11 @@ from tob.utility import elapsed, extract_date
 
 
 def init():
-    Timers.path = last(Timers.timers) or getpath(Timers.timers)
-    delete = []
-    for tme, args in items(Timers.timers):
+    Timers.path = last(Timers) or getpath(Timers)
+    print(fmt(Timers))
+    print(Timers.timers)
+    remove = []
+    for tme, args in Timers.timers.items():
         orig, channel, txt = args
         for origin in Fleet.like(orig):
             if not origin:
@@ -32,10 +34,11 @@ def init():
                 timer = Timed(diff, Fleet.say, origin, channel, txt)
                 timer.start()
             else:
-                delete.append(tme)
-    for tme in delete:
-        Timers.delete(tme)
-    write(Timers.timers, Timers.path)
+                remove.append(tme)
+    for tme in remove:
+        delete(tme)
+    if Timers.timers:
+        write(Timers, Timers.path)
     logging.warning("%s timers", len(Timers.timers))
 
 
@@ -44,18 +47,18 @@ class NoDate(Exception):
     pass
 
 
-class Timers:
+class Timers(Object):
 
     path = ""
-    timers = Object()
+    timers = {}
 
-    @staticmethod
-    def add(tme, orig, channel,  txt):
-        setattr(Timers.timers, tme, (orig, channel, txt))
 
-    @staticmethod
-    def delete(tme):
-        delattr(Timers.timers, tme)
+def add(tme, orig, channel,  txt):
+    Timers.timers[tme] = (orig, channel, txt)
+
+
+def delete(tme):
+     del Timers.timers[tme]
 
 
 def get_day(daystr):
@@ -162,7 +165,7 @@ def tmr(event):
     result = ""
     if not event.rest:
         nmr = 0
-        for tme, txt in items(Timers.timers):
+        for tme, txt in Timers.timers.items():
             lap = float(tme) - time.time()
             if lap > 0:
                 event.reply(f'{nmr} {" ".join(txt)} {elapsed(lap)}')
@@ -197,8 +200,8 @@ def tmr(event):
         return result
     diff = target - time.time()
     txt = " ".join(event.args[1:])
-    Timers.add(target, event.orig, event.channel, txt)
-    write(Timers.timers, Timers.path)
+    add(target, event.orig, event.channel, txt)
+    write(Timers, Timers.path or getpath(Timers))
     timer = Timed(diff, Fleet.say, event.orig, event.channel, txt)
     timer.start()
     event.reply("ok " +  elapsed(diff))

@@ -4,6 +4,9 @@
 "a clean namespace"
 
 
+import types
+
+
 class Object:
 
     def __contains__(self, key):
@@ -41,6 +44,8 @@ def construct(obj, *args, **kwargs):
 def items(obj):
     if isinstance(obj, dict):
         return obj.items()
+    if isinstance(obj, types.MappingProxyType):
+        return obj.items()
     return obj.__dict__.items()
 
 
@@ -51,10 +56,19 @@ def keys(obj):
 
 
 def update(obj, data={}, empty=True):
-    for key, value in items(data):
-        if not empty and not value:
-            continue
-        setattr(obj, key, value)
+    if isinstance(obj, type):
+        for k, v in items(data):
+            if type(getattr(obj, k, None)) == types.MethodType:
+                continue
+            setattr(obj, k, v)
+    elif isinstance(obj, dict):
+        for k, v in items(data):
+            setattr(obj, k, v)
+    else:
+        for key, value in items(data):
+            if not empty and not value:
+                continue
+            setattr(obj, key, value)
 
 
 def values(obj):
