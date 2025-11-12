@@ -9,9 +9,9 @@ import time
 
 
 from tob.clients import Fleet
-from tob.methods import getpath
 from tob.objects import Object, items
 from tob.persist import last, write
+from tob.storage import getpath
 from tob.threads import Timed
 from tob.utility import elapsed, extract_date
 

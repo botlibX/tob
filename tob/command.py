@@ -7,9 +7,7 @@ import inspect
 from typing import Callable
 
 
-from .clients import Fleet
-from .methods import parse
-from .package import getmod, modules
+from .objects import Default, Object, values
 
 
 class Commands:
@@ -29,6 +27,53 @@ class Commands:
         return Commands.cmds.get(cmd, None)
 
 
+class Fleet:
+
+    clients = Object()
+
+    @staticmethod
+    def add(client):
+        setattr(Fleet.clients, repr(client), client)
+
+    @staticmethod
+    def all():
+        return values(Fleet.clients)
+
+    @staticmethod
+    def announce(text):
+        for client in Fleet.all():
+            client.announce(text)
+
+    @staticmethod
+    def display(event):
+        client = Fleet.get(event.orig)
+        if client:
+            client.display(event)
+
+    @staticmethod
+    def get(origin):
+        return getattr(Fleet.clients, origin, None)
+
+    @staticmethod
+    def like(origin):
+        for orig in Fleet.clients:
+            if origin.split()[0] in orig.split()[0]:
+                yield orig
+
+    @staticmethod
+    def say(orig, channel, txt):
+        client = Fleet.get(orig)
+        if client:
+            client.say(channel, txt)
+
+    @staticmethod
+    def shutdown():
+        for client in Fleet.all():
+            client.wait()
+            client.stop()
+
+
+
 def command(evt):
     parse(evt, evt.text)
     func = Commands.get(evt.cmd)
@@ -46,16 +91,56 @@ def scan(module):
             Commands.add(cmdz)
 
 
-def scanner(names=[]):
-    if not names:
-        names = modules()
-    mods = []
-    for name in names:
-        mod = getmod(name)
-        if mod:
-            mods.append(mod)
-            scan(mod)
-    return mods
+def parse(obj, text) -> None:
+    data = {
+        "args": [],
+        "cmd": "",
+        "gets": Default(),
+        "index": None,
+        "init": "",
+        "opts": "",
+        "otxt": text,
+        "rest": "",
+        "silent": Default(),
+        "sets": Default(),
+        "text": text
+    }
+    for k, v in data.items():
+        setattr(obj, k, getattr(obj, k, v) or v)
+    args = []
+    nr = -1
+    for spli in text.split():
+        if spli.startswith("-"):
+            try:
+                obj.index = int(spli[1:])
+            except ValueError:
+                obj.opts += spli[1:]
+            continue
+        if "-=" in spli:
+            key, value = spli.split("-=", maxsplit=1)
+            setattr(obj.silent, key, value)
+            setattr(obj.gets, key, value)
+            continue
+        if "==" in spli:
+            key, value = spli.split("==", maxsplit=1)
+            setattr(obj.gets, key, value)
+            continue
+        if "=" in spli:
+            key, value = spli.split("=", maxsplit=1)
+            setattr(obj.sets, key, value)
+            continue
+        nr += 1
+        if nr == 0:
+            obj.cmd = spli
+            continue
+        args.append(spli)
+    if args:
+        obj.args = args
+        obj.text  = obj.cmd or ""
+        obj.rest = " ".join(obj.args)
+        obj.text  = obj.cmd + " " + obj.rest
+    else:
+        obj.text = obj.cmd or ""
 
 
 def __dir__():

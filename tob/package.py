@@ -7,8 +7,6 @@ import os
 import sys
 
 
-
-
 class Mods:
 
     dirs: dict[str, str] = {}

@@ -8,9 +8,8 @@ import time
 
 
 from .marshal import dump, load
-from .methods import deleted, fqn, getpath
-from .objects import Object, items, update
-from .storage import cdir, store
+from .objects import Object, deleted, items, update
+from .storage import cdir, fqn, getpath, store
 
 
 lock = threading.RLock()

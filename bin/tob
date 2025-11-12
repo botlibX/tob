@@ -29,7 +29,7 @@ Config.name = "tob"
 Config.version = 141
 
 
-Mods.ignore = ["udp", "web", "rst"]
+Mods.ignore = ["mbx", "udp", "web", "rst"]
 Mods.add("local", "mods")
 Mods.add("mods", moddir())
 Mods.add(f"{Config.name}.modules", os.path.join(where(), "modules"))

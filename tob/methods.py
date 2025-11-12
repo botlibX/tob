@@ -6,7 +6,6 @@ import os
 
 
 from .objects import Default, items
-from .storage import store
 
 
 def deleted(obj):
@@ -58,39 +57,6 @@ def fmt(obj, args=[], skip=[], plain=False, empty=False) -> str:
         else:
             txt += f"{key}={name(value, True)} "
     return txt.strip()
-
-
-def fqn(obj):
-    kin = str(type(obj)).split()[-1][1:-2]
-    if kin == "type":
-        kin = f"{obj.__module__}.{obj.__name__}"
-    return kin
-
-
-def getpath(obj):
-    return store(ident(obj))
-
-
-def ident(obj):
-    return os.path.join(fqn(obj), *str(datetime.datetime.now()).split())
-
-
-def name(obj, short=False):
-    typ = type(obj)
-    res = ""
-    if "__builtins__" in dir(typ):
-        res = obj.__name__
-    elif "__self__" in dir(obj):
-        res = f"{obj.__self__.__class__.__name__}.{obj.__name__}"
-    elif "__class__" in dir(obj) and "__name__" in dir(obj):
-        res = f"{obj.__class__.__name__}.{obj.__name__}"
-    elif "__class__" in dir(obj):
-        res =  f"{obj.__class__.__module__}.{obj.__class__.__name__}"
-    elif "__name__" in dir(obj):
-        res = f"{obj.__class__.__name__}.{obj.__name__}"
-    if short:
-        res = res.split(".")[-1]
-    return res
 
 
 def parse(obj, text) -> None:

@@ -5,6 +5,7 @@ import queue
 import threading
 
 
+from .command import Fleet
 from .handler import Handler
 from .objects import Default, Object, values
 from .threads import launch
@@ -70,52 +71,6 @@ class Output(Client):
     def stop(self):
         self.oqueue.put(None)
         super().stop()
-
-
-class Fleet:
-
-    clients = Object()
-
-    @staticmethod
-    def add(client):
-        setattr(Fleet.clients, repr(client), client)
-
-    @staticmethod
-    def all():
-        return values(Fleet.clients)
-
-    @staticmethod
-    def announce(text):
-        for client in Fleet.all():
-            client.announce(text)
-
-    @staticmethod
-    def display(event):
-        client = Fleet.get(event.orig)
-        if client:
-            client.display(event)
-
-    @staticmethod
-    def get(origin):
-        return getattr(Fleet.clients, origin, None)
-
-    @staticmethod
-    def like(origin):
-        for orig in Fleet.clients:
-            if origin.split()[0] in orig.split()[0]:
-                yield orig
-
-    @staticmethod
-    def say(orig, channel, txt):
-        client = Fleet.get(orig)
-        if client:
-            client.say(channel, txt)
-
-    @staticmethod
-    def shutdown():
-        for client in Fleet.all():
-            client.wait()
-            client.stop()
 
 
 class Pool:
