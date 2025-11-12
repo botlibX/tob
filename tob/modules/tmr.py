@@ -10,16 +10,16 @@ import time
 
 from tob.clients import Fleet
 from tob.methods import getpath
-from tob.objects import Object
+from tob.objects import Object, items
 from tob.persist import last, write
 from tob.repeats import Timed
 from tob.utility import elapsed, extract_date
 
 
 def init():
-    Timers.path = last(Timers) or getpath(Timers)
+    Timers.path = last(Timers.timers) or getpath(Timers.timers)
     remove = []
-    for tme, args in Timers.timers.items():
+    for tme, args in items(Timers.timers):
         orig, channel, txt = args
         for origin in Fleet.like(orig):
             if not origin:
@@ -33,7 +33,7 @@ def init():
     for tme in remove:
         delete(tme)
     if Timers.timers:
-        write(Timers, Timers.path)
+        write(Timers.timers, Timers.path)
     logging.warning("%s timers", len(Timers.timers))
 
 
@@ -42,18 +42,24 @@ class NoDate(Exception):
     pass
 
 
+class Timer(Object):
+
+    pass
+
+
 class Timers(Object):
 
     path = ""
-    timers = {}
+    timers = Timer()
+
 
 
 def add(tme, orig, channel,  txt):
-    Timers.timers[tme] = (orig, channel, txt)
+    setattr(Timers.timers, str(tme), (orig, channel, txt))
 
 
 def delete(tme):
-     del Timers.timers[tme]
+     delattr(Timers.timers, str(tme))
 
 
 def get_day(daystr):
@@ -160,7 +166,7 @@ def tmr(event):
     result = ""
     if not event.rest:
         nmr = 0
-        for tme, txt in Timers.timers.items():
+        for tme, txt in items(Timers.timers):
             lap = float(tme) - time.time()
             if lap > 0:
                 event.reply(f'{nmr} {" ".join(txt)} {elapsed(lap)}')
@@ -196,13 +202,10 @@ def tmr(event):
     diff = target - time.time()
     txt = " ".join(event.args[1:])
     add(target, event.orig, event.channel, txt)
-    write(Timers, Timers.path or getpath(Timers))
+    write(Timers.timers, Timers.path or getpath(Timers.timers))
     timer = Timed(diff, Fleet.say, event.orig, event.channel, txt)
     timer.start()
     event.reply("ok " +  elapsed(diff))
-
-
-"data"
 
 
 MONTHS = [

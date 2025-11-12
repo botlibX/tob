@@ -27,7 +27,7 @@ class Format(logging.Formatter):
         return logging.Formatter.format(self, record)
 
 
-def level(loglevel="debug") -> None:
+def level(loglevel="debug"):
     if loglevel != "none":
         lvl = LEVELS.get(loglevel)
         if not lvl:

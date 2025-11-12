@@ -54,6 +54,18 @@ def command(evt):
     evt.ready()
 
 
+def getmod(name):
+    pth = ""
+    pname = ""
+    for packname, path in Mods.dirs.items():
+        modpath = os.path.join(path, name + ".py")
+        if os.path.exists(modpath):
+            pth = modpath
+            mname = f"{packname}.{name}"
+            break
+    return sys.modules.get(mname, None) or importer(mname, pth)
+
+
 def importer(name, pth):
     if not os.path.exists(pth):
         return
@@ -69,21 +81,15 @@ def importer(name, pth):
 
 
 def inits(names):
-    modz = []
+    mods = []
     for name in names:
         if name in Mods.ignore:
             continue
-        for modname, path in Mods.dirs.items():
-            modpath = os.path.join(path, name + ".py")
-            if not os.path.exists(modpath):
-                continue
-            pkgname = path.split(os.sep)[-1]
-            mname = ".".join((pkgname, name))
-            mod = importer(mname, modpath)
-            if mod and "init" in dir(mod):
-                thr = launch(mod.init)
-                modz.append((mod, thr))
-    return modz
+        mod = getmod(name)
+        if mod and "init" in dir(mod):
+            thr = launch(mod.init)
+            mods.append((mod, thr))
+    return mods
 
 
 def modules():
@@ -115,16 +121,10 @@ def scanner(names=[]):
     for name in names:
         if name in Mods.ignore:
             continue
-        for modname, path in Mods.dirs.items():
-            modpath = os.path.join(path, name + ".py")
-            if not os.path.exists(modpath):
-                continue
-            pkgname = path.split(os.sep)[-1] or path
-            mname = ".".join((pkgname, name))
-            mod = importer(mname, modpath)
-            if mod:
-                mods.append(mod)
-                scan(mod)
+        mod = getmod(name)
+        if mod:
+            mods.append(mod)
+            scan(mod)
     return mods
 
 
