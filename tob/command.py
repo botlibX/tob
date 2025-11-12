@@ -55,8 +55,8 @@ def command(evt):
 
 
 def getmod(name):
+    mname = ""
     pth = ""
-    pname = ""
     for packname, path in Mods.dirs.items():
         modpath = os.path.join(path, name + ".py")
         if os.path.exists(modpath):
