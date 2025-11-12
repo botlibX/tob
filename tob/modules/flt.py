@@ -2,7 +2,7 @@
 
 
 from tob.clients import Fleet
-from tob.methods import fmt
+from tob.objects import fmt
 from tob.threads import name
 
 

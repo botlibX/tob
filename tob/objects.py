@@ -84,8 +84,15 @@ def fmt(obj, args=[], skip=[], plain=False, empty=False) -> str:
         elif isinstance(value, (int, float, dict, bool, list)):
             txt += f"{key}={value} "
         else:
-            txt += f"{key}={name(value, True)} "
+            txt += f"{key}={fqn(value)}((value))"
     return txt.strip()
+
+
+def fqn(obj):
+    kin = str(type(obj)).split()[-1][1:-2]
+    if kin == "type":
+        kin = f"{obj.__module__}.{obj.__name__}"
+    return kin
 
 
 def items(obj):

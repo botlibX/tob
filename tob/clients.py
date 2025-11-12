@@ -7,7 +7,7 @@ import threading
 
 from .command import Fleet
 from .handler import Handler
-from .objects import Default, Object, values
+from .objects import Default
 from .threads import launch
 
 

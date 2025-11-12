@@ -4,10 +4,7 @@
 import inspect
 
 
-from typing import Callable
-
-
-from .objects import Default, Object, values
+from typing import Callable, Any
 
 
 class Commands:
@@ -29,15 +26,15 @@ class Commands:
 
 class Fleet:
 
-    clients = Object()
+    clients: dict[str, Any] = {}
 
     @staticmethod
     def add(client):
-        setattr(Fleet.clients, repr(client), client)
+        Fleet.clients[repr(client)] = client
 
     @staticmethod
     def all():
-        return values(Fleet.clients)
+        return Fleet.clients.values()
 
     @staticmethod
     def announce(text):
@@ -52,7 +49,7 @@ class Fleet:
 
     @staticmethod
     def get(origin):
-        return getattr(Fleet.clients, origin, None)
+        return Fleet.clients.get(origin, None)
 
     @staticmethod
     def like(origin):
@@ -95,14 +92,14 @@ def parse(obj, text) -> None:
     data = {
         "args": [],
         "cmd": "",
-        "gets": Default(),
+        "gets": {},
         "index": None,
         "init": "",
         "opts": "",
         "otxt": text,
         "rest": "",
-        "silent": Default(),
-        "sets": Default(),
+        "silent": {},
+        "sets": {},
         "text": text
     }
     for k, v in data.items():
@@ -118,16 +115,16 @@ def parse(obj, text) -> None:
             continue
         if "-=" in spli:
             key, value = spli.split("-=", maxsplit=1)
-            setattr(obj.silent, key, value)
-            setattr(obj.gets, key, value)
+            obj.silent[key] = value
+            obj.gets[key] = value
             continue
         if "==" in spli:
             key, value = spli.split("==", maxsplit=1)
-            setattr(obj.gets, key, value)
+            obj.gets[key] = value
             continue
         if "=" in spli:
             key, value = spli.split("=", maxsplit=1)
-            setattr(obj.sets, key, value)
+            obj.sets[key] = value
             continue
         nr += 1
         if nr == 0:
@@ -146,10 +143,7 @@ def parse(obj, text) -> None:
 def __dir__():
     return (
         'Comamnds',
-        'Mods',
         'command',
-        'importer',
-        'modules',
-        'scan',
-        'scanner'
+        'parse',
+        'scan'
     )

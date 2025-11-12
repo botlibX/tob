@@ -16,10 +16,9 @@ sys.path.insert(0, os.getcwd())
 
 
 from tob.clients import Client, Config, Output, Pool
-from tob.command import Commands, command, scan
+from tob.command import Commands, command, parse, scan
 from tob.handler import Event
 from tob.loggers import level
-from tob.methods import parse
 from tob.package import Mods, getmod, modules
 from tob.storage import Workdir, moddir, skel
 from tob.threads import launch, threadhook
