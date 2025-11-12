@@ -23,8 +23,7 @@ from tob.clients import Fleet
 from tob.methods import fmt, getpath
 from tob.objects import Object, update
 from tob.persist import find, fntime, last, write
-from tob.repeats import Repeater
-from tob.threads import launch
+from tob.threads import Repeater, launch
 from tob.utility import elapsed, spl
 
 
