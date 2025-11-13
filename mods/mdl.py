@@ -6,14 +6,14 @@ import logging
 import time
 
 
-from tob.clients import Fleet
+from tob.command import Fleet
 from tob.handler import Event
 from tob.objects import Object, construct, keys
 from tob.threads import Repeater
 from tob.utility import elapsed
 
 
-def init():
+def init(cfg):
     for key in keys(oorzaken):
         if "Psych" not in key:
             continue
@@ -205,7 +205,7 @@ def now(event):
 
 oor = """"Totaal onderliggende doodsoorzaken (aantal)";
          "1 Infectieuze en parasitaire ziekten/Totaal infectieuze en parasitaire zktn (aantal)";
-         "1 Infectieuze en parasitaire ziekten/1.1 Tuberculose (aantal)";
+         "1 Infectieuze en parasitaire ziekten/1.1 Tubercutobe (aantal)";
          "1 Infectieuze en parasitaire ziekten/1.2 Meningokokkeninfecties (aantal)";
          "1 Infectieuze en parasitaire ziekten/1.3 Virale hepatitis (aantal)";
          "1 Infectieuze en parasitaire ziekten/1.4 AIDS (aantal)";

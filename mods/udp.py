@@ -17,7 +17,7 @@ from tob.threads import launch
 DEBUG = False
 
 
-def init():
+def init(cfg):
     udp = UDP()
     udp.start()
     logging.warning("http://%s:%s", Cfg.host, Cfg.port)

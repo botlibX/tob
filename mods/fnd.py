@@ -5,8 +5,7 @@ import time
 
 
 from tob.methods import fmt
-from tob.persist import find, fntime
-from tob.storage import types
+from tob.persist import find, fntime, types
 from tob.utility import elapsed
 
 

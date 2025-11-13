@@ -13,31 +13,16 @@ sys.path.insert(0, os.getcwd())
 
 
 from tob.clients import Client
-from tob.command import Commands, Config, command, parse, scan
+from tob.command import Commands, command, parse, scan
 from tob.handler import Event
 from tob.loggers import level
-from tob.objects import update
+from tob.objects import Default, update
 from tob.package import Mods, getmod, modules
-from tob.storage import Workdir, moddir, pidname
+from tob.persist import Workdir, moddir, pidname
+from tob.runtime import Config, boot
 from tob.threads import launch, threadhook
 from tob.utility import daemon, forever, pidfile, privileges, wrap
 from tob.utility import check, spl, where, wrapped
-
-
-Config.name = "tob"
-Config.version = 141
-
-
-Mods.ignore = ["mbx", "udp", "web", "rst"]
-Mods.add("local", "mods")
-Mods.add("mods", moddir())
-Mods.add(f"{Config.name}.modules", os.path.join(where(), "modules"))
-
-
-Workdir.wdr = os.path.expanduser(f"~/.{Config.name}")
-
-
-"clients"
 
 
 class CLI(Client):
@@ -68,14 +53,26 @@ class Console(CLI):
 "in the begining"
 
 
-def inits(names):
+def banner(name, version):
+    tme = time.ctime(time.time()).replace("  ", " ")
+    logger = logging.getLogger()
+    print("%s %s since %s (%s)" % (
+                                   name.upper(),
+                                   version,
+                                   tme,
+                                   logging.getLevelName(logger.getEffectiveLevel())
+                                  ))
+    sys.stdout.flush()
+
+
+def scanner(names, init=False):
     mods = []
     for name in names:
-        if name in Mods.ignore:
-            continue
         mod = getmod(name)
-        if mod and "init" in dir(mod):
-            thr = launch(mod.init)
+        if mod:
+            scan(mod)
+        if init and "init" in dir(mod):
+            thr = launch(mod.init, Config())
             mods.append((mod, thr))
     return mods
 
@@ -87,7 +84,7 @@ def background():
     daemon(check("v"))
     privileges()
     level("info")
-    scanner()
+    scanner(modules(), True)
     Commands.add(cmd, ver)
     pidfile(pidname(Config.name))
     inits(modules())
@@ -105,10 +102,9 @@ def console():
         mods = modules()
     else:
         mods = spl(Config.sets.get("init", ""))
-    scanner(mods)
     Commands.add(cmd, ver)
     csl = Console()
-    for _mod, thr in inits(mods):
+    for _mod, thr in scanner(mods, True):
         thr.join(30.0)
     csl.start()
     forever()
@@ -117,7 +113,7 @@ def console():
 def control():
     if len(sys.argv) == 1:
         return
-    scanner()
+    scanner(modules(), False)
     Commands.add(cmd, srv, ver)
     csl = CLI()
     csl.silent = False
@@ -133,10 +129,9 @@ def service():
     privileges()
     level("info")
     banner(Config.name, Config.version)
-    scanner()
+    scanner(modules(), True)
     Commands.add(cmd, ver)
     pidfile(pidname(Config.name))
-    inits(modules())
     forever()
 
 
@@ -175,47 +170,6 @@ def ver(event):
 
 
 threading.excepthook = threadhook
-
-
-def banner(name, version):
-    tme = time.ctime(time.time()).replace("  ", " ")
-    logger = logging.getLogger()
-    print("%s %s since %s (%s)" % (
-                                   name.upper(),
-                                   version,
-                                   tme,
-                                   logging.getLevelName(logger.getEffectiveLevel())
-                                  ))
-    sys.stdout.flush()
-
-
-def inits(names):
-    mods = []
-    for name in names:
-        if name in Mods.ignore:
-            continue
-        mod = getmod(name)
-        if mod and "init" in dir(mod):
-            thr = launch(mod.init)
-            mods.append((mod, thr))
-    return mods
-
-
-def scanner(names=[]):
-    if not names:
-        names = modules()
-    mods = []
-    for name in names:
-        if name in Mods.ignore:
-            continue
-        mod = getmod(name)
-        if mod:
-            mods.append(mod)
-            scan(mod)
-    return mods
-
-
-"main"
 
 
 def main():

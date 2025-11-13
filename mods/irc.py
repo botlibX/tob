@@ -12,24 +12,24 @@ import time
 
 
 from tob.clients import Output
-from tob.command import Config as MConfig
 from tob.command import Fleet, command
 from tob.handler import Event as IEvent
 from tob.loggers import LEVELS
 from tob.methods import edit, fmt
 from tob.objects import Object, keys
-from tob.persist import last, write
-from tob.storage import getpath
+from tob.persist import getpath, last, write
 from tob.threads import launch
+from tob.utility import where
 
 
 IGNORE = ["PING", "PONG", "PRIVMSG"] 
-
+NAME = where(Fleet).split(os.sep)[-1]
+print(NAME)
 
 lock = threading.RLock()
 
 
-def init():
+def init(cfg):
     irc = IRC()
     irc.start()
     irc.events.joined.wait(30.0)
@@ -42,21 +42,21 @@ def init():
 
 class Config:
 
-    channel = f"#{MConfig.name}"
+    channel = f"#{NAME}"
     commands = True
     control = "!"
-    name = MConfig.name
-    nick = MConfig.name
+    name = NAME
+    nick = NAME
     password = ""
     port = 6667
-    realname = MConfig.name
+    realname = NAME
     sasl = False
     server = "localhost"
     servermodes = ""
     sleep = 60
-    username = MConfig.name
+    username = NAME
     users = False
-    version = MConfig.version
+    version = 1
 
     def __init__(self):
         self.channel = Config.channel
@@ -591,7 +591,7 @@ def cb_quit(evt):
 
 def cfg(event):
     config = Config()
-    fnm = last(config)
+    last(config)
     if not event.sets:
         event.reply(
             fmt(
@@ -601,7 +601,7 @@ def cfg(event):
             )
         )
     else:
-        edit(config, event.sets)
+        edit(onfig, event.sets)
         write(config, fnm or getpath(config))
         event.reply("ok")
 

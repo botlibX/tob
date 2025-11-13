@@ -118,6 +118,7 @@ def md5sum(path):
         return hashlib.md5(txt).hexdigest()
 
 
+
 def pidfile(filename):
     if os.path.exists(filename):
         os.unlink(filename)
@@ -143,8 +144,8 @@ def spl(txt):
     return [x for x in result if x]
 
 
-def where():
-    return os.path.dirname(inspect.getfile(wrap))
+def where(obj):
+    return os.path.dirname(inspect.getfile(obj))
 
 
 def wrapped(func):

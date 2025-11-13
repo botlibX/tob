@@ -1,15 +1,15 @@
 # This file is placed in the Public Domain.
 
 
+import datetime
 import json
 import os
+import pathlib
 import threading
 import time
 
 
-from .marshal import dump, load
-from .objects import Object, items, update
-from .storage import cdir, fqn, getpath, store
+from .objects import Object, dump, items, load, update
 
 
 lock = threading.RLock()
@@ -132,13 +132,68 @@ def write(obj, path=None):
         return path
 
 
+class Workdir:
+
+    wdr = ""
+
+
+def cdir(path):
+    pth = pathlib.Path(path)
+    pth.parent.mkdir(parents=True, exist_ok=True)
+
+
+def fqn(obj):
+    kin = str(type(obj)).split()[-1][1:-2]
+    if kin == "type":
+        kin = f"{obj.__module__}.{obj.__name__}"
+    return kin
+
+
+def getpath(obj):
+    return store(ident(obj))
+
+
+def ident(obj):
+    return os.path.join(fqn(obj), *str(datetime.datetime.now()).split())
+
+
+def moddir(modname=None):
+    return os.path.join(Workdir.wdr, modname or "mods")
+
+
+def pidname(name):
+    assert Workdir.wdr
+    return os.path.join(Workdir.wdr, f"{name}.pid")
+
+
+def skel():
+    pth = pathlib.Path(store())
+    pth.mkdir(parents=True, exist_ok=True)
+    pth = pathlib.Path(moddir())
+    pth.mkdir(parents=True, exist_ok=True)
+
+
+def store(fnm=""):
+    return os.path.join(Workdir.wdr, "store", fnm)
+
+
+def types():
+    return os.listdir(store())
+
+
 def __dir__():
     return (
         'Cache',
-        'deleted',
+        'Workdir',
+        'cdir',
         'find',
         'fntime',
+        'fqn',
+        'fqn',
+        'getpath',
+        'ident',
         'read',
-        'search',
+        'skel',
+        'types',
         'write'
     )

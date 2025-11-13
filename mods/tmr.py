@@ -8,15 +8,14 @@ import re
 import time
 
 
-from tob.clients import Fleet
+from tob.command import Fleet
 from tob.objects import Object, items
-from tob.persist import last, write
-from tob.storage import getpath
+from tob.persist import getpath, last, write
 from tob.threads import Timed
 from tob.utility import elapsed, extract_date
 
 
-def init():
+def init(cfg):
     Timers.path = last(Timers.timers) or getpath(Timers.timers)
     remove = []
     for tme, args in items(Timers.timers):

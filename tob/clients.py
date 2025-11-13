@@ -5,9 +5,6 @@ import queue
 import threading
 
 
-from typing import Any, Callable
-
-
 from .handler import Handler
 from .threads import launch
 
@@ -68,7 +65,7 @@ class Output(Client):
 
 class Fleet:
 
-    clients: dict[str, Any] = {}
+    clients: dict[str, Client] = {}
 
     @staticmethod
     def add(client):

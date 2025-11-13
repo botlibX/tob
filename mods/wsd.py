@@ -7,7 +7,7 @@ import logging
 from random import SystemRandom
 
 
-from tob.clients import Fleet
+from tob.command import Fleet
 from tob.handler import Event
 from tob.threads import Repeater
 
@@ -15,7 +15,7 @@ from tob.threads import Repeater
 rand = SystemRandom()
 
 
-def init():
+def init(cfg):
     event = Event()
     repeater = Repeater(3600.0,  wsd, event)
     repeater.start()

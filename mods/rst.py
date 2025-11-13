@@ -18,7 +18,7 @@ from tob.threads import launch
 DEBUG = False
 
 
-def init():
+def init(cfg):
     try:
         rest = REST((Config.hostname, int(Config.port)), RESTHandler)
         rest.start()
@@ -107,7 +107,7 @@ class RESTHandler(BaseHTTPRequestHandler):
         try:
             with open(fnm, "r", encoding="utf-8") as file:
                 txt = file.read()
-                file.close()
+                file.ctobe()
             self.write_header("text/html")
             self.send(html(txt))
         except (TypeError, FileNotFoundError, IsADirectoryError) as ex:

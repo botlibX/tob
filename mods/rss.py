@@ -22,8 +22,7 @@ from urllib.parse import quote_plus, urlencode
 from tob.clients import Fleet
 from tob.methods import fmt
 from tob.objects import Object, update
-from tob.persist import find, fntime, last, write
-from tob.storage import getpath
+from tob.persist import find, fntime, getpath, last, write
 from tob.threads import Repeater, launch
 from tob.utility import elapsed, spl
 
@@ -31,7 +30,7 @@ from tob.utility import elapsed, spl
 DEBUG = False
 
 
-def init():
+def init(cfg):
     fetcher = Fetcher()
     fetcher.start()
     if fetcher.seenfn:

@@ -4,19 +4,11 @@
 import inspect
 
 
-from typing import Callable, Any
+from typing import Any, Callable
 
 
 from .clients import Fleet
 from .methods import parse
-
-
-class Config:
-
-    name = "tob"
-    opts = ""
-    sets = {}
-    version = 141
 
 
 class Commands:
@@ -56,7 +48,6 @@ def scan(module):
 def __dir__():
     return (
         'Comamnds',
-        'Config',
         'command',
         'scan'
     )
