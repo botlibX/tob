@@ -6,16 +6,15 @@ import threading
 import time
 
 
-from .objects import Default
 from .threads import launch
 
 
-class Event(Default):
+class Event:
 
     def __init__(self):
-        super().__init__()
         self._ready = threading.Event()
         self._thr = None
+        self.channel = ""
         self.ctime = time.time()
         self.orig = ""
         self.result = {}

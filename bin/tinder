@@ -15,7 +15,7 @@ import time
 sys.path.insert(0, os.getcwd())
 
 
-from tob.clients import Client, Config, Output, Pool
+from tob.clients import Client, Config, Output
 from tob.command import Commands, command, parse, scan
 from tob.handler import Event
 from tob.loggers import level
@@ -41,6 +41,35 @@ class CLI(Output):
     def raw(self, txt):
         if "v" in Config.opts:
             print(txt)
+
+
+class Pool:
+
+    clients: list[Client] = []
+    lock = threading.RLock()
+    nrcpu = 1
+    nrlast = 0
+
+    @staticmethod
+    def add(client):
+        Pool.clients.append(client)
+
+    @staticmethod
+    def init(cls, nr, verbose=False):
+        Pool.nrcpu = nr
+        for _x in range(Pool.nrcpu):
+            clt = cls()
+            clt.start()
+            Pool.add(clt)
+
+    @staticmethod
+    def put(event):
+        with Pool.lock:
+            if Pool.nrlast >= Pool.nrcpu-1:
+                Pool.nrlast = 0
+            clt = Pool.clients[Pool.nrlast]
+            clt.put(event)
+            Pool.nrlast += 1
 
 
 def banner(name, version):

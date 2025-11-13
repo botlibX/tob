@@ -5,18 +5,11 @@ import queue
 import threading
 
 
-from .command import Fleet
+from typing import Any, Callable
+
+
 from .handler import Handler
-from .objects import Default
 from .threads import launch
-
-
-class Config(Default):
-
-    name = "tob"
-    opts = ""
-    sets = Default()
-    version = 141
 
 
 class Client(Handler):
@@ -73,39 +66,55 @@ class Output(Client):
         super().stop()
 
 
-class Pool:
+class Fleet:
 
-    clients: list[Client] = []
-    lock = threading.RLock()
-    nrcpu = 1
-    nrlast = 0
+    clients: dict[str, Any] = {}
 
     @staticmethod
     def add(client):
-        Pool.clients.append(client)
+        Fleet.clients[repr(client)] = client
 
     @staticmethod
-    def init(cls, nr, verbose=False):
-        Pool.nrcpu = nr
-        for _x in range(Pool.nrcpu):
-            clt = cls()
-            clt.start()
-            Pool.add(clt)
+    def all():
+        return Fleet.clients.values()
 
     @staticmethod
-    def put(event):
-        with Pool.lock:
-            if Pool.nrlast >= Pool.nrcpu-1:
-                Pool.nrlast = 0
-            clt = Pool.clients[Pool.nrlast]
-            clt.put(event)
-            Pool.nrlast += 1
+    def announce(text):
+        for client in Fleet.all():
+            client.announce(text)
+
+    @staticmethod
+    def display(event):
+        client = Fleet.get(event.orig)
+        if client:
+            client.display(event)
+
+    @staticmethod
+    def get(origin):
+        return Fleet.clients.get(origin, None)
+
+    @staticmethod
+    def like(origin):
+        for orig in Fleet.clients:
+            if origin.split()[0] in orig.split()[0]:
+                yield orig
+
+    @staticmethod
+    def say(orig, channel, txt):
+        client = Fleet.get(orig)
+        if client:
+            client.say(channel, txt)
+
+    @staticmethod
+    def shutdown():
+        for client in Fleet.all():
+            client.wait()
+            client.stop()
 
 
 def __dir__():
     return (
         'Client',
         'Fleet',
-        'Output',
-        'Pool'
+        'Output'
    )

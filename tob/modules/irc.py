@@ -12,11 +12,12 @@ import time
 
 
 from tob.clients import Output
-from tob.clients import Config as MConfig
+from tob.command import Config as MConfig
 from tob.command import Fleet, command
 from tob.handler import Event as IEvent
 from tob.loggers import LEVELS
-from tob.objects import Object, edit, fmt, keys
+from tob.methods import edit, fmt
+from tob.objects import Object, keys
 from tob.persist import last, write
 from tob.storage import getpath
 from tob.threads import launch

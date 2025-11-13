@@ -19,8 +19,9 @@ from urllib.error import HTTPError, URLError
 from urllib.parse import quote_plus, urlencode
 
 
-from tob.command import Fleet
-from tob.objects import Object, fmt, update
+from tob.clients import Fleet
+from tob.methods import fmt
+from tob.objects import Object, update
 from tob.persist import find, fntime, last, write
 from tob.storage import getpath
 from tob.threads import Repeater, launch

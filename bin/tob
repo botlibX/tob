@@ -12,8 +12,8 @@ import time
 sys.path.insert(0, os.getcwd())
 
 
-from tob.clients import Client, Config
-from tob.command import Commands, command, parse, scan
+from tob.clients import Client
+from tob.command import Commands, Config, command, parse, scan
 from tob.handler import Event
 from tob.loggers import level
 from tob.objects import update
@@ -104,7 +104,7 @@ def console():
     if "a" in Config.opts:
         mods = modules()
     else:
-        mods = spl(Config.sets.get("init"))
+        mods = spl(Config.sets.get("init", ""))
     scanner(mods)
     Commands.add(cmd, ver)
     csl = Console()

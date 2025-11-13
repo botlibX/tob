@@ -8,7 +8,7 @@ import time
 
 
 from .marshal import dump, load
-from .objects import Object, deleted, items, update
+from .objects import Object, items, update
 from .storage import cdir, fqn, getpath, store
 
 
@@ -30,6 +30,10 @@ class Cache:
     @staticmethod
     def update(path, obj):
         setattr(Cache.objs, path, obj)
+
+
+def deleted(obj):
+    return "__deleted__" in dir(obj) and obj.__deleted__
 
 
 def find(type=None, selector=None, removed=False, matching=False):
@@ -131,8 +135,10 @@ def write(obj, path=None):
 def __dir__():
     return (
         'Cache',
+        'deleted',
         'find',
         'fntime',
         'read',
+        'search',
         'write'
     )
