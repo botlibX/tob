@@ -9,7 +9,7 @@ from random import SystemRandom
 
 from tob.command import Fleet
 from tob.handler import Event
-from tob.threads import Repeater
+from tob.repeats import Repeater
 
 
 rand = SystemRandom()

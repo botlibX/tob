@@ -9,7 +9,8 @@ import threading
 import time
 
 
-from .objects import Object, dump, items, load, update
+from .marshal import dump, load
+from .objects import Object, items, update
 
 
 lock = threading.RLock()
