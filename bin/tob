@@ -24,8 +24,9 @@ from tob.utility import daemon, forever, pidfile, privileges, wrap
 from tob.utility import check, spl, where, wrapped
 
 
-Config.name = "tob"
-Mods.ignore = ["mbx", "udp", "web", "rst"]
+NAME = "tob"
+
+
 
 
 class CLI(Client):
@@ -69,9 +70,9 @@ def banner(name, version):
 
 
 def boot():
-    Mods.add(f"{Config.name}.modules", os.path.join(where(Config), "modules"))
-    Mods.add("mods", "mods")
-    Workdir.wdr = os.path.expanduser(f"~/.{Config.name}")
+    Config.name = NAME
+    Mods.init(ignore="mbx,rst,udp,web", local=True)
+    Workdir.init(NAME)
 
 
 def scanner(names, init=False):
@@ -93,7 +94,6 @@ def background():
     daemon(check("v"))
     privileges()
     level("info")
-    boot()
     scanner(modules(), True)
     Commands.add(cmd, ver)
     pidfile(pidname(Config.name))
@@ -104,7 +104,6 @@ def console():
     import readline # noqa: F401
     parse(Config, " ".join(sys.argv[1:]))
     level(Config.sets.get("level", "info"))
-    boot()
     if "v" in Config.opts:
         banner(Config.name, Config.version)
     mods = []
@@ -123,7 +122,6 @@ def console():
 def control():
     if len(sys.argv) == 1:
         return
-    boot()
     scanner(modules(), False)
     Commands.add(cmd, srv, ver)
     csl = CLI()
@@ -140,7 +138,6 @@ def service():
     privileges()
     level("info")
     banner(Config.name, Config.version)
-    boot()
     scanner(modules(), True)
     Commands.add(cmd, ver)
     pidfile(pidname(Config.name))
@@ -185,6 +182,7 @@ threading.excepthook = threadhook
 
 
 def main():
+    boot()
     if check("c"):
         wrap(console)
     elif check("d"):

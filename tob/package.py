@@ -7,15 +7,27 @@ import os
 import sys
 
 
+from .utility import spl, where
+
+
 class Mods:
 
     dirs: dict[str, str] = {}
     ignore: list[str] = []
 
-    def add(name, path=None):
-        if path is None:
-            path = name
+    @staticmethod
+    def add(name=None, path=None):
         Mods.dirs[name] = path
+
+    @staticmethod
+    def init(ignore="", local=False):
+        name = f"{__name__}.modules"
+        path = os.path.join(where(Mods), "modules")
+        Mods.add(name, path)
+        if ignore:
+            Mods.ignore = spl(ignore)
+        if local:
+            Mods.add("mods", "mods")
 
 
 def getmod(name):
@@ -34,13 +46,13 @@ def getmod(name):
 
 def importer(name, pth):
     if not os.path.exists(pth):
-        return
+        raise ModuleNotFoundError(pth)
     spec = importlib.util.spec_from_file_location(name, pth)
     if not spec or not spec.loader:
-        return
+        raise ModuleNotFoundError(name)
     mod = importlib.util.module_from_spec(spec)
     if not mod:
-        return
+        raise ModuleNotFoundError(str(mod))
     sys.modules[name] = mod
     spec.loader.exec_module(mod)
     return mod
