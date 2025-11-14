@@ -9,6 +9,14 @@ from .handler import Handler
 from .threads import launch
 
 
+class Config:
+
+    name = "tob"
+    opts = ""
+    sets: dict[str,str] = {}
+    version = 141
+
+
 class Client(Handler):
 
     def __init__(self):

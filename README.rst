@@ -14,8 +14,7 @@ T O B
 
 ::
 
-    >>> from tob.objects import Object
-    >>> from tob.serials import dumps, loads
+    >>> from tob.objects import Object, dumps, loads
     >>> o = Object()
     >>> o.a = "b"
     >>> print(loads(dumps(o)))

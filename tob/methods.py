@@ -4,7 +4,7 @@
 from .objects import fqn, items
 
 
-def edit(obj, setter, skip=True) -> None:
+def edit(obj, setter, skip=True):
     for key, val in items(setter):
         if skip and val == "":
             continue
@@ -26,7 +26,7 @@ def edit(obj, setter, skip=True) -> None:
             setattr(obj, key, val)
 
 
-def fmt(obj, args=[], skip=[], plain=False, empty=False) -> str:
+def fmt(obj, args=[], skip=[], plain=False, empty=False):
     if not args:
         args = obj.__dict__.keys()
     txt = ""
@@ -51,7 +51,7 @@ def fmt(obj, args=[], skip=[], plain=False, empty=False) -> str:
     return txt.strip()
 
 
-def parse(obj, text) -> None:
+def parse(obj, text):
     data = {
         "args": [],
         "cmd": "",

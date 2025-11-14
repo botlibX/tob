@@ -4,7 +4,7 @@
 import inspect
 
 
-from typing import Any, Callable
+from typing import Callable
 
 
 from .clients import Fleet

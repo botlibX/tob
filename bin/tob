@@ -12,17 +12,20 @@ import time
 sys.path.insert(0, os.getcwd())
 
 
-from tob.clients import Client
+from tob.clients import Client, Config
 from tob.command import Commands, command, parse, scan
 from tob.handler import Event
 from tob.loggers import level
-from tob.objects import Default, update
+from tob.objects import update
 from tob.package import Mods, getmod, modules
 from tob.persist import Workdir, moddir, pidname
-from tob.runtime import Config, boot
 from tob.threads import launch, threadhook
 from tob.utility import daemon, forever, pidfile, privileges, wrap
 from tob.utility import check, spl, where, wrapped
+
+
+Config.name = "tob"
+Mods.ignore = ["mbx", "udp", "web", "rst"]
 
 
 class CLI(Client):
@@ -65,6 +68,12 @@ def banner(name, version):
     sys.stdout.flush()
 
 
+def boot():
+    Mods.add(f"{Config.name}.modules", os.path.join(where(Config), "modules"))
+    Mods.add("mods", "mods")
+    Workdir.wdr = os.path.expanduser(f"~/.{Config.name}")
+
+
 def scanner(names, init=False):
     mods = []
     for name in names:
@@ -84,10 +93,10 @@ def background():
     daemon(check("v"))
     privileges()
     level("info")
+    boot()
     scanner(modules(), True)
     Commands.add(cmd, ver)
     pidfile(pidname(Config.name))
-    inits(modules())
     forever()
 
 
@@ -95,6 +104,7 @@ def console():
     import readline # noqa: F401
     parse(Config, " ".join(sys.argv[1:]))
     level(Config.sets.get("level", "info"))
+    boot()
     if "v" in Config.opts:
         banner(Config.name, Config.version)
     mods = []
@@ -113,6 +123,7 @@ def console():
 def control():
     if len(sys.argv) == 1:
         return
+    boot()
     scanner(modules(), False)
     Commands.add(cmd, srv, ver)
     csl = CLI()
@@ -129,6 +140,7 @@ def service():
     privileges()
     level("info")
     banner(Config.name, Config.version)
+    boot()
     scanner(modules(), True)
     Commands.add(cmd, ver)
     pidfile(pidname(Config.name))

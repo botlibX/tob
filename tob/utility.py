@@ -1,8 +1,6 @@
 # This file is placed in the Public Domain.
 
 
-import hashlib
-import inspect
 import os
 import pathlib
 import sys
@@ -17,9 +15,6 @@ FORMATS = [
     "%d-%m",
     "%m-%d"
 ]
-
-
-STARTTIME = time.time()
 
 
 def check(text):
@@ -113,6 +108,7 @@ def forever():
 
 
 def md5sum(path):
+    import hashlib
     with open(path, "r", encoding="utf-8") as file:
         txt = file.read().encode("utf-8")
         return hashlib.md5(txt).hexdigest()
@@ -145,6 +141,7 @@ def spl(txt):
 
 
 def where(obj):
+    import inspect
     return os.path.dirname(inspect.getfile(obj))
 
 
@@ -171,17 +168,16 @@ def wrap(func):
 
 def __dir__():
     return (
-        'STARTTIME',
         'check',
         'daemon',
         'elapsed',
         'extract_date',
-        'daemon',
         'forever',
         'md5sum',
         'pidfile',
         'privileges',
         'spl',
+        'where',
         'wrap',
         'wrapped'
    )

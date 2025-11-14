@@ -20,12 +20,6 @@ class Object:
         return str(self.__dict__)
 
 
-class Default(Object):
-
-    def __getattr__(self, key):
-        return self.__dict__.get(key, "")
-
-
 def construct(obj, *args, **kwargs):
     if args:
         val = args[0]
@@ -89,8 +83,6 @@ class Encoder(json.JSONEncoder):
             return o.items()
         if isinstance(o, list):
             return iter(o)
-        #if isinstance(o, Object):
-        #    return items(o)
         if isinstance(o, types.MappingProxyType):
             return dict(o)
         try:
@@ -122,7 +114,6 @@ def loads(s, *args, **kw):
 
 def __dir__():
     return (
-        'Default',
         'Object',
         'construct',
         'dump',

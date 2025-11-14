@@ -11,7 +11,7 @@ import threading
 import time
 
 
-from tob.clients import Output
+from tob.clients import Config, Output
 from tob.command import Fleet, command
 from tob.handler import Event as IEvent
 from tob.loggers import LEVELS
@@ -23,8 +23,7 @@ from tob.utility import where
 
 
 IGNORE = ["PING", "PONG", "PRIVMSG"] 
-NAME = where(Fleet).split(os.sep)[-1]
-print(NAME)
+
 
 lock = threading.RLock()
 
@@ -40,33 +39,33 @@ def init(cfg):
     return irc
 
 
-class Config:
+class IConfig:
 
-    channel = f"#{NAME}"
+    channel = f"#{Config.name}"
     commands = True
     control = "!"
-    name = NAME
-    nick = NAME
+    name = Config.name
+    nick = Config.name
     password = ""
     port = 6667
-    realname = NAME
+    realname = Config.name
     sasl = False
     server = "localhost"
     servermodes = ""
     sleep = 60
-    username = NAME
+    username = Config.name
     users = False
     version = 1
 
     def __init__(self):
-        self.channel = Config.channel
-        self.commands = Config.commands
-        self.name = Config.name
-        self.nick = Config.nick
-        self.port = Config.port
-        self.realname = Config.realname
-        self.server = Config.server
-        self.username = Config.username
+        self.channel = IConfig.channel
+        self.commands = IConfig.commands
+        self.name = IConfig.name
+        self.nick = IConfig.nick
+        self.port = IConfig.port
+        self.realname = IConfig.realname
+        self.server = IConfig.server
+        self.username = IConfig.username
 
 
 class Event(IEvent):
@@ -111,7 +110,7 @@ class IRC(Output):
         Output.__init__(self)
         self.buffer = []
         self.cache = {}
-        self.cfg = Config()
+        self.cfg = IConfig()
         self.channels = []
         self.events = Object()
         self.events.authed = threading.Event()
@@ -590,7 +589,7 @@ def cb_quit(evt):
 
 
 def cfg(event):
-    config = Config()
+    config = IConfig()
     last(config)
     if not event.sets:
         event.reply(
