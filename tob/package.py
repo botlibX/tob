@@ -46,13 +46,13 @@ def getmod(name):
 
 def importer(name, pth):
     if not os.path.exists(pth):
-        raise ModuleNotFoundError(pth)
+        return
     spec = importlib.util.spec_from_file_location(name, pth)
     if not spec or not spec.loader:
-        raise ModuleNotFoundError(name)
+        return
     mod = importlib.util.module_from_spec(spec)
     if not mod:
-        raise ModuleNotFoundError(str(mod))
+        return
     sys.modules[name] = mod
     spec.loader.exec_module(mod)
     return mod
