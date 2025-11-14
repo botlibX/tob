@@ -20,12 +20,13 @@ from tob.command import Commands, command, parse, scan
 from tob.handler import Event
 from tob.loggers import level
 from tob.package import Mods, getmod, modules
-from tob.storage import Workdir, moddir, skel
+from tob.persist import Workdir, moddir, skel
 from tob.threads import launch, threadhook
 from tob.utility import elapsed, where
 
 
-Mods.add(f"{Config.name}.modules", os.path.join(where(), "modules"))
+#Mods.add(f"{Config.name}.modules", os.path.join(where(), "modules"))
+Mods.add("mods")
 Workdir.wdr = ".test"
 
 
@@ -185,7 +186,7 @@ examples = {
 
 pre = {
     "cfg": ["", "nick=mekker"],
-    "imp": ["", "tests/feeds.opml"],
+    "imp": ["", "testing/feeds.opml"],
     "log": ["", "bla"],
     "rss": ["","http://hnrss.org/newest"],
     "tdo": ["", "mekker"]

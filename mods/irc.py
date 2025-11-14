@@ -590,7 +590,7 @@ def cb_quit(evt):
 
 def cfg(event):
     config = IConfig()
-    last(config)
+    fnm = last(config)
     if not event.sets:
         event.reply(
             fmt(
@@ -600,7 +600,7 @@ def cfg(event):
             )
         )
     else:
-        edit(onfig, event.sets)
+        edit(config, event.sets)
         write(config, fnm or getpath(config))
         event.reply("ok")
 

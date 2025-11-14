@@ -11,7 +11,7 @@ from http.server import HTTPServer, BaseHTTPRequestHandler
 
 
 from tob.objects import Object
-from tob.storage import store, types
+from tob.persist import store, types
 from tob.threads import launch
 
 
