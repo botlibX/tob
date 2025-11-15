@@ -20,10 +20,13 @@ class Mods:
         Mods.dirs[name] = path
 
     @staticmethod
-    def init(ignore="", local=False):
-        name = f"{__name__}.modules"
-        path = os.path.join(where(Mods), "modules")
-        Mods.add(name, path)
+    def init(name, ignore="", local=False):
+        if name:
+           pkg = importer(name)
+        if not pkg:
+           name = f"{name}.modules"
+           pkg = importer(name)
+        Mods.add(name, pkg.__path__[0])
         if ignore:
             Mods.ignore = spl(ignore)
         if local:
@@ -44,10 +47,11 @@ def getmod(name):
     return sys.modules.get(mname, None) or importer(mname, pth)
 
 
-def importer(name, pth):
-    if not os.path.exists(pth):
-        return
-    spec = importlib.util.spec_from_file_location(name, pth)
+def importer(name, pth=None):
+    if pth and os.path.exists(pth):
+        spec = importlib.util.spec_from_file_location(name, pth)
+    else:
+        spec = importlib.util.find_spec(name)
     if not spec or not spec.loader:
         return
     mod = importlib.util.module_from_spec(spec)

@@ -26,7 +26,8 @@ from tob.utility import check, spl, where, wrapped
 
 NAME = "tob"
 
-
+Config.name = NAME
+Config.version = 141
 
 
 class CLI(Client):
@@ -71,8 +72,8 @@ def banner(name, version):
 
 def boot():
     Config.name = NAME
-    Mods.init(ignore="mbx,rst,udp,web", local=True)
     Workdir.init(NAME)
+    Mods.init("mods", ignore="mbx,rst,udp,web", local=True)
 
 
 def scanner(names, init=False):

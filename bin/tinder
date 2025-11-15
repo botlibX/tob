@@ -25,8 +25,7 @@ from tob.threads import launch, threadhook
 from tob.utility import elapsed, where
 
 
-#Mods.add(f"{Config.name}.modules", os.path.join(where(), "modules"))
-Mods.add("mods")
+Mods.init("mod")
 Workdir.wdr = ".test"
 
 
