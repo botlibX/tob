@@ -4,8 +4,8 @@
 import unittest
 
 
-from tob.marshal import dumps
 from tob.objects import Object
+from tob.serials import dumps
 
 
 VALIDJSON = '{"test": "bla"}'

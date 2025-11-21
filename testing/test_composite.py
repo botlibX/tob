@@ -4,8 +4,8 @@
 import unittest
 
 
-from tob.marshal import dumps, loads
-from tob.objects import Object, update
+from tob.objects import Object
+from tob.persist import read, write
 
 
 class TestComposite(unittest.TestCase):
@@ -20,7 +20,7 @@ class TestComposite(unittest.TestCase):
         obj = Object()
         obj.obj = Object()
         obj.obj.a = "test"
-        txt = dumps(obj)
+        fnm = write(obj)
         ooo = Object()
-        update(ooo, loads(txt))
+        read(ooo, fnm)
         self.assertTrue(ooo.obj)
