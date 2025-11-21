@@ -17,11 +17,11 @@ from tob.clients import Client
 from tob.configs import Config, configure
 from tob.defines import SYSTEMD
 from tob.message import Message
-from tob.package import Mods, getmod, modules
+from tob.package import getmod, modules
 from tob.threads import launch, threadhook
 from tob.utility import daemon, forever, pidfile, privileges, wrap
 from tob.utility import check, level, spl, wrapped
-from tob.workdir import Workdir, pidname
+from tob.workdir import pidname
 
 
 NAME = "tob" ; VERSION = 150 # noqa: E702
