@@ -34,7 +34,8 @@ packages=[
     'tob',
     'tob.modules',
     'tob.network',
-    'tob.network.html'
+    'tob.network.html',
+    'tob.nucleus'
 ]
 include-package-data = true
 
