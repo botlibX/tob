@@ -1,7 +1,6 @@
 # This file is placed in the Public Domain.
 
 
-import json
 import types
 
 
@@ -18,6 +17,12 @@ class Object:
 
     def __str__(self):
         return str(self.__dict__)
+
+
+class Default(Object):
+
+    def __getattr__(self, key):
+        return self.__dict__.get(key, "")
 
 
 def construct(obj, *args, **kwargs):
@@ -54,7 +59,7 @@ def keys(obj):
     return obj.__dict__.keys()
 
 
-def update(obj, data={}, empty=True):
+def update(obj, data, empty=True):
     if isinstance(obj, type):
         for k, v in items(data):
             if isinstance(getattr(obj, k, None), types.MethodType):
@@ -78,6 +83,7 @@ def values(obj):
 
 def __dir__():
     return (
+        'Default',
         'Object',
         'construct',
         'fqn',

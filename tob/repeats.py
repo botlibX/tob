@@ -5,7 +5,8 @@ import threading
 import time
 
 
-from .threads import launch, name
+from .methods import name
+from .threads import launch
 
 
 class Timy(threading.Timer):

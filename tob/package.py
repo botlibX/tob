@@ -7,26 +7,24 @@ import os
 import sys
 
 
-from .utility import spl, where
+from .utility import spl
 
 
 class Mods:
 
-    dirs: dict[str, str] = {}
-    ignore: list[str] = []
+    dirs = {}
+    ignore = []
 
     @staticmethod
-    def add(name=None, path=None):
+    def add(name, path):
         Mods.dirs[name] = path
 
     @staticmethod
-    def init(name, ignore="", local=False):
+    def init(name=None, ignore="", local=False):
         if name:
-           pkg = importer(name)
-        if not pkg:
-           name = f"{name}.modules"
-           pkg = importer(name)
-        Mods.add(name, pkg.__path__[0])
+            pkg = importer(name)
+            if pkg:
+                Mods.add(name, pkg.__path__[0])
         if ignore:
             Mods.ignore = spl(ignore)
         if local:
@@ -52,7 +50,7 @@ def importer(name, pth=None):
         spec = importlib.util.spec_from_file_location(name, pth)
     else:
         spec = importlib.util.find_spec(name)
-    if not spec or not spec.loader:
+    if not spec:
         return
     mod = importlib.util.module_from_spec(spec)
     if not mod:
@@ -81,5 +79,5 @@ def __dir__():
         'Mods',
         'getmod',
         'importer',
-        'modules',
+        'modules'
     )

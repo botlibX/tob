@@ -2,52 +2,24 @@
 
 
 import queue
-import threading
-import time
-
-
-from typing import Callable
 
 
 from .threads import launch
 
 
-class Event:
-
-    def __init__(self):
-        self._ready = threading.Event()
-        self._thr = None
-        self.channel = ""
-        self.ctime = time.time()
-        self.orig = ""
-        self.result = {}
-        self.type = "event"
-
-    def ready(self):
-        self._ready.set()
-
-    def reply(self, text):
-        self.result[time.time()] = text
-
-    def wait(self, timeout=None):
-        self._ready.wait()
-        if self._thr:
-            self._thr.join(timeout)
-
-
 class Handler:
 
     def __init__(self):
-        self.cbs: dict[str, Callable] = {}
+        self.cbs = {}
         self.queue = queue.Queue()
 
     def callback(self, event):
-        func = self.cbs.get(event.type, None)
-        if func:
-            name = event.text and event.text.split()[0]
-            event._thr = launch(func, event, name=name)
-        else:
+        func = self.cbs.get(event.kind, None)
+        if not func:
             event.ready()
+            return
+        name = event.text and event.text.split()[0]
+        event._thr = launch(func, event, name=name)
 
     def loop(self):
         while True:
@@ -63,8 +35,8 @@ class Handler:
     def put(self, event):
         self.queue.put(event)
 
-    def register(self, type, callback):
-        self.cbs[type] = callback
+    def register(self, kind, callback):
+        self.cbs[kind] = callback
 
     def start(self):
         launch(self.loop)
@@ -75,6 +47,5 @@ class Handler:
 
 def __dir__():
     return (
-        'Event',
-        'Handler'
+        'Handler',
    )

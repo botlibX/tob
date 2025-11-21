@@ -1,6 +1,7 @@
 # This file is placed in the Public Domain.
 
 
+
 import logging
 import os
 import pathlib
@@ -8,14 +9,35 @@ import sys
 import time
 
 
-FORMATS = [
-    "%Y-%M-%D %H:%M:%S",
-    "%Y-%m-%d %H:%M:%S",
-    "%Y-%m-%d",
-    "%d-%m-%Y",
-    "%d-%m",
-    "%m-%d"
-]
+from .defines import LEVELS, TIMES
+
+
+class Logging:
+
+    datefmt = "%H:%M:%S"
+    format = "%(module).3s %(message)s"
+
+
+class Format(logging.Formatter):
+
+    def format(self, record):
+        record.module = record.module.upper()
+        return logging.Formatter.format(self, record)
+
+
+def level(loglevel="debug"):
+    if loglevel != "none":
+        lvl = LEVELS.get(loglevel)
+        if not lvl:
+            return
+        logger = logging.getLogger()
+        for handler in logger.handlers:
+            logger.removeHandler(handler)
+        logger.setLevel(lvl)
+        formatter = Format(Logging.format, datefmt=Logging.datefmt)
+        ch = logging.StreamHandler()
+        ch.setFormatter(formatter)
+        logger.addHandler(ch)
 
 
 def check(text):
@@ -91,7 +113,7 @@ def elapsed(seconds, short=True):
 def extract_date(daystr):
     daystr = daystr.encode('utf-8', 'replace').decode("utf-8")
     res = time.time()
-    for fmat in FORMATS:
+    for fmat in TIMES:
         try:
             res = time.mktime(time.strptime(daystr, fmat))
             break
@@ -108,12 +130,16 @@ def forever():
             break
 
 
+def getmain(name):
+    main = sys.modules.get("__main__")
+    return getattr(main, name, None)
+
+
 def md5sum(path):
     import hashlib
     with open(path, "r", encoding="utf-8") as file:
         txt = file.read().encode("utf-8")
-        return hashlib.md5(txt).hexdigest()
-
+        return hashlib.md5(txt, usedforsecurity=False).hexdigest()
 
 
 def pidfile(filename):
@@ -146,13 +172,6 @@ def where(obj):
     return os.path.dirname(inspect.getfile(obj))
 
 
-def wrapped(func):
-    try:
-        func()
-    except (KeyboardInterrupt, EOFError):
-        pass
-
-
 def wrap(func):
     import termios
     old = None
@@ -167,13 +186,23 @@ def wrap(func):
             termios.tcsetattr(sys.stdin.fileno(), termios.TCSADRAIN, old)
 
 
+def wrapped(func):
+    try:
+        func()
+    except (KeyboardInterrupt, EOFError):
+        pass
+
+
 def __dir__():
     return (
+        'Logging',
         'check',
         'daemon',
         'elapsed',
         'extract_date',
         'forever',
+        'getmain',
+        'level',
         'md5sum',
         'pidfile',
         'privileges',

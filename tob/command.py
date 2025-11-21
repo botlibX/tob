@@ -4,17 +4,14 @@
 import inspect
 
 
-from typing import Callable
-
-
-from .clients import Fleet
+from .brokers import Broker
 from .methods import parse
 
 
 class Commands:
 
-    cmds: dict[str, Callable] = {}
-    names: dict[str, str] = {}
+    cmds = {}
+    names = {}
 
     @staticmethod
     def add(*args):
@@ -33,7 +30,8 @@ def command(evt):
     func = Commands.get(evt.cmd)
     if func:
         func(evt)
-        Fleet.display(evt)
+        bot = Broker.get(evt.orig)
+        bot.display(evt)
     evt.ready()
 
 
