@@ -4,7 +4,8 @@
 import inspect
 
 
-from .brokers import getobj
+from .brokers import get as bget
+from .message import ready
 from .methods import parse
 
 
@@ -14,25 +15,25 @@ class Commands:
     names = {}
 
 
-def addcmd(*args):
+def add(*args):
     for func in args:
         name = func.__name__
         Commands.cmds[name] = func
         Commands.names[name] = func.__module__.split(".")[-1]
 
 
-def getcmd(cmd):
+def get(cmd):
     return Commands.cmds.get(cmd, None)
 
 
 def command(evt):
     parse(evt, evt.text)
-    func = getcmd(evt.cmd)
+    func = get(evt.cmd)
     if func:
         func(evt)
-        bot = getobj(evt.orig)
+        bot = bget(evt.orig)
         bot.display(evt)
-    evt.ready()
+    ready(evt)
 
 
 def scan(module):
@@ -40,13 +41,14 @@ def scan(module):
         if key.startswith("cb"):
             continue
         if 'event' in inspect.signature(cmdz).parameters:
-            addcmd(cmdz)
+            add(cmdz)
 
 
 def __dir__():
     return (
         'Comamnds',
+        'add',
         'command',
-        'getcmd',
+        'get',
         'scan'
     )

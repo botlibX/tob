@@ -6,8 +6,9 @@ class Broker:
     objects = {}
 
 
-def addobj(obj):
+def add(obj):
     Broker.objects[repr(obj)] = obj
+
 
 def all(attr=None):
     for obj in Broker.objects.values():
@@ -15,8 +16,10 @@ def all(attr=None):
             continue
         yield obj
 
-def getobj(origin):
+
+def get(origin):
     return Broker.objects.get(origin, None)
+
 
 def like(origin):
     for orig in Broker.objects:
@@ -27,8 +30,8 @@ def like(origin):
 def __dir__():
     return (
         'Broker',
-        'addobj',
+        'add',
         'all',
-        'getobj',
+        'get',
         'like'
     )

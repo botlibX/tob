@@ -8,8 +8,11 @@ import re
 import time
 
 
-from tob.brokers import getobj, like
+from tob.brokers import get as bget
+from tob.brokers import like
+from tob.defines import MONTH
 from tob.locater import last
+from tob.message import reply
 from tob.objects import Object, items
 from tob.persist import write
 from tob.repeats import Timed
@@ -30,7 +33,7 @@ def init(cfg):
                 continue
             diff = float(tme) - time.time()
             if diff > 0:
-                bot = getobj(origin)
+                bot = bget(origin)
                 timer = Timed(diff, bot.say, channel, txt)
                 timer.start()
             else:
@@ -87,7 +90,7 @@ def get_day(daystr):
         day = int(day)
         month = int(month)
         yea = int(yea)
-        date = f"{day} {MONTHS[month]} {yea}"
+        date = f"{day} {MONTH[month]} {yea}"
         return time.mktime(time.strptime(date, r"%d %b %Y"))
     raise NoDate(daystr)
 
@@ -174,10 +177,10 @@ def tmr(event):
         for tme, txt in items(Timers.timers):
             lap = float(tme) - time.time()
             if lap > 0:
-                event.reply(f'{nmr} {" ".join(txt)} {elapsed(lap)}')
+                reply(event, f'{nmr} {" ".join(txt)} {elapsed(lap)}')
                 nmr += 1
         if not nmr:
-            event.reply("no timers.")
+            reply(event, "no timers.")
         return result
     seconds = 0
     line = ""
@@ -186,7 +189,7 @@ def tmr(event):
             try:
                 seconds = int(word[1:])
             except (ValueError, IndexError):
-                event.reply(f"{seconds} is not an integer")
+                reply(event, f"{seconds} is not an integer")
                 return result
         else:
             line += word + " "
@@ -202,30 +205,13 @@ def tmr(event):
             target += hour
     target += rand.random() 
     if not target or time.time() > target:
-        event.reply("already passed given time.")
+        reply(event, "already passed given time.")
         return result
     diff = target - time.time()
     txt = " ".join(event.args[1:])
     add(target, event.orig, event.channel, txt)
     write(Timers.timers, Timers.path or getpath(Timers.timers))
-    bot = getobj(event.orig)
+    bot = bget(event.orig)
     timer = Timed(diff, bot.say, event.orig, event.channel, txt)
     timer.start()
-    event.reply("ok " +  elapsed(diff))
-
-
-MONTHS = [
-    'Bo',
-    'Jan',
-    'Feb',
-    'Mar',
-    'Apr',
-    'May',
-    'Jun',
-    'Jul',
-    'Aug',
-    'Sep',
-    'Oct',
-    'Nov',
-    'Dec'
-]
+    reply(event, "ok " +  elapsed(diff))

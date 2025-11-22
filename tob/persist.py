@@ -7,7 +7,7 @@ import threading
 
 
 from .objects import Object
-from .objects import update
+from .objects import update as oupdate
 from .serials import dump, load
 from .workdir import getpath
 
@@ -20,15 +20,7 @@ class Cache:
     objs = Object()
 
 
-def addcache(path, obj):
-    setattr(Cache.objs, path, obj)
-
-
-def getcache(path):
-    return getattr(Cache.objs, path, None)
-
-
-def updatecache(path, obj):
+def add(path, obj):
     setattr(Cache.objs, path, obj)
 
 
@@ -37,14 +29,21 @@ def cdir(path):
     pth.parent.mkdir(parents=True, exist_ok=True)
 
 
+def get(path):
+    return getattr(Cache.objs, path, None)
+
+
 def read(obj, path):
     with lock:
         with open(path, "r", encoding="utf-8") as fpt:
             try:
-                update(obj, load(fpt))
+                oupdate(obj, load(fpt))
             except json.decoder.JSONDecodeError as ex:
                 ex.add_note(path)
                 raise ex
+
+def update(path, obj):
+    setattr(Cache.objs, path, obj)
 
 
 def write(obj, path=None):
@@ -61,10 +60,10 @@ def write(obj, path=None):
 def __dir__():
     return (
         'Cache',
-        'addcache',
+        'add',
         'cdir',
-        'getcache',
+        'get',
         'read',
-        'updatecache',
+        'update',
         'write'
     )

@@ -6,7 +6,7 @@ import time
 
 
 from .objects import Object, fqn, items, keys, update
-from .persist import Cache, addcache, getcache, read
+from .persist import Cache, add, get, read
 from .workdir import long, store
 
 
@@ -26,11 +26,11 @@ def find(kind=None, selector=None, removed=False, matching=False):
         selector = {}
     fullname = long(kind)
     for pth in fns(fullname):
-        obj = getcache(pth)
+        obj = get(pth)
         if not obj:
             obj = Object()
             read(obj, pth)
-            addcache(pth, obj)
+            add(pth, obj)
         if not removed and deleted(obj):
             continue
         if selector and not search(obj, selector, matching):

@@ -4,6 +4,7 @@
 import queue
 
 
+from .message import ready
 from .threads import launch
 
 
@@ -16,7 +17,7 @@ class Handler:
     def callback(self, event):
         func = self.cbs.get(event.kind, None)
         if not func:
-            event.ready()
+            ready(event)
             return
         name = event.text and event.text.split()[0]
         event._thr = launch(func, event, name=name)

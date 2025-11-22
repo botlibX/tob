@@ -6,6 +6,7 @@ import time
 
 from tob.objects import Object
 from tob.locater import find, fntime
+from tob.message import reply
 from tob.persist import write
 from tob.utility import elapsed
 
@@ -22,12 +23,12 @@ def log(event):
         nmr = 0
         for fnm, obj in find('log', event.gets):
             lap = elapsed(time.time() - fntime(fnm))
-            event.reply(f'{nmr} {obj.txt} {lap}')
+            reply(event, f'{nmr} {obj.txt} {lap}')
             nmr += 1
         if not nmr:
-            event.reply('no log')
+            reply(event, 'no log')
         return
     obj = Log()
     obj.txt = event.rest
     write(obj)
-    event.reply("ok")
+    reply(event, "ok")

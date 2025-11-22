@@ -11,21 +11,19 @@ from http.server import HTTPServer, BaseHTTPRequestHandler
 
 
 from tob.objects import Object
+from tob.package import get as mget
 from tob.threads import launch
 
 
 DEBUG = False
 
 
-d = os.path.dirname
-j = os.path.join
-
-
-PATH = d(d(__file__))
-PATH = j(PATH, "network", "html")
-
-
 def init(cfg):
+    mod = mget("cfg.name}.network")
+    if not mod:
+        logging.warning("can't find web directory")
+        return
+    PATH = os.path.join(mod.__path__[0], "html")
     if not os.path.exists(j(PATH, 'index.html')):
         logging.warning("no index.html")
         return

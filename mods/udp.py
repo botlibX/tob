@@ -10,6 +10,7 @@ import time
 
 
 from tob.brokers import all
+from tob.message import reply
 from tob.objects import Object
 from tob.threads import launch
 
@@ -93,7 +94,7 @@ def udp(event):
                          [],
                          0.0
                         )[0]:
-        event.reply("udp <text>")
+        reply(event, "udp <text>")
         return
     size = 0
     while 1:

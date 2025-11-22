@@ -7,7 +7,7 @@ import time
 
 
 from tob.brokers import all
-from tob.message import Message
+from tob.message import Message, reply
 from tob.objects import Object, construct, keys
 from tob.repeats import Repeater
 from tob.utility import elapsed
@@ -178,7 +178,7 @@ def dis(event):
         nrtimes = int(delta/needed)
         txt += f"{getalias(nme)} {nrtimes} | "
     txt += "https://pypi.org/project/."
-    event.reply(txt)
+    reply(event, txt)
 
 
 def now(event):
@@ -199,7 +199,7 @@ def now(event):
             nryear,
             elapsed(needed)
         )
-        event.reply(txt)
+        reply(event, txt)
 
 
 "data"
