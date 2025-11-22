@@ -25,7 +25,8 @@ from tob.utility import elapsed
 from tob.workdir import Workdir
 
 
-NAME = "tob" ; VERSION = 150 # noqa: E702
+NAME = "tob"
+VERSION = 150
 
 
 configure(NAME, VERSION, "", True)
