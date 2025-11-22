@@ -7,6 +7,7 @@ import threading
 
 from .brokers import add
 from .handler import Handler
+from .objects import keys
 
 
 class Client(Handler):
@@ -24,10 +25,10 @@ class Client(Handler):
 
     def display(self, event):
         with self.olock:
-            for tme in sorted(event.result):
+            for tme in sorted(keys(event.result)):
                 self.dosay(
                            event.channel,
-                           event.result[tme]
+                           getattr(event.result, tme)
                           )
 
     def dosay(self, channel, text):

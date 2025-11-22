@@ -5,7 +5,8 @@ import threading
 import time
 
 
-from .configs import Default
+from .default import Default
+from .objects import Object
 
 
 class Message(Default):
@@ -13,22 +14,22 @@ class Message(Default):
     def __init__(self):
         super().__init__()
         self._ready = threading.Event()
-        self.result = {}
+        self.result = Object()
         self.kind = "event"
 
 
-def ready(msg):
-    msg._ready.set()
+def ready(obj):
+    obj._ready.set()
 
 
-def reply(msg, text):
-    msg.result[time.time()] = text
+def reply(obj, text):
+    setattr(obj.result, str(time.time()), text)
 
 
-def wait(msg, timeout=None):
-    msg._ready.wait()
-    if msg._thr:
-        msg._thr.join(timeout)
+def wait(obj, timeout=None):
+    obj._ready.wait()
+    if obj._thr:
+        obj._thr.join(timeout)
 
 
 def __dir__():

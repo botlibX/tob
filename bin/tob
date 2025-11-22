@@ -163,7 +163,7 @@ def ver(event):
 
 def main():
     configure(NAME, VERSION, IGNORE, LOCAL)
-    if check("b"):
+    if not check("b"):
         threading.excepthook = threadhook
     if check("c"):
         wrap(console)

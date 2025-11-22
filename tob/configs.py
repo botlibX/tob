@@ -1,15 +1,9 @@
 # This file is placed in the Public Domain.
 
 
-from .objects import Object
+from .default import Default
 from .package import configure as pconf
 from .workdir import configure as wconf
-
-
-class Default(Object):
-
-    def __getattr__(self, key):
-        return self.__dict__.get(key, "")
 
 
 class Config(Default):
