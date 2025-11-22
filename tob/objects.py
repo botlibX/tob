@@ -4,6 +4,11 @@
 import types
 
 
+class Reserved(Exception):
+
+    pass
+
+
 class Object:
 
     def __contains__(self, key):
@@ -57,7 +62,7 @@ def update(obj, data, empty=True):
     if isinstance(obj, type):
         for k, v in items(data):
             if isinstance(getattr(obj, k, None), types.MethodType):
-                continue
+                raise Reserved(k)
             setattr(obj, k, v)
     elif isinstance(obj, dict):
         for k, v in items(data):
