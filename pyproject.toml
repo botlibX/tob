@@ -32,14 +32,5 @@ classifiers=[
 [tool.setuptools]
 packages=[
     'tob',
-    'tob.modules',
-    'tob.network',
-    'tob.network.html',
-    'tob.nucleus'
 ]
 include-package-data = true
-
-
-[tool.setuptools.package-data]
-"tob.network" = ["*"]
-"tob.network.html" = ["*"]
