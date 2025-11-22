@@ -5,7 +5,7 @@ import queue
 import threading
 
 
-from .brokers import Broker
+from .brokers import addobj
 from .handler import Handler
 
 
@@ -16,7 +16,7 @@ class Client(Handler):
         self.olock = threading.RLock()
         self.oqueue = queue.Queue()
         self.silent = True
-        Broker.add(self)
+        addobj(self)
 
     def announce(self, text):
         if not self.silent:

@@ -15,20 +15,20 @@ class Mods:
     dirs = {}
     ignore = []
 
-    @staticmethod
-    def add(name, path):
-        Mods.dirs[name] = path
 
-    @staticmethod
-    def init(name=None, ignore="", local=False):
-        if name:
-            pkg = importer(name)
-            if pkg:
-                Mods.add(name, pkg.__path__[0])
-        if ignore:
-            Mods.ignore = spl(ignore)
-        if local:
-            Mods.add("mods", "mods")
+def addmod(name, path):
+    Mods.dirs[name] = path
+
+
+def configure(name=None, ignore="", local=False):
+    if name:
+        pkg = importer(name)
+        if pkg:
+            addmod(name, pkg.__path__[0])
+    if ignore:
+        Mods.ignore = spl(ignore)
+    if local:
+        addmod("mods", "mods")
 
 
 def getmod(name):
@@ -77,6 +77,8 @@ def modules():
 def __dir__():
     return (
         'Mods',
+        'addmod',
+        'configure',
         'getmod',
         'importer',
         'modules'

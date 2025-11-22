@@ -13,10 +13,10 @@ class Workdir:
 
     wdr = ""
 
-    @staticmethod
-    def init(name):
-        Workdir.wdr = os.path.expanduser(f"~/.{name}")
-        skel()
+
+def configure(name):
+    Workdir.wdr = os.path.expanduser(f"~/.{name}")
+    skel()
 
 
 def getpath(obj):

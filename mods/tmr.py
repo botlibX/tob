@@ -8,7 +8,7 @@ import re
 import time
 
 
-from tob.brokers import Broker
+from tob.brokers import getobj, like
 from tob.locater import last
 from tob.objects import Object, items
 from tob.persist import write
@@ -25,12 +25,12 @@ def init(cfg):
     remove = []
     for tme, args in items(Timers.timers):
         orig, channel, txt = args
-        for origin in Broker.like(orig):
+        for origin in like(orig):
             if not origin:
                 continue
             diff = float(tme) - time.time()
             if diff > 0:
-                bot = Broker.get(origin)
+                bot = getobj(origin)
                 timer = Timed(diff, bot.say, channel, txt)
                 timer.start()
             else:
@@ -208,7 +208,7 @@ def tmr(event):
     txt = " ".join(event.args[1:])
     add(target, event.orig, event.channel, txt)
     write(Timers.timers, Timers.path or getpath(Timers.timers))
-    bot = Broker.get(event.orig)
+    bot = getobj(event.orig)
     timer = Timed(diff, bot.say, event.orig, event.channel, txt)
     timer.start()
     event.reply("ok " +  elapsed(diff))

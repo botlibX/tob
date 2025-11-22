@@ -28,7 +28,7 @@ from tob.workdir import Workdir
 NAME = "tob" ; VERSION = 150 # noqa: E702
 
 
-configure(NAME, VERSION)
+configure(NAME, VERSION, "", True)
 Workdir.wdr = ".test"
 
 

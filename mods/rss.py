@@ -19,7 +19,7 @@ from urllib.error import HTTPError, URLError
 from urllib.parse import quote_plus, urlencode
 
 
-from tob.brokers import Broker
+from tob.brokers import all
 from tob.locater import find, fntime, last
 from tob.methods import fmt
 from tob.objects import Object, update
@@ -132,7 +132,7 @@ class Fetcher(Object):
             txt = f"[{feedname}] "
         for obj in result:
             txt2 = txt + self.display(obj)
-            for bot in Broker.all():
+            for bot in all("announce"):
                 bot.announce(txt2)
         return counter
 

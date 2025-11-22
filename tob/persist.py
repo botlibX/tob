@@ -6,7 +6,8 @@ import pathlib
 import threading
 
 
-from .objects import Object, update
+from .objects import Object
+from .objects import update
 from .serials import dump, load
 from .workdir import getpath
 
@@ -18,17 +19,17 @@ class Cache:
 
     objs = Object()
 
-    @staticmethod
-    def add(path, obj):
-        setattr(Cache.objs, path, obj)
 
-    @staticmethod
-    def get(path):
-        return getattr(Cache.objs, path, None)
+def addcache(path, obj):
+    setattr(Cache.objs, path, obj)
 
-    @staticmethod
-    def update(path, obj):
-        setattr(Cache.objs, path, obj)
+
+def getcache(path):
+    return getattr(Cache.objs, path, None)
+
+
+def updatecache(path, obj):
+    setattr(Cache.objs, path, obj)
 
 
 def cdir(path):
@@ -53,14 +54,17 @@ def write(obj, path=None):
         cdir(path)
         with open(path, "w", encoding="utf-8") as fpt:
             dump(obj, fpt, indent=4)
-        Cache.update(path, obj)
+        updatecache(path, obj)
         return path
 
 
 def __dir__():
     return (
         'Cache',
+        'addcache',
         'cdir',
+        'getcache',
         'read',
+        'updatecache',
         'write'
     )

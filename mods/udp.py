@@ -9,7 +9,7 @@ import threading
 import time
 
 
-from tob.brokers import Broker
+from tob.brokers import all
 from tob.objects import Object
 from tob.threads import launch
 
@@ -46,7 +46,7 @@ class UDP(Object):
     def output(self, txt, addr=None):
         if addr:
             Cfg.addr = addr
-        for bot in Broker.all():
+        for bot in all("announce"):
             bot.announce(txt.replace("\00", ""))
 
     def loop(self):

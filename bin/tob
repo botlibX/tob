@@ -12,7 +12,7 @@ import time
 sys.path.insert(0, os.getcwd())
 
 
-from tob.command import Commands, command, parse, scan
+from tob.command import Commands, addcmd, command, parse, scan
 from tob.clients import Client
 from tob.configs import Config, configure
 from tob.defines import SYSTEMD
@@ -24,14 +24,10 @@ from tob.utility import check, level, spl, wrapped
 from tob.workdir import pidname
 
 
+IGNORE = ""
+LOCAL = True
 NAME = "tob" 
 VERSION = 150
-
-
-threading.excepthook = threadhook
-
-
-"clients"
 
 
 class CLI(Client):
@@ -94,7 +90,7 @@ def background():
     privileges()
     level("info")
     scanner(modules(), False)
-    Commands.add(cmd, ver)
+    addcmd(cmd, ver)
     pidfile(pidname(Config.name))
     forever()
 
@@ -110,7 +106,7 @@ def console():
         mods = modules()
     else:
         mods = spl(Config.sets.get("init", ""))
-    Commands.add(cmd, ver)
+    addcmd(cmd, ver)
     csl = Console()
     for _mod, thr in scanner(mods, True):
         thr.join(30.0)
@@ -122,7 +118,7 @@ def control():
     if len(sys.argv) == 1:
         return
     scanner(modules(), False)
-    Commands.add(cmd, srv, ver)
+    addcmd(cmd, srv, ver)
     csl = CLI()
     csl.silent = False
     evt = Message()
@@ -138,7 +134,7 @@ def service():
     level("info")
     banner(Config.name, Config.version)
     scanner(modules(), False)
-    Commands.add(cmd, ver)
+    addcmd(cmd, ver)
     pidfile(pidname(Config.name))
     forever()
 
@@ -164,7 +160,9 @@ def ver(event):
 
 
 def main():
-    configure(NAME, VERSION)
+    configure(NAME, VERSION, IGNORE, LOCAL)
+    if check("b"):
+        threading.excepthook = threadhook
     if check("c"):
         wrap(console)
     elif check("d"):

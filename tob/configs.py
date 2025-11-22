@@ -2,8 +2,8 @@
 
 
 from .objects import Default
-from .package import Mods
-from .workdir import Workdir
+from .package import configure as pconf
+from .workdir import configure as wconf
 
 
 class Config(Default):
@@ -12,11 +12,11 @@ class Config(Default):
     version = 440
 
 
-def configure(name, version):
+def configure(name, version, ignore=None, local=False):
     Config.name = name
     Config.version = version
-    Workdir.init(name)
-    Mods.init(f"{name}.modules", local=True)
+    wconf(name)
+    pconf(f"{name}.modules", ignore, local)
 
 
 def __dir__():

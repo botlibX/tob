@@ -4,7 +4,7 @@
 import inspect
 
 
-from .brokers import Broker
+from .brokers import getobj
 from .methods import parse
 
 
@@ -13,24 +13,24 @@ class Commands:
     cmds = {}
     names = {}
 
-    @staticmethod
-    def add(*args):
-        for func in args:
-            name = func.__name__
-            Commands.cmds[name] = func
-            Commands.names[name] = func.__module__.split(".")[-1]
 
-    @staticmethod
-    def get(cmd):
-        return Commands.cmds.get(cmd, None)
+def addcmd(*args):
+    for func in args:
+        name = func.__name__
+        Commands.cmds[name] = func
+        Commands.names[name] = func.__module__.split(".")[-1]
+
+
+def getcmd(cmd):
+    return Commands.cmds.get(cmd, None)
 
 
 def command(evt):
     parse(evt, evt.text)
-    func = Commands.get(evt.cmd)
+    func = getcmd(evt.cmd)
     if func:
         func(evt)
-        bot = Broker.get(evt.orig)
+        bot = getobj(evt.orig)
         bot.display(evt)
     evt.ready()
 
@@ -40,12 +40,13 @@ def scan(module):
         if key.startswith("cb"):
             continue
         if 'event' in inspect.signature(cmdz).parameters:
-            Commands.add(cmdz)
+            addcmd(cmdz)
 
 
 def __dir__():
     return (
         'Comamnds',
         'command',
+        'getcmd',
         'scan'
     )
