@@ -4,7 +4,6 @@
 import os
 
 
-from tob.configs import Config
 from tob.message import reply
 from tob.package import get as mget
 

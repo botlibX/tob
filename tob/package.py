@@ -1,8 +1,6 @@
 # This file is placed in the Public Domain.
 
 
-import importlib
-import importlib.util
 import os
 import sys
 

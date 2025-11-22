@@ -16,6 +16,7 @@ from tob.threads import launch
 
 
 DEBUG = False
+PATH = ""
 
 
 def init(cfg):
@@ -24,7 +25,7 @@ def init(cfg):
         logging.warning("can't find web directory")
         return
     PATH = os.path.join(mod.__path__[0], "html")
-    if not os.path.exists(j(PATH, 'index.html')):
+    if not os.path.exists(os.path.join(PATH, 'index.html')):
         logging.warning("no index.html")
         return
     try:
