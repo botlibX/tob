@@ -7,7 +7,7 @@ import os
 import sys
 
 
-from .utility import spl
+from .utility import importer, spl
 
 
 class Mods:
@@ -18,17 +18,6 @@ class Mods:
 
 def add(name, path):
     Mods.dirs[name] = path
-
-
-def configure(name=None, ignore="", local=False):
-    if name:
-        pkg = importer(name)
-        if pkg:
-            add(name, pkg.__path__[0])
-    if ignore:
-        Mods.ignore = spl(ignore)
-    if local:
-        add("mods", "mods")
 
 
 def get(name):
@@ -45,19 +34,15 @@ def get(name):
     return sys.modules.get(mname, None) or importer(mname, pth)
 
 
-def importer(name, pth=None):
-    if pth and os.path.exists(pth):
-        spec = importlib.util.spec_from_file_location(name, pth)
-    else:
-        spec = importlib.util.find_spec(name)
-    if not spec:
-        return
-    mod = importlib.util.module_from_spec(spec)
-    if not mod:
-        return
-    sys.modules[name] = mod
-    spec.loader.exec_module(mod)
-    return mod
+def configure(name=None, ignore="", local=False):
+    if name:
+        pkg = importer(name)
+        if pkg:
+            add(name, pkg.__path__[0])
+    if ignore:
+        Mods.ignore = spl(ignore)
+    if local:
+        add("mods", "mods")
 
 
 def modules():
@@ -78,8 +63,7 @@ def __dir__():
     return (
         'Mods',
         'add',
-        'configure',
         'get',
-        'importer',
+        'configure',
         'modules'
     )

@@ -19,8 +19,12 @@ def configure(name):
     skel()
 
 
+def getid(obj):
+    return ident(obj)
+
+
 def getpath(obj):
-    return store(ident(obj))
+    return store(getid(obj))
 
 
 def ident(obj):

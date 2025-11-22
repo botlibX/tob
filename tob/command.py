@@ -48,7 +48,7 @@ def __dir__():
     return (
         'Comamnds',
         'add',
-        'command',
         'get',
+        'command',
         'scan'
     )

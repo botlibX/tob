@@ -6,9 +6,9 @@ import pathlib
 import threading
 
 
-from .objects import Object
-from .objects import update as oupdate
+from .objects import Object, update
 from .serials import dump, load
+from .utility import cdir
 from .workdir import getpath
 
 
@@ -24,11 +24,6 @@ def add(path, obj):
     setattr(Cache.objs, path, obj)
 
 
-def cdir(path):
-    pth = pathlib.Path(path)
-    pth.parent.mkdir(parents=True, exist_ok=True)
-
-
 def get(path):
     return getattr(Cache.objs, path, None)
 
@@ -37,12 +32,12 @@ def read(obj, path):
     with lock:
         with open(path, "r", encoding="utf-8") as fpt:
             try:
-                oupdate(obj, load(fpt))
+                update(obj, load(fpt))
             except json.decoder.JSONDecodeError as ex:
                 ex.add_note(path)
                 raise ex
 
-def update(path, obj):
+def sync(path, obj):
     setattr(Cache.objs, path, obj)
 
 
@@ -53,7 +48,7 @@ def write(obj, path=None):
         cdir(path)
         with open(path, "w", encoding="utf-8") as fpt:
             dump(obj, fpt, indent=4)
-        update(path, obj)
+        sync(path, obj)
         return path
 
 

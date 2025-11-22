@@ -1,7 +1,7 @@
 # This file is placed in the Public Domain.
 
 
-
+import importlib.util
 import logging
 import os
 import pathlib
@@ -25,19 +25,9 @@ class Format(logging.Formatter):
         return logging.Formatter.format(self, record)
 
 
-def level(loglevel="debug"):
-    if loglevel != "none":
-        lvl = LEVELS.get(loglevel)
-        if not lvl:
-            return
-        logger = logging.getLogger()
-        for handler in logger.handlers:
-            logger.removeHandler(handler)
-        logger.setLevel(lvl)
-        formatter = Format(Logging.format, datefmt=Logging.datefmt)
-        ch = logging.StreamHandler()
-        ch.setFormatter(formatter)
-        logger.addHandler(ch)
+def cdir(path):
+    pth = pathlib.Path(path)
+    pth.parent.mkdir(parents=True, exist_ok=True)
 
 
 def check(text):
@@ -135,11 +125,42 @@ def getmain(name):
     return getattr(main, name, None)
 
 
+def importer(name, pth=None):
+    if pth and os.path.exists(pth):
+        spec = importlib.util.spec_from_file_location(name, pth)
+    else:
+        spec = importlib.util.find_spec(name)
+    if not spec:
+        return
+    mod = importlib.util.module_from_spec(spec)
+    if not mod:
+        return
+    sys.modules[name] = mod
+    spec.loader.exec_module(mod)
+    return mod
+
+
+
 def md5sum(path):
     import hashlib
     with open(path, "r", encoding="utf-8") as file:
         txt = file.read().encode("utf-8")
         return hashlib.md5(txt, usedforsecurity=False).hexdigest()
+
+
+def level(loglevel="debug"):
+    if loglevel != "none":
+        lvl = LEVELS.get(loglevel)
+        if not lvl:
+            return
+        logger = logging.getLogger()
+        for handler in logger.handlers:
+            logger.removeHandler(handler)
+        logger.setLevel(lvl)
+        formatter = Format(Logging.format, datefmt=Logging.datefmt)
+        ch = logging.StreamHandler()
+        ch.setFormatter(formatter)
+        logger.addHandler(ch)
 
 
 def pidfile(filename):
@@ -202,6 +223,7 @@ def __dir__():
         'extract_date',
         'forever',
         'getmain',
+        'imprter',
         'level',
         'md5sum',
         'pidfile',

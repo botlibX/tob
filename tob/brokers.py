@@ -10,15 +10,15 @@ def add(obj):
     Broker.objects[repr(obj)] = obj
 
 
+def get(origin):
+    return Broker.objects.get(origin, None)
+
+
 def all(attr=None):
     for obj in Broker.objects.values():
         if attr and attr not in dir(obj):
             continue
         yield obj
-
-
-def get(origin):
-    return Broker.objects.get(origin, None)
 
 
 def like(origin):
@@ -31,7 +31,7 @@ def __dir__():
     return (
         'Broker',
         'add',
-        'all',
         'get',
+        'all',
         'like'
     )

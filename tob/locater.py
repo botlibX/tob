@@ -10,6 +10,11 @@ from .persist import add, get, read
 from .workdir import long, store
 
 
+class Stats(Object):
+
+    nrs = 0
+
+
 def attrs(kind):
     objs = list(find(kind))
     if objs:
