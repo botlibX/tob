@@ -5,7 +5,7 @@ import queue
 import threading
 
 
-from .brokers import add as badd
+from .brokers import add
 from .handler import Handler
 
 
@@ -16,7 +16,7 @@ class Client(Handler):
         self.olock = threading.RLock()
         self.oqueue = queue.Queue()
         self.silent = True
-        badd(self)
+        add(self)
 
     def announce(self, text):
         if not self.silent:

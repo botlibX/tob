@@ -12,7 +12,7 @@ class Config(Default):
     version = 440
 
 
-def configure(name, version, ignore=None, local=False):
+def configure(name, version, ignore="", local=False):
     Config.name = name
     Config.version = version
     wconf(name)

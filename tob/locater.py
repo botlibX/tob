@@ -6,7 +6,7 @@ import time
 
 
 from .objects import Object, fqn, items, keys, update
-from .persist import Cache, add, get, read
+from .persist import add, get, read
 from .workdir import long, store
 
 
