@@ -1,21 +1,24 @@
 # This file is placed in the Public Domain.
 
 
+from .objects import Object, values
+
+
 class Broker:
 
-    objects = {}
+    objects = Object()
 
 
 def add(obj):
-    Broker.objects[repr(obj)] = obj
+    setattr(Broker.objects, repr(obj), obj)
 
 
 def get(origin):
-    return Broker.objects.get(origin, None)
+    return getattr(Broker.objects, origin, None)
 
 
 def all(attr=None):
-    for obj in Broker.objects.values():
+    for obj in values(Broker.objects):
         if attr and attr not in dir(obj):
             continue
         yield obj

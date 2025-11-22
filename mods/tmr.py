@@ -11,10 +11,9 @@ import time
 from tob.brokers import get as bget
 from tob.brokers import like
 from tob.defines import MONTH
-from tob.locater import last
 from tob.message import reply
 from tob.objects import Object, items
-from tob.persist import write
+from tob.persist import last, write
 from tob.repeats import Timed
 from tob.utility import elapsed, extract_date
 from tob.workdir import getpath

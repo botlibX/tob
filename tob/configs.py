@@ -14,8 +14,8 @@ class Default(Object):
 
 class Config(Default):
 
-    name = "tob"
-    version = 150
+    name = ""
+    version = 0
 
 
 def configure(name, version, ignore="", local=False):

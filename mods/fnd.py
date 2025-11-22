@@ -4,9 +4,9 @@
 import time
 
 
-from tob.locater import find, fntime
 from tob.message import reply
 from tob.methods import fmt
+from tob.persist import find, fntime
 from tob.utility import elapsed
 from tob.workdir import types
 

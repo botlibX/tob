@@ -20,11 +20,10 @@ from urllib.parse import quote_plus, urlencode
 
 
 from tob.brokers import all
-from tob.locater import find, fntime, last
 from tob.message import reply
 from tob.methods import fmt
 from tob.objects import Object, update
-from tob.persist import write
+from tob.persist import find, fntime, last, write
 from tob.repeats import Repeater
 from tob.threads import launch
 from tob.utility import elapsed, spl

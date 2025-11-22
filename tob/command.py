@@ -7,23 +7,24 @@ import inspect
 from .brokers import get as bget
 from .message import ready
 from .methods import parse
+from .objects import Object
 
 
 class Commands:
 
-    cmds = {}
-    names = {}
+    cmds = Object()
+    names = Object()
 
 
 def add(*args):
     for func in args:
         name = func.__name__
-        Commands.cmds[name] = func
-        Commands.names[name] = func.__module__.split(".")[-1]
+        setattr(Commands.cmds, name, func)
+        setattr(Commands.names, name, func.__module__.split(".")[-1])
 
 
 def get(cmd):
-    return Commands.cmds.get(cmd, None)
+    return getattr(Commands.cmds, cmd, None)
 
 
 def command(evt):

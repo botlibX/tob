@@ -4,10 +4,9 @@
 import time
 
 
-from tob.locater import find, fntime
 from tob.message import reply
 from tob.objects import Object
-from tob.persist import write
+from tob.persist import find, fntime, write
 from tob.utility import elapsed
 
 

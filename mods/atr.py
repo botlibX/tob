@@ -4,8 +4,8 @@
 "fields"
 
 
-from tob.locater import attrs
 from tob.message import reply
+from tob.persist import attrs
 from tob.workdir import types
 
 

@@ -15,12 +15,11 @@ from tob.brokers import get
 from tob.command import command
 from tob.configs import Config as Main
 from tob.defines import LEVELS
-from tob.locater import last
 from tob.message import Message, reply
 from tob.methods import edit, fmt
 from tob.objects import Object, keys
 from tob.outputs import Output
-from tob.persist import write
+from tob.persist import last, write
 from tob.threads import launch
 from tob.workdir import getpath
 
