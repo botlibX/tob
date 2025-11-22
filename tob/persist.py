@@ -53,7 +53,7 @@ def write(obj, path=None):
         cdir(path)
         with open(path, "w", encoding="utf-8") as fpt:
             dump(obj, fpt, indent=4)
-        updatecache(path, obj)
+        update(path, obj)
         return path
 
 
