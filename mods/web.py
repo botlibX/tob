@@ -10,22 +10,19 @@ import time
 from http.server import HTTPServer, BaseHTTPRequestHandler
 
 
+from tob.configs import Config
 from tob.objects import Object
-from tob.package import get as mget
 from tob.threads import launch
+from tob.utility import importer
 
 
-DEBUG = False
-PATH = ""
-
-
-def init(cfg):
-    mod = mget("cfg.name}.network")
+def init():
+    mod = importer(f"{Config.name}.nucleus")
     if not mod:
         logging.warning("can't find web directory")
         return
-    PATH = os.path.join(mod.__path__[0], "html")
-    if not os.path.exists(os.path.join(PATH, 'index.html')):
+    Cfg.path = mod.__path__[0]
+    if not os.path.exists(os.path.join(Cfg.path, 'index.html')):
         logging.warning("no index.html")
         return
     try:
@@ -40,7 +37,8 @@ def init(cfg):
 class Cfg:
 
     hostname = "localhost"
-    port     = 8000
+    path = ""
+    port = 8000
 
 
 class HTTP(HTTPServer, Object):
@@ -103,11 +101,11 @@ class HTTPHandler(BaseHTTPRequestHandler):
     def do_GET(self):
         if "favicon" in self.path:
             return
-        if DEBUG:
+        if Config.debug:
             return
         if self.path == "/":
             self.path = "index.html"
-        self.path = PATH + os.sep + self.path
+        self.path = Cfg.path + os.sep + self.path
         if not os.path.exists(self.path):
             self.write_header("text/html")
             self.send_response(404)
@@ -117,7 +115,7 @@ class HTTPHandler(BaseHTTPRequestHandler):
             try:
                 with open(self.path, "rb") as file:
                     img = file.read()
-                    file.ctobe()
+                    file.close()
                 ext = self.path[-3]
                 self.write_header(f"image/{ext}", len(img))
                 self.raw(img)
@@ -128,7 +126,7 @@ class HTTPHandler(BaseHTTPRequestHandler):
         try:
             with open(self.path, "r", encoding="utf-8", errors="ignore") as file:
                 txt = file.read()
-                file.ctobe()
+                file.close()
             self.write_header("text/html")
             self.send(txt)
         except (TypeError, FileNotFoundError, IsADirectoryError):

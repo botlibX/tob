@@ -8,13 +8,11 @@ import re
 import time
 
 
-from tob.brokers import get as bget
-from tob.brokers import like
-from tob.defines import MONTH
-from tob.message import reply
+from tob.brokers import Broker
 from tob.objects import Object, items
 from tob.persist import last, write
 from tob.repeats import Timed
+from tob.statics import MONTH
 from tob.utility import elapsed, extract_date
 from tob.workdir import getpath
 
@@ -22,17 +20,17 @@ from tob.workdir import getpath
 rand = random.SystemRandom()
 
 
-def init(cfg):
+def init():
     Timers.path = last(Timers.timers) or getpath(Timers.timers)
     remove = []
     for tme, args in items(Timers.timers):
         orig, channel, txt = args
-        for origin in like(orig):
+        for origin in Broker.like(orig):
             if not origin:
                 continue
             diff = float(tme) - time.time()
             if diff > 0:
-                bot = bget(origin)
+                bot = Broker.get(origin)
                 timer = Timed(diff, bot.say, channel, txt)
                 timer.start()
             else:
@@ -176,10 +174,10 @@ def tmr(event):
         for tme, txt in items(Timers.timers):
             lap = float(tme) - time.time()
             if lap > 0:
-                reply(event, f'{nmr} {" ".join(txt)} {elapsed(lap)}')
+                event.reply(f'{nmr} {" ".join(txt)} {elapsed(lap)}')
                 nmr += 1
         if not nmr:
-            reply(event, "no timers.")
+            event.reply("no timers.")
         return result
     seconds = 0
     line = ""
@@ -188,7 +186,7 @@ def tmr(event):
             try:
                 seconds = int(word[1:])
             except (ValueError, IndexError):
-                reply(event, f"{seconds} is not an integer")
+                event.reply(f"{seconds} is not an integer")
                 return result
         else:
             line += word + " "
@@ -204,13 +202,13 @@ def tmr(event):
             target += hour
     target += rand.random() 
     if not target or time.time() > target:
-        reply(event, "already passed given time.")
+        event.reply("already passed given time.")
         return result
     diff = target - time.time()
     txt = " ".join(event.args[1:])
     add(target, event.orig, event.channel, txt)
     write(Timers.timers, Timers.path or getpath(Timers.timers))
-    bot = bget(event.orig)
+    bot = Broker.get(event.orig)
     timer = Timed(diff, bot.say, event.orig, event.channel, txt)
     timer.start()
-    reply(event, "ok " +  elapsed(diff))
+    event.reply("ok " +  elapsed(diff))

@@ -6,14 +6,14 @@ import logging
 import time
 
 
-from tob.brokers import all
-from tob.message import Message, reply
+from tob.brokers import Broker
+from tob.message import Message
 from tob.objects import Object, construct, keys
 from tob.repeats import Repeater
 from tob.utility import elapsed
 
 
-def init(cfg):
+def init():
     for key in keys(oorzaken):
         if "Psych" not in key:
             continue
@@ -138,7 +138,7 @@ def cbnow(_evt):
         nrtimes = int(delta/needed)
         txt += f"{getalias(nme)} {nrtimes} | "
     txt += "https://pypi.org/project/."
-    for bot in all("announce"):
+    for bot in Broker.all("announce"):
         bot.announce(txt)
 
 
@@ -161,7 +161,7 @@ def cbstats(evt):
             nryear,
             elapsed(needed)
         )
-        for bot in all("announce"):
+        for bot in Broker.all("announce"):
             bot.announce(txt)
 
 
@@ -178,7 +178,7 @@ def dis(event):
         nrtimes = int(delta/needed)
         txt += f"{getalias(nme)} {nrtimes} | "
     txt += "https://pypi.org/project/."
-    reply(event, txt)
+    event.reply(txt)
 
 
 def now(event):
@@ -199,7 +199,7 @@ def now(event):
             nryear,
             elapsed(needed)
         )
-        reply(event, txt)
+        event.reply(txt)
 
 
 "data"

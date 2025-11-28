@@ -12,24 +12,22 @@ import time
 sys.path.insert(0, os.getcwd())
 
 
-from tob.command import add
-from tob.command import Commands, command, parse, scan
+from tob.command import Commands, command
 from tob.clients import Client
-from tob.configs import Config, configure
-from tob.defines import SYSTEMD
-from tob.message import Message, reply, wait
-from tob.package import get as mget
+from tob.configs import Config
+from tob.kernels import Kernel, scanner
+from tob.message import Message
 from tob.package import modules
-from tob.threads import launch, threadhook
+from tob.statics import SYSTEMD
+from tob.threads import threadhook
 from tob.utility import daemon, forever, pidfile, privileges, wrap
-from tob.utility import check, level, spl, wrapped
+from tob.utility import check, spl, wrapped
 from tob.workdir import pidname
 
 
-IGNORE = ""
-LOCAL = True
-NAME = "tob" 
-VERSION = 150
+Config.ignore = "udp"
+Config.name = "tob" 
+Config.version = 111
 
 
 class CLI(Client):
@@ -48,7 +46,7 @@ class Console(CLI):
         if not event.text:
             return
         super().callback(event)
-        wait(event)
+        event.wait()
 
     def poll(self):
         evt = Message()
@@ -60,28 +58,16 @@ class Console(CLI):
 "in the beginning"
 
 
-def banner(name, version):
+def banner():
     tme = time.ctime(time.time()).replace("  ", " ")
     logger = logging.getLogger()
     print("%s %s since %s (%s)" % (
-                                   name.upper(),
-                                   version,
+                                   Config.name.upper(),
+                                   Config.version,
                                    tme,
                                    logging.getLevelName(logger.getEffectiveLevel())
                                   ))
     sys.stdout.flush()
-
-
-def scanner(names, init=False):
-    mods = []
-    for name in names:
-        mod = mget(name)
-        if mod:
-            scan(mod)
-        if init and "init" in dir(mod):
-            thr = launch(mod.init, Config())
-            mods.append((mod, thr))
-    return mods
 
 
 "scripts"
@@ -90,25 +76,22 @@ def scanner(names, init=False):
 def background():
     daemon(check("v"))
     privileges()
-    level("info")
     scanner(modules(), True)
-    add(cmd, ver)
+    Commands.add(cmd, ver)
     pidfile(pidname(Config.name))
     forever()
 
 
 def console():
     import readline # noqa: F401
-    parse(Config, " ".join(sys.argv[1:]))
-    level(Config.sets.get("level", "info"))
     if "v" in Config.opts:
-        banner(Config.name, Config.version)
+        banner()
     mods = []
     if "a" in Config.opts:
         mods = modules()
     else:
         mods = spl(Config.sets.get("init", ""))
-    add(cmd, ver)
+    Commands.add(cmd, ver)
     csl = Console()
     for _mod, thr in scanner(mods, True):
         thr.join(30.0)
@@ -120,7 +103,7 @@ def control():
     if len(sys.argv) == 1:
         return
     scanner(modules(), False)
-    add(cmd, srv, ver)
+    Commands.add(cmd, srv, ver)
     csl = CLI()
     csl.silent = False
     evt = Message()
@@ -128,15 +111,14 @@ def control():
     evt.text = " ".join(sys.argv[1:])
     evt.type = "command"
     command(evt)
-    wait(evt)
+    evt.wait()
 
 
 def service():
     privileges()
-    level("info")
     banner(Config.name, Config.version)
     scanner(modules(), True)
-    add(cmd, ver)
+    Commands.add(cmd, ver)
     pidfile(pidname(Config.name))
     forever()
 
@@ -145,26 +127,28 @@ def service():
 
 
 def cmd(event):
-    reply(event, ",".join(sorted(Commands.names or Commands.cmds)))
+    event.reply(",".join(sorted(Commands.names or Commands.cmds)))
 
 
 def srv(event):
     import getpass
     name = getpass.getuser()
-    reply(event, SYSTEMD % (Config.name.upper(), name, name, name, Config.name))
+    event.reply(SYSTEMD % (Config.name.upper(), name, name, name, Config.name))
 
 
 def ver(event):
-    reply(event, f"{Config.name.upper()} {Config.version}")
+    event.reply(f"{Config.name.upper()} {Config.version}")
 
 
 "runtime"
 
 
 def main():
-    configure(NAME, VERSION, IGNORE, LOCAL)
-    if not check("b"):
+    Kernel.configure()
+    if check("b"):
         threading.excepthook = threadhook
+    if check('z'):
+        Config.debug = True
     if check("c"):
         wrap(console)
     elif check("d"):

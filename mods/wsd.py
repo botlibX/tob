@@ -7,7 +7,7 @@ import logging
 from random import SystemRandom
 
 
-from tob.brokers import all
+from tob.brokers import Broker
 from tob.message import Message
 from tob.repeats import Repeater
 
@@ -15,7 +15,7 @@ from tob.repeats import Repeater
 rand = SystemRandom()
 
 
-def init(cfg):
+def init():
     event = Message()
     repeater = Repeater(3600.0,  wsd, event)
     repeater.start()
@@ -23,7 +23,7 @@ def init(cfg):
 
 
 def wsd(event):
-    for bot in all("announce"):
+    for bot in Broker.all("announce"):
         bot.announce(rand.choice(TXT.split("\n")).strip()[2:])
 
 
