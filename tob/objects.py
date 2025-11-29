@@ -13,10 +13,6 @@ class Reserved(Exception):
 
 class Object:
 
-    def __init__(self):
-        super().__init__()
-        self.__deleted__ = False
-
     def __contains__(self, key):
         return key in dir(self)
 
