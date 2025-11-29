@@ -9,6 +9,7 @@ class Config(Default):
     args = []
     debug = False
     gets = {}
+    ignore = ""
     index = 0
     local = False
     mods = False

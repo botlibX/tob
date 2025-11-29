@@ -3,6 +3,7 @@
 
 import datetime
 import os
+import types
 
 
 class Reserved(Exception):
@@ -35,7 +36,7 @@ class Default(Object):
         return self.__dict__.get(key, "")
 
 
-def construct(obj, *args):
+def construct(obj, *args, **kwargs):
     if args:
         val = args[0]
         if isinstance(val, zip):

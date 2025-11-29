@@ -25,7 +25,7 @@ class Message(Default):
     def reply(self, text):
         self._result[time.time()] = text
 
-    def wait(self, timeout):
+    def wait(self, timeout=0.0):
         self._ready.wait(timeout or None)
         if self._thr:
             self._thr.join(timeout)

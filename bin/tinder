@@ -14,27 +14,27 @@ import time
 sys.path.insert(0, os.getcwd())
 
 
-from tob.clients import Client
-from tob.command import command, parse, scan
-from tob.configs import Config, configure
-from tob.message import Message, wait
-from tob.outputs import Output
-from tob.package import Mods, get, modules
+from tob.clients import Client, Output
+from tob.command import Commands, command
+from tob.configs import Config
+from tob.kernels import Kernel, scanner
+from tob.message import Message
+from tob.methods import fmt, parse
+from tob.package import modules
 from tob.threads import launch, threadhook
 from tob.utility import elapsed
 from tob.workdir import Workdir
 
 
-NAME = "tob"
-VERSION = 150
-
-
-configure(NAME, VERSION, "", True)
+Config.debug = True
+Config.name = "objz"
+Config.opts = "m"
+Config.version = 110
+Kernel.configure()
 Workdir.wdr = ".test"
 
 
 events = queue.Queue()
-threading.excepthook = threadhook
 
 
 class CLI(Output):
@@ -93,7 +93,7 @@ def consume():
     while True:
         try:
             event = events.get()
-            wait(event)
+            event.wait()
             events.task_done()
         except (KeyboardInterrupt, EOFError):
             os._exit(0)
@@ -109,20 +109,6 @@ def payload(todo):
             events.put(evt)
 
 
-def scanner(names=None):
-    if names is None:
-        names = modules()
-    mods = []
-    for name in names:
-        if name in Mods.ignore:
-            continue
-        mod = get(name)
-        if mod:
-            mods.append(mod)
-            scan(mod)
-    return mods
-
-
 def main():
     if os.path.exists(Workdir.wdr):
         shutil.rmtree(Workdir.wdr)
@@ -131,7 +117,7 @@ def main():
         threading.excepthook = threadhook
     if "v" in Config.opts:
         banner(Config.name, Config.version)
-    scanner()
+    scanner(modules())
     if "z" in Config.opts:
         Pool.init(CLI, os.cpu_count())
     else:
@@ -153,15 +139,19 @@ def main():
         thr.join()
     launch(consume)
     nrevents = events.qsize()
-    events.join()
+    try:
+        events.join()
+    except (KeyboardInterrupt, EOFError):
+        os._exit(0)
     endtime = time.time()
     lap = elapsed(endtime-starttime)
     percall = (endtime-starttime)/nrevents
     nrs = events.qsize()
     if "v" in Config.opts:
+        print(fmt(Config))
         print(f"{nrs} events left.")
         print(f"total: {lap} nrs: {nrevents} call: %.6fs" % percall)
-    sys.exit()
+    os._exit(0)
 
 
 examples = {

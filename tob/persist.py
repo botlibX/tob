@@ -47,9 +47,7 @@ def deleted(obj):
     return "__deleted__" in dir(obj) and obj.__deleted__
 
 
-def find(kind, selector, removed=False, matching=False):
-    if selector is None:
-        selector = {}
+def find(kind, selector={}, removed=False, matching=False):
     fullname = long(kind)
     for pth in fns(fullname):
         obj = Cache.get(pth)

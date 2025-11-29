@@ -26,7 +26,7 @@ class Client(Handler):
         if not self.silent:
             self.raw(text)
 
-    def display(self):
+    def display(self, event):
         with self.olock:
             for tme in sorted(event._result.keys()):
                 self.dosay(

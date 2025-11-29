@@ -9,7 +9,7 @@ from .message import Message
 from .objects import Object, fqn, items
 
 
-def edit(obj, setter, skip):
+def edit(obj, setter={}, skip=False):
     for key, val in items(setter):
         if skip and val == "":
             continue
@@ -56,8 +56,13 @@ def fmt(obj, args=[], skip=[], plain=False, empty=False):
     return txt.strip()
 
 
-def name(ob):
-    return inspect.getmodulename(inspect.getsource(obj))
+def name(obj):
+    rpr = repr(obj)
+    if "method" in rpr:
+        return rpr.split("method")[1].split()[0]
+    if "function" in rpr:
+        return rpr.split("function")[1].split()[0]
+    return repr(obj)
 
 
 def parse(obj, text):
