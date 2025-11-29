@@ -16,19 +16,19 @@ class Message(Default):
         self._result = {}
         self._thr = None
         self.args = []
+        self.cmd = ""
         self.index = 0
         self.kind = "event"
+        self.opts = ""
+        self.orig = ""
+        self.rest = ""
+        self.text = ""
         
-    def ready(self):
-        self._ready.set()
+    def ready(self) -> None: ...
 
-    def reply(self, text):
-        self._result[time.time()] = text
+    def reply(self, text: str) -> None: ...
 
-    def wait(self, timeout):
-        self._ready.wait(timeout or None)
-        if self._thr:
-            self._thr.join(timeout)
+    def wait(self, timeout: float = 0.0): ...
 
 
 def __dir__():

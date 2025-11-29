@@ -17,7 +17,7 @@ from .workdir import Workdir
 class Kernel:
 
     @staticmethod
-    def configure() -> None:
+    def configure():
         parse(Config, " ".join(sys.argv[1:]))
         level(Config.sets.get("level", "info"))
         Workdir.configure(Config.name)
@@ -26,10 +26,7 @@ class Kernel:
         Mods.configure()
 
 
-def scanner(
-            names: list[str],
-            init=False
-           ) -> list[tuple[types.ModuleType, Thread]]:
+def scanner(names,init=False):
     mods = []
     for name in names:
         mod = Mods.get(name)

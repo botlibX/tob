@@ -3,8 +3,6 @@
 
 import datetime
 import os
-import types
-import typing
 
 
 class Reserved(Exception):
@@ -37,7 +35,7 @@ class Default(Object):
         return self.__dict__.get(key, "")
 
 
-def construct(obj: Object, *args, **kwargs) -> None:
+def construct(obj, *args):
     if args:
         val = args[0]
         if isinstance(val, zip):
@@ -50,7 +48,7 @@ def construct(obj: Object, *args, **kwargs) -> None:
         update(obj, kwargs)
 
 
-def fqn(obj: Object) -> str:
+def fqn(obj):
     kin = str(type(obj)).split()[-1][1:-2]
     if kin == "type":
         tpe = type(obj)
@@ -58,11 +56,11 @@ def fqn(obj: Object) -> str:
     return kin
 
 
-def ident(obj: Object) -> str:
+def ident(obj):
     return os.path.join(fqn(obj), *str(datetime.datetime.now()).split())
 
 
-def items(obj: Object | dict[str, str]) -> typing.ItemsView:
+def items(obj):
     if isinstance(obj, dict):
         return obj.items()
     if isinstance(obj, types.MappingProxyType):
@@ -70,17 +68,13 @@ def items(obj: Object | dict[str, str]) -> typing.ItemsView:
     return obj.__dict__.items()
 
 
-def keys(obj: Object | dict) -> typing.KeysView:
+def keys(obj):
     if isinstance(obj, dict):
         return obj.keys()
     return obj.__dict__.keys()
 
 
-def update(
-           obj: Object,
-           data: Object | dict[str, typing.Any],
-           empty: bool =True
-          ) -> None:
+def update(obj, data, empty=True):
     if isinstance(obj, type):
         for k, v in items(data):
             if isinstance(getattr(obj, k, None), types.MethodType):
@@ -96,7 +90,7 @@ def update(
             setattr(obj, key, value)
 
 
-def values(obj: Object) -> typing.ValuesView:
+def values(obj):
     if isinstance(obj, dict):
         return obj.values()
     return obj.__dict__.values()

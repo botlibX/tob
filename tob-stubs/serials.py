@@ -5,9 +5,12 @@ import json
 import types
 
 
+from typing import Any
+
+
 class Encoder(json.JSONEncoder):
 
-    def default(self, o):
+    def default(self, o): 
         if isinstance(o, dict):
             return o.items()
         if isinstance(o, list):
@@ -23,22 +26,16 @@ class Encoder(json.JSONEncoder):
                 return repr(o)
 
 
-def dump(*args, **kw):
-    kw["cls"] = Encoder
-    return json.dump(*args, **kw)
+def dump(*args, **kw) -> None: ...
 
 
-def dumps(*args, **kw):
-    kw["cls"] = Encoder
-    return json.dumps(*args, **kw)
+def dumps(*args, **kw) -> str: ...
 
 
-def load(s, *args, **kw):
-    return json.load(s, *args, **kw)
+def load(s, *args, **kw) -> Any: ...
 
 
-def loads(s, *args, **kw):
-    return json.loads(s, *args, **kw)
+def loads(s, *args, **kw) -> Any: ...
 
 
 def __dir__():

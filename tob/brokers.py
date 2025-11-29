@@ -1,33 +1,30 @@
 # This file is placed in the Public Domain.
 
 
-import typing
-
-
 from .message import Message
 
 
 class Broker:
 
-    objects: dict[str, typing.Any] = {}
+    objects = {}
 
     @staticmethod
-    def add(obj: typing.Any) -> None:
+    def add(obj):
         Broker.objects[repr(obj)] = obj
         
     @staticmethod
-    def all(attr: str) -> typing.Generator[str, object]:
+    def all(attr):
         for obj in Broker.objects.values():
             if attr and attr not in dir(obj):
                 continue
             yield obj
 
     @staticmethod
-    def get(origin: str) -> typing.Any:
+    def get(origin):
         return Broker.objects.get(origin, None)
 
     @staticmethod
-    def like(origin: str) -> list[typing.Any]:
+    def like(origin):
         res = []
         for orig in Broker.objects:
             if origin.split()[0] in orig.split()[0]:
@@ -35,7 +32,7 @@ class Broker:
         return res
 
 
-def display(evt: Message) -> None:
+def display(evt):
     bot = Broker.get(evt.orig)
     if not bot:
         return

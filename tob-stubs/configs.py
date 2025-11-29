@@ -6,15 +6,23 @@ from .objects import Default
 
 class Config(Default):
 
-    args = []
+    args: list[str] = []
+    cmd = ""
     debug = False
-    gets = {}
+    gets: dict[str, str] = {}
     index = 0
+    init = ""
+    ignore = ""
     local = False
     mods = False
+    name = ""
     network = False
-    sets  = {}
-    silent = {}
+    opts = ""
+    otxt = ""
+    rest = ""
+    sets: dict[str, str] = {}
+    silent: dict[str, str] = {}
+    text = ""
     version = 0
 
 

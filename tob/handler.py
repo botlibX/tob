@@ -15,7 +15,7 @@ class Handler:
         self.cbs = {}
         self.queue = queue.Queue()
 
-    def callback(self, event: Message) -> None:
+    def callback(self, event):
         func = self.cbs.get(event.kind, None)
         if not func:
             event.ready()
@@ -23,7 +23,7 @@ class Handler:
         name = event.text and event.text.split()[0]
         event._thr = launch(func, event, name=name)
 
-    def loop(self) -> None:
+    def loop(self):
         while True:
             event = self.poll()
             if event is None:
@@ -31,19 +31,19 @@ class Handler:
             event.orig = repr(self)
             self.callback(event)
 
-    def poll(self) -> Message:
+    def poll(self):
         return self.queue.get()
 
-    def put(self, event: Message) -> None:
+    def put(self, event):
         self.queue.put(event)
 
-    def register(self, kind: str, callback: types.FunctionType) -> None:
+    def register(self, kind, callback):
         self.cbs[kind] = callback
 
-    def start(self) -> None:
+    def start(self):
         launch(self.loop)
 
-    def stop(self) -> None:
+    def stop(self):
         self.queue.put(None)
 
 

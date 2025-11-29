@@ -22,11 +22,11 @@ class Client(Handler):
         self.silent = True
         Broker.add(self)
 
-    def announce(self, text: str) -> None:
+    def announce(self, text):
         if not self.silent:
             self.raw(text)
 
-    def display(self, event: Message) -> None:
+    def display(self):
         with self.olock:
             for tme in sorted(event._result.keys()):
                 self.dosay(
@@ -34,16 +34,16 @@ class Client(Handler):
                            event._result.get(tme)
                           )
 
-    def dosay(self, channel: str, text: str) -> None:
+    def dosay(self, channel, text):
         self.say(channel, text)
 
-    def raw(self, text: str) -> None:
+    def raw(self, text):
         raise NotImplementedError("raw")
 
-    def say(self, channel: str, text: str) -> None:
+    def say(self, channel, text):
         self.raw(text)
 
-    def wait(self) -> None:
+    def wait(self):
         try:
             self.oqueue.join()
         except Exception as ex:
@@ -53,7 +53,7 @@ class Client(Handler):
 
 class Output(Client):
 
-    def output(self) -> None:
+    def output(self):
         while True:
             event = self.oqueue.get()
             if event is None:
@@ -62,11 +62,11 @@ class Output(Client):
             self.display(event)
             self.oqueue.task_done()
 
-    def start(self) -> None:
+    def start(self):
         launch(self.output)
         super().start()
 
-    def stop(self) -> None:
+    def stop(self):
         self.oqueue.put(None)
         super().stop()
 

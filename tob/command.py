@@ -12,22 +12,22 @@ from .methods import parse
 
 class Commands:
 
-    cmds: dict[str, types.FunctionType] = {}
-    names: dict[str, str] = {}
+    cmds = {}
+    names = {}
 
     @staticmethod
-    def add(*args: types.FunctionType) -> None:
+    def add(*args):
        for func in args:
             name = func.__name__
             Commands.cmds[name] = func
             Commands.names[name] = func.__module__.split(".")[-1]
 
     @staticmethod
-    def get(cmd: str) -> types.FunctionType | None:
+    def get(cmd):
         return Commands.cmds.get(cmd, None)
 
 
-def command(evt: Message) -> None:
+def command(evt):
     parse(evt, evt.text)
     func = Commands.get(evt.cmd)
     if func:
@@ -36,7 +36,7 @@ def command(evt: Message) -> None:
     evt.ready()
 
 
-def scan(module: types.ModuleType) -> None:
+def scan(module):
     for key, cmdz in inspect.getmembers(module, inspect.isfunction):
         if key.startswith("cb"):
             continue

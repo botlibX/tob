@@ -20,18 +20,7 @@ class Format(logging.Formatter):
         return logging.Formatter.format(self, record)
 
 
-def level(loglevel):
-    lvl = LEVELS.get(loglevel)
-    if not lvl:
-        return
-    logger = logging.getLogger()
-    for handler in logger.handlers:
-        logger.removeHandler(handler)
-    logger.setLevel(lvl)
-    formatter = Format(Logging.format, datefmt=Logging.datefmt)
-    ch = logging.StreamHandler()
-    ch.setFormatter(formatter)
-    logger.addHandler(ch)
+def level(loglevel: str ="debug") -> None: ...
 
 
 def __dir__():

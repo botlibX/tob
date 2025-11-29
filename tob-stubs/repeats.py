@@ -32,26 +32,16 @@ class Timed:
         self.target = time.time() + self.sleep
         self.timer = None
 
-    def run(self):
-        self.timer.latest = time.time()
-        self.func(*self.args)
+    def run(self) -> None: ...
 
-    def start(self):
-        self.kwargs["name"] = self.name
-        timer = Timy(self.sleep, self.run, *self.args, **self.kwargs)
-        timer.start()
-        self.timer = timer
+    def start(self) -> None: ...
 
-    def stop(self):
-        if self.timer:
-            self.timer.cancel()
+    def stop(self) -> None: ...
 
 
 class Repeater(Timed):
 
-    def run(self):
-        launch(self.start)
-        super().run()
+    def run(self) -> None: ...
 
 
 def __dir__():

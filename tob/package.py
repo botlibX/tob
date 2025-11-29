@@ -3,7 +3,6 @@
 
 import os
 import sys
-import types
 
 
 from .configs import Config
@@ -13,17 +12,17 @@ from .workdir import moddir
 
 class Mods:
 
-    dirs: dict[str, str] = {}
+    dirs = {}
     ignore = ""
     package = __spec__.parent or ""
     path = os.path.dirname(__spec__.loader.path) # type: ignore
 
     @staticmethod
-    def add(name: str, path: str) -> None:
+    def add(name: str, path):
         Mods.dirs[name] = path
 
     @staticmethod
-    def configure() -> None:
+    def configure():
         name = Mods.package + ".modules" 
         Mods.add(name, os.path.join(Mods.path, "modules"))
         Mods.add("modules", moddir())
@@ -34,7 +33,7 @@ class Mods:
             Mods.add("mods", "mods")
 
     @staticmethod
-    def get(name: str) -> types.ModuleType | None:
+    def get(name):
         mname = ""
         pth = ""
         if name in spl(Mods.ignore):
@@ -48,7 +47,7 @@ class Mods:
         return sys.modules.get(mname, None) or importer(mname, pth)
 
 
-def modules() -> list[str]:
+def modules():
     mods = []
     for name, path in Mods.dirs.items():
         if name in spl(Mods.ignore):

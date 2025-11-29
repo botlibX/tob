@@ -2,7 +2,6 @@
 
 
 import inspect
-import typing
 
 
 from .configs import Config
@@ -10,11 +9,7 @@ from .message import Message
 from .objects import Object, fqn, items
 
 
-def edit(
-         obj: Object,
-         setter: dict[str, str],
-         skip: bool = True
-        ) -> None:
+def edit(obj, setter, skip):
     for key, val in items(setter):
         if skip and val == "":
             continue
@@ -36,13 +31,7 @@ def edit(
             setattr(obj, key, val)
 
 
-def fmt(
-        obj: Object,
-        args: list[str] = [],
-        skip: list[str] = [],
-        plain: bool = False,
-        empty: bool = False
-    ) -> str:
+def fmt(obj, args=[], skip=[], plain=False, empty=False):
     if args == []:
         args = list(obj.__dict__.keys())
     txt = ""
@@ -67,11 +56,11 @@ def fmt(
     return txt.strip()
 
 
-def name(obj: typing.Any):
+def name(ob):
     return inspect.getmodulename(inspect.getsource(obj))
 
 
-def parse(obj: type[Config] | Message, text: str):
+def parse(obj, text):
     data: dict[str, typing.Any] = {
         "args": [],
         "cmd": "",

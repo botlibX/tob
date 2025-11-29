@@ -36,23 +36,18 @@ class Cache:
         update(Cache.objects[path], obj)
 
 
-def attrs(kind: str) -> list[str]:
+def attrs(kind):
     objs = list(find(kind))
     if objs:
         return list(keys(objs[0][1]))
     return []
 
 
-def deleted(obj: Object):
+def deleted(obj):
     return "__deleted__" in dir(obj) and obj.__deleted__
 
 
-def find(
-         kind: str,
-         selector: dict = {},
-         removed: bool = False,
-         matching=False
-        ) -> typing.Generator[tuple[str, Object | dict[typing.Any, typing.Any]]]:
+def find(kind, selector, removed=False, matching=False):
     if selector is None:
         selector = {}
     fullname = long(kind)
@@ -69,7 +64,7 @@ def find(
         yield pth, obj
 
 
-def fns(kind: str) -> typing.Generator[str]:
+def fns(kind):
     path = store(kind)
     for rootdir, dirs, _files in os.walk(path, topdown=True):
         for dname in dirs:
@@ -80,7 +75,7 @@ def fns(kind: str) -> typing.Generator[str]:
                 yield os.path.join(ddd, fll)
 
 
-def fntime(daystr: str) -> float:
+def fntime(daystr):
     datestr = " ".join(daystr.split(os.sep)[-2:])
     datestr = datestr.replace("_", " ")
     if "." in datestr:
@@ -93,7 +88,7 @@ def fntime(daystr: str) -> float:
     return float(timed)
 
 
-def last(obj: Object, selector: dict = {}) -> str:
+def last(obj, selector={}):
     if selector is None:
         selector = {}
     result = sorted(
@@ -108,7 +103,7 @@ def last(obj: Object, selector: dict = {}) -> str:
     return res
 
 
-def read(obj: Object, path: str) -> None:
+def read(obj, path):
     with lock:
         with open(path, "r", encoding="utf-8") as fpt:
             try:
@@ -118,11 +113,7 @@ def read(obj: Object, path: str) -> None:
                 raise ex
 
 
-def search(
-           obj: Object,
-           selector: dict = {},
-           matching: bool =False
-          ) -> bool:
+def search(obj, selector={}, matching=False):
     res = False
     for key, value in items(selector):
         val = getattr(obj, key, None)
@@ -138,7 +129,7 @@ def search(
     return res
 
 
-def write(obj: Object, path: str = ""):
+def write(obj, path=""):
     with lock:
         if path == "":
             path = getpath(obj)
