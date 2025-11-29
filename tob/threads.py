@@ -9,6 +9,9 @@ import time
 import _thread
 
 
+from typing import Callable
+
+
 from .methods import name
 
 
@@ -30,16 +33,16 @@ class Thread(threading.Thread):
     def __next__(self):
         yield from dir(self)
 
-    def join(self, timeout=None):
+    def join(self, timeout: float | None = 0.0) -> None:
         try:
-            super().join(timeout)
+            super().join(timeout or None)
             return self.result
         except (KeyboardInterrupt, EOFError) as ex:
             if self.event:
                 self.event.ready()
             raise ex
 
-    def run(self):
+    def run(self) -> None:
         func, args = self.queue.get()
         if args and "ready" in dir(args[0]):
             self.event = args[0]
@@ -51,7 +54,7 @@ class Thread(threading.Thread):
             raise ex
 
 
-def launch(func, *args, **kwargs):
+def launch(func: Callable, *args, **kwargs) -> Thread:
     try:
         thread = Thread(func, *args, **kwargs)
         thread.start()
@@ -60,7 +63,7 @@ def launch(func, *args, **kwargs):
         os._exit(0)
 
 
-def threadhook(args):
+def threadhook(args) -> None:
     kind, value, trace, _thr = args
     exc = value.with_traceback(trace)
     if kind not in (KeyboardInterrupt, EOFError):

@@ -1,7 +1,7 @@
 # This file is placed in the Public Domain.
 
 
-from typing import Any
+from typing import Any, Generator
 
 
 from .message import Message
@@ -9,14 +9,14 @@ from .message import Message
 
 class Broker:
 
-    objects = {}
+    objects: dict[str, Any] = {}
 
     @staticmethod
     def add(obj: Any) -> None:
         Broker.objects[repr(obj)] = obj
         
     @staticmethod
-    def all(attr: str) -> list[str, object]:
+    def all(attr: str) -> Generator[str, object]:
         for obj in Broker.objects.values():
             if attr and attr not in dir(obj):
                 continue

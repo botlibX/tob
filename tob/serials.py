@@ -5,6 +5,9 @@ import json
 import types
 
 
+from typing import Any
+
+
 class Encoder(json.JSONEncoder):
 
     def default(self, o):
@@ -23,21 +26,21 @@ class Encoder(json.JSONEncoder):
                 return repr(o)
 
 
-def dump(*args, **kw):
+def dump(*args, **kw) -> None:
     kw["cls"] = Encoder
     return json.dump(*args, **kw)
 
 
-def dumps(*args, **kw):
+def dumps(*args, **kw) -> str:
     kw["cls"] = Encoder
     return json.dumps(*args, **kw)
 
 
-def load(s, *args, **kw):
+def load(s, *args, **kw) -> Any:
     return json.load(s, *args, **kw)
 
 
-def loads(s, *args, **kw):
+def loads(s, *args, **kw) -> Any:
     return json.loads(s, *args, **kw)
 
 

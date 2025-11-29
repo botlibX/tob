@@ -7,11 +7,14 @@ from .objects import Default
 class Config(Default):
 
     debug = False
+    gets: dict[str, str] = {}
     ignore = ""
     local = False
     mods = False
     name = ""
     network = False
+    opts = ""
+    sets: dict[str, str] = {}
     version = 0
 
 

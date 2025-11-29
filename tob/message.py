@@ -14,16 +14,18 @@ class Message(Default):
         super().__init__()
         self._ready = threading.Event()
         self._result = {}
+        self._thr = None
         self.kind = "event"
+        self.orig = ""
 
-    def ready(self):
+    def ready(self) -> None:
         self._ready.set()
 
-    def reply(self, text):
+    def reply(self, text: str) -> None:
         self._result[time.time()] = text
 
-    def wait(self, timeout=None):
-        self._ready.wait(timeout)
+    def wait(self, timeout: float = 0.0):
+        self._ready.wait(timeout or None)
         if self._thr:
             self._thr.join(timeout)
 

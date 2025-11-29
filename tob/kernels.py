@@ -4,12 +4,15 @@
 import sys
 
 
+from types import ModuleType
+
+
 from .command import scan
 from .configs import Config
 from .loggers import level
 from .methods import parse
 from .package import Mods
-from .threads import launch
+from .threads import Thread, launch
 from .workdir import Workdir
 
 
@@ -25,7 +28,7 @@ class Kernel:
         Mods.configure()
 
 
-def scanner(names: list[str], init=False) -> list[object]:
+def scanner(names: list[str], init=False) -> list[tuple[ModuleType, Thread]]:
     mods = []
     for name in names:
         mod = Mods.get(name)

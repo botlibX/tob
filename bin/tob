@@ -27,7 +27,7 @@ from tob.workdir import pidname
 
 Config.ignore = "udp"
 Config.name = "tob" 
-Config.version = 111
+Config.version = 150
 
 
 class CLI(Client):

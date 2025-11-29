@@ -1,7 +1,7 @@
 # This file is placed in the Public Domain.
 
 
-from .objects import fqn, items
+from .objects import Object, fqn, items
 
 
 def edit(obj: object, setter: dict[str, str], skip: bool = True) -> None:
@@ -26,16 +26,15 @@ def edit(obj: object, setter: dict[str, str], skip: bool = True) -> None:
             setattr(obj, key, val)
 
 
-def fmt(obj: object,
+def fmt(
+        obj: Object,
         args: list[str] = [],
-        skip: bool = None,
+        skip: list[str] = [],
         plain: bool = False,
         empty: bool = False
     ) -> str:
-    if args is None:
-        args = obj.__dict__.keys()
-    if skip is None:
-        skip = []
+    if args == []:
+        args = list(obj.__dict__.keys())
     txt = ""
     for key in args:
         if key.startswith("__"):

@@ -4,8 +4,8 @@
 import inspect
 
 
-from types import ModuleType
-from typing import Callable
+from types import FunctionType
+from typing import Callable, Iterable
 
 
 from .brokers import display
@@ -15,18 +15,18 @@ from .methods import parse
 
 class Commands:
 
-    cmds = {}
-    names = {}
+    cmds: dict[str, FunctionType] = {}
+    names: dict[str, str] = {}
 
     @staticmethod
-    def add(*args: list[Callable]) -> None:
+    def add(*args: FunctionType) -> None:
        for func in args:
             name = func.__name__
             Commands.cmds[name] = func
             Commands.names[name] = func.__module__.split(".")[-1]
 
     @staticmethod
-    def get(cmd: str) -> object:
+    def get(cmd: str) -> FunctionType | None:
         return Commands.cmds.get(cmd, None)
 
 

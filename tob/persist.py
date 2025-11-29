@@ -7,6 +7,9 @@ import threading
 import time
 
 
+from typing import Any, Generator
+
+
 from .objects import Object, fqn, items, keys, update
 from .serials import dump, load
 from .utility import cdir
@@ -18,35 +21,40 @@ lock = threading.RLock()
 
 class Cache:
 
-    objects = {}
+    objects: dict[str, Any] = {}
 
     @staticmethod
-    def add(path, obj):
+    def add(path: str, obj: Object | dict[str, Any]) -> None:
         Cache.objects[path] = obj
 
     @staticmethod
-    def get(path):
+    def get(path: str) -> Object | None:
         return Cache.objects.get(path, None)
 
     @staticmethod
-    def sync(path, obj):
+    def sync(path: str, obj: Object | dict[str, Any]) -> None:
         if path not in Cache.objects:
             return Cache.add(path, obj)
         update(Cache.objects[path], obj)
 
 
-def attrs(kind):
+def attrs(kind: str) -> list[str]:
     objs = list(find(kind))
     if objs:
-        return keys(objs[0][1])
+        return list(keys(objs[0][1]))
     return []
 
 
-def deleted(obj):
+def deleted(obj: Object):
     return "__deleted__" in dir(obj) and obj.__deleted__
 
 
-def find(kind, selector=None, removed=False, matching=False):
+def find(
+         kind: str,
+         selector: dict = {},
+         removed: bool = False,
+         matching=False
+        ) -> Generator[tuple[str, Object | dict[Any, Any]]]:
     if selector is None:
         selector = {}
     fullname = long(kind)
@@ -63,7 +71,7 @@ def find(kind, selector=None, removed=False, matching=False):
         yield pth, obj
 
 
-def fns(kind):
+def fns(kind: str) -> Generator[str]:
     path = store(kind)
     for rootdir, dirs, _files in os.walk(path, topdown=True):
         for dname in dirs:
@@ -74,7 +82,7 @@ def fns(kind):
                 yield os.path.join(ddd, fll)
 
 
-def fntime(daystr):
+def fntime(daystr: str) -> float:
     datestr = " ".join(daystr.split(os.sep)[-2:])
     datestr = datestr.replace("_", " ")
     if "." in datestr:
@@ -87,7 +95,7 @@ def fntime(daystr):
     return float(timed)
 
 
-def last(obj, selector=None):
+def last(obj: Object, selector: dict = {}) -> str:
     if selector is None:
         selector = {}
     result = sorted(
@@ -102,7 +110,7 @@ def last(obj, selector=None):
     return res
 
 
-def read(obj, path):
+def read(obj: Object, path: str) -> None:
     with lock:
         with open(path, "r", encoding="utf-8") as fpt:
             try:
@@ -112,7 +120,11 @@ def read(obj, path):
                 raise ex
 
 
-def search(obj, selector, matching=False):
+def search(
+           obj: Object,
+           selector: dict = {},
+           matching: bool =False
+          ) -> bool:
     res = False
     for key, value in items(selector):
         val = getattr(obj, key, None)
@@ -128,9 +140,9 @@ def search(obj, selector, matching=False):
     return res
 
 
-def write(obj, path=None):
+def write(obj: Object, path: str = ""):
     with lock:
-        if path is None:
+        if path == "":
             path = getpath(obj)
         cdir(path)
         with open(path, "w", encoding="utf-8") as fpt:

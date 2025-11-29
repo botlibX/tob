@@ -5,6 +5,9 @@ import os
 import sys
 
 
+from types import ModuleType
+
+
 from .configs import Config
 from .utility import importer, spl
 from .workdir import moddir
@@ -12,17 +15,17 @@ from .workdir import moddir
 
 class Mods:
 
-    dirs = {}
+    dirs: dict[str, str] = {}
     ignore = ""
-    package = __spec__.parent
-    path = os.path.dirname(__spec__.loader.path)
+    package = __spec__.parent or ""
+    path = os.path.dirname(__spec__.loader.path) # type: ignore
 
     @staticmethod
-    def add(name, path):
+    def add(name: str, path: str) -> None:
         Mods.dirs[name] = path
 
     @staticmethod
-    def configure():
+    def configure() -> None:
         name = Mods.package + ".modules" 
         Mods.add(name, os.path.join(Mods.path, "modules"))
         Mods.add("modules", moddir())
@@ -33,11 +36,11 @@ class Mods:
             Mods.add("mods", "mods")
 
     @staticmethod
-    def get(name):
+    def get(name: str) -> ModuleType | None:
         mname = ""
         pth = ""
         if name in spl(Mods.ignore):
-            return
+            return None
         for packname, path in Mods.dirs.items():
             modpath = os.path.join(path, name + ".py")
             if os.path.exists(modpath):
@@ -47,7 +50,7 @@ class Mods:
         return sys.modules.get(mname, None) or importer(mname, pth)
 
 
-def modules():
+def modules() -> list[str]:
     mods = []
     for name, path in Mods.dirs.items():
         if name in spl(Mods.ignore):

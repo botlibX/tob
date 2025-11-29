@@ -1,7 +1,12 @@
 # This file is placed in the Public Domain.
 
 
+import datetime
+import os
 import types
+
+
+from typing import Any, ItemsView, KeysView, ValuesView
 
 
 class Reserved(Exception):
@@ -10,6 +15,10 @@ class Reserved(Exception):
 
 
 class Object:
+
+    def __init__(self):
+        super().__init__()
+        self.__deleted__ = False
 
     def __contains__(self, key):
         return key in dir(self)
@@ -30,7 +39,7 @@ class Default(Object):
         return self.__dict__.get(key, "")
 
 
-def construct(obj, *args, **kwargs):
+def construct(obj: Object, *args, **kwargs) -> None:
     if args:
         val = args[0]
         if isinstance(val, zip):
@@ -43,14 +52,19 @@ def construct(obj, *args, **kwargs):
         update(obj, kwargs)
 
 
-def fqn(obj):
+def fqn(obj: Object) -> str:
     kin = str(type(obj)).split()[-1][1:-2]
     if kin == "type":
-        kin = f"{obj.__module__}.{obj.__name__}"
+        tpe = type(obj)
+        kin = f"{tpe.__module__}.{tpe.__name__}"
     return kin
 
 
-def items(obj):
+def ident(obj: Object) -> str:
+    return os.path.join(fqn(obj), *str(datetime.datetime.now()).split())
+
+
+def items(obj: Object | dict[str, str]) -> ItemsView:
     if isinstance(obj, dict):
         return obj.items()
     if isinstance(obj, types.MappingProxyType):
@@ -58,13 +72,17 @@ def items(obj):
     return obj.__dict__.items()
 
 
-def keys(obj):
+def keys(obj: Object | dict) -> KeysView:
     if isinstance(obj, dict):
         return obj.keys()
     return obj.__dict__.keys()
 
 
-def update(obj, data, empty=True):
+def update(
+           obj: Object,
+           data: Object | dict[str, Any],
+           empty: bool =True
+          ) -> None:
     if isinstance(obj, type):
         for k, v in items(data):
             if isinstance(getattr(obj, k, None), types.MethodType):
@@ -80,7 +98,7 @@ def update(obj, data, empty=True):
             setattr(obj, key, value)
 
 
-def values(obj):
+def values(obj: Object) -> ValuesView:
     if isinstance(obj, dict):
         return obj.values()
     return obj.__dict__.values()
@@ -93,6 +111,8 @@ def __dir__():
         'Reserved',
         'construct',
         'fqn',
+        'getid',
+        'ident',
         'items',
         'keys',
         'update',

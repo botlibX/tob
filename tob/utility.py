@@ -8,15 +8,20 @@ import sys
 import time
 
 
+from types import ModuleType
+from typing import Any, Callable
+
+
+from .objects import Object
 from .statics import TIMES
 
 
-def cdir(path):
+def cdir(path: str) -> None:
     pth = pathlib.Path(path)
     pth.parent.mkdir(parents=True, exist_ok=True)
 
 
-def check(text):
+def check(text: str) -> bool:
     args = sys.argv[1:]
     for arg in args:
         if not arg.startswith("-"):
@@ -27,7 +32,7 @@ def check(text):
     return False
 
 
-def daemon(verbose=False):
+def daemon(verbose: bool = False) -> None:
     pid = os.fork()
     if pid != 0:
         os._exit(0)
@@ -47,7 +52,7 @@ def daemon(verbose=False):
     os.nice(10)
 
 
-def elapsed(seconds, short=True):
+def elapsed(seconds: int, short: bool = True) -> str:
     txt = ""
     nsec = float(seconds)
     if nsec < 1:
@@ -86,7 +91,7 @@ def elapsed(seconds, short=True):
     return txt
 
 
-def extract_date(daystr):
+def extract_date(daystr: str) -> float:
     daystr = daystr.encode('utf-8', 'replace').decode("utf-8")
     res = time.time()
     for fmat in TIMES:
@@ -98,7 +103,7 @@ def extract_date(daystr):
     return res
 
 
-def forever():
+def forever() -> None:
     while True:
         try:
             time.sleep(0.1)
@@ -106,34 +111,34 @@ def forever():
             break
 
 
-def getmain(name):
+def getmain(name: str) -> Any:
     main = sys.modules.get("__main__")
     return getattr(main, name, None)
 
 
-def importer(name, pth=None):
+def importer(name: str, pth: str = "") -> ModuleType | None:
     if pth and os.path.exists(pth):
         spec = importlib.util.spec_from_file_location(name, pth)
     else:
         spec = importlib.util.find_spec(name)
-    if not spec:
-        return
+    if not spec or not spec.loader:
+        return None
     mod = importlib.util.module_from_spec(spec)
     if not mod:
-        return
+        return None
     sys.modules[name] = mod
     spec.loader.exec_module(mod)
     return mod
 
 
-def md5sum(path):
+def md5sum(path: str) -> str:
     import hashlib
     with open(path, "r", encoding="utf-8") as file:
         txt = file.read().encode("utf-8")
         return hashlib.md5(txt, usedforsecurity=False).hexdigest()
 
 
-def pidfile(filename):
+def pidfile(filename: str) -> None:
     if os.path.exists(filename):
         os.unlink(filename)
     path2 = pathlib.Path(filename)
@@ -142,7 +147,7 @@ def pidfile(filename):
         fds.write(str(os.getpid()))
 
 
-def privileges():
+def privileges() -> None:
     import getpass
     import pwd
     pwnam2 = pwd.getpwnam(getpass.getuser())
@@ -150,7 +155,7 @@ def privileges():
     os.setuid(pwnam2.pw_uid)
 
 
-def spl(txt):
+def spl(txt: str) -> list[str]:
     try:
         result = txt.split(",")
     except (TypeError, ValueError):
@@ -158,12 +163,12 @@ def spl(txt):
     return [x for x in result if x]
 
 
-def where(obj):
+def where(obj: Any) -> str:
     import inspect
     return os.path.dirname(inspect.getfile(obj))
 
 
-def wrap(func):
+def wrap(func: Callable) -> None:
     import termios
     old = None
     try:
@@ -177,7 +182,7 @@ def wrap(func):
             termios.tcsetattr(sys.stdin.fileno(), termios.TCSADRAIN, old)
 
 
-def wrapped(func):
+def wrapped(func: Callable) -> None:
     try:
         func()
     except (KeyboardInterrupt, EOFError):
