@@ -12,7 +12,7 @@ from .workdir import moddir
 
 class Mods:
 
-    dirs = {}
+    dirs: dict[str, str] = {}
     ignore = ""
     package = __spec__.parent or ""
     path = os.path.dirname(__spec__.loader.path) # type: ignore

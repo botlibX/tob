@@ -66,7 +66,7 @@ def name(obj):
 
 
 def parse(obj, text):
-    data: dict[str, typing.Any] = {
+    data = {
         "args": [],
         "cmd": "",
         "gets": {},

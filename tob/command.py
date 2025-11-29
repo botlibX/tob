@@ -2,7 +2,7 @@
 
 
 import inspect
-import types
+import typing
 
 
 from .brokers import display
@@ -12,8 +12,8 @@ from .methods import parse
 
 class Commands:
 
-    cmds = {}
-    names = {}
+    cmds: dict[str, typing.Callable] = {}
+    names: dict[str, str] = {}
 
     @staticmethod
     def add(*args):

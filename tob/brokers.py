@@ -6,7 +6,7 @@ from .message import Message
 
 class Broker:
 
-    objects = {}
+    objects: dict[str, object] = {}
 
     @staticmethod
     def add(obj):
