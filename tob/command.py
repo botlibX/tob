@@ -2,10 +2,7 @@
 
 
 import inspect
-
-
-from types import FunctionType
-from typing import Callable, Iterable
+import types
 
 
 from .brokers import display
@@ -15,18 +12,18 @@ from .methods import parse
 
 class Commands:
 
-    cmds: dict[str, FunctionType] = {}
+    cmds: dict[str, types.FunctionType] = {}
     names: dict[str, str] = {}
 
     @staticmethod
-    def add(*args: FunctionType) -> None:
+    def add(*args: types.FunctionType) -> None:
        for func in args:
             name = func.__name__
             Commands.cmds[name] = func
             Commands.names[name] = func.__module__.split(".")[-1]
 
     @staticmethod
-    def get(cmd: str) -> FunctionType | None:
+    def get(cmd: str) -> types.FunctionType | None:
         return Commands.cmds.get(cmd, None)
 
 
@@ -39,7 +36,7 @@ def command(evt: Message) -> None:
     evt.ready()
 
 
-def scan(module: object) -> None:
+def scan(module: types.ModuleType) -> None:
     for key, cmdz in inspect.getmembers(module, inspect.isfunction):
         if key.startswith("cb"):
             continue

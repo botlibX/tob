@@ -2,9 +2,7 @@
 
 
 import sys
-
-
-from types import ModuleType
+import types
 
 
 from .command import scan
@@ -28,7 +26,10 @@ class Kernel:
         Mods.configure()
 
 
-def scanner(names: list[str], init=False) -> list[tuple[ModuleType, Thread]]:
+def scanner(
+            names: list[str],
+            init=False
+           ) -> list[tuple[types.ModuleType, Thread]]:
     mods = []
     for name in names:
         mod = Mods.get(name)

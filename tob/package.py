@@ -3,9 +3,7 @@
 
 import os
 import sys
-
-
-from types import ModuleType
+import types
 
 
 from .configs import Config
@@ -36,7 +34,7 @@ class Mods:
             Mods.add("mods", "mods")
 
     @staticmethod
-    def get(name: str) -> ModuleType | None:
+    def get(name: str) -> types.ModuleType | None:
         mname = ""
         pth = ""
         if name in spl(Mods.ignore):

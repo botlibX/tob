@@ -4,9 +4,7 @@
 import datetime
 import os
 import types
-
-
-from typing import Any, ItemsView, KeysView, ValuesView
+import typing
 
 
 class Reserved(Exception):
@@ -64,7 +62,7 @@ def ident(obj: Object) -> str:
     return os.path.join(fqn(obj), *str(datetime.datetime.now()).split())
 
 
-def items(obj: Object | dict[str, str]) -> ItemsView:
+def items(obj: Object | dict[str, str]) -> typing.ItemsView:
     if isinstance(obj, dict):
         return obj.items()
     if isinstance(obj, types.MappingProxyType):
@@ -72,7 +70,7 @@ def items(obj: Object | dict[str, str]) -> ItemsView:
     return obj.__dict__.items()
 
 
-def keys(obj: Object | dict) -> KeysView:
+def keys(obj: Object | dict) -> typing.KeysView:
     if isinstance(obj, dict):
         return obj.keys()
     return obj.__dict__.keys()
@@ -80,7 +78,7 @@ def keys(obj: Object | dict) -> KeysView:
 
 def update(
            obj: Object,
-           data: Object | dict[str, Any],
+           data: Object | dict[str, typing.Any],
            empty: bool =True
           ) -> None:
     if isinstance(obj, type):
@@ -98,7 +96,7 @@ def update(
             setattr(obj, key, value)
 
 
-def values(obj: Object) -> ValuesView:
+def values(obj: Object) -> typing.ValuesView:
     if isinstance(obj, dict):
         return obj.values()
     return obj.__dict__.values()

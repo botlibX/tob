@@ -15,9 +15,15 @@ class Message(Default):
         self._ready = threading.Event()
         self._result = {}
         self._thr = None
+        self.args = []
+        self.cmd = ""
+        self.index = 0
         self.kind = "event"
+        self.opts = ""
         self.orig = ""
-
+        self.rest = ""
+        self.text = ""
+        
     def ready(self) -> None:
         self._ready.set()
 

@@ -1,7 +1,7 @@
 # This file is placed in the Public Domain.
 
 
-from typing import Any, Generator
+import typing
 
 
 from .message import Message
@@ -9,25 +9,25 @@ from .message import Message
 
 class Broker:
 
-    objects: dict[str, Any] = {}
+    objects: dict[str, typing.Any] = {}
 
     @staticmethod
-    def add(obj: Any) -> None:
+    def add(obj: typing.Any) -> None:
         Broker.objects[repr(obj)] = obj
         
     @staticmethod
-    def all(attr: str) -> Generator[str, object]:
+    def all(attr: str) -> typing.Generator[str, object]:
         for obj in Broker.objects.values():
             if attr and attr not in dir(obj):
                 continue
             yield obj
 
     @staticmethod
-    def get(origin: str) -> Any:
+    def get(origin: str) -> typing.Any:
         return Broker.objects.get(origin, None)
 
     @staticmethod
-    def like(origin: str) -> list[Any]:
+    def like(origin: str) -> list[typing.Any]:
         res = []
         for orig in Broker.objects:
             if origin.split()[0] in orig.split()[0]:

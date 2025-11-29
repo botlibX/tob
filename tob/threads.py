@@ -6,10 +6,9 @@ import os
 import queue
 import threading
 import time
+import types
+import typing
 import _thread
-
-
-from typing import Callable
 
 
 from .methods import name
@@ -54,7 +53,11 @@ class Thread(threading.Thread):
             raise ex
 
 
-def launch(func: Callable, *args, **kwargs) -> Thread:
+def launch(
+           func: typing.Callable,
+           *args,
+           **kwargs
+          ) -> Thread:
     try:
         thread = Thread(func, *args, **kwargs)
         thread.start()

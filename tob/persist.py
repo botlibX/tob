@@ -5,9 +5,7 @@ import json
 import os
 import threading
 import time
-
-
-from typing import Any, Generator
+import typing
 
 
 from .objects import Object, fqn, items, keys, update
@@ -21,10 +19,10 @@ lock = threading.RLock()
 
 class Cache:
 
-    objects: dict[str, Any] = {}
+    objects: dict[str, typing.Any] = {}
 
     @staticmethod
-    def add(path: str, obj: Object | dict[str, Any]) -> None:
+    def add(path: str, obj: Object | dict[str, typing.Any]) -> None:
         Cache.objects[path] = obj
 
     @staticmethod
@@ -32,7 +30,7 @@ class Cache:
         return Cache.objects.get(path, None)
 
     @staticmethod
-    def sync(path: str, obj: Object | dict[str, Any]) -> None:
+    def sync(path: str, obj: Object | dict[str, typing.Any]) -> None:
         if path not in Cache.objects:
             return Cache.add(path, obj)
         update(Cache.objects[path], obj)
@@ -54,7 +52,7 @@ def find(
          selector: dict = {},
          removed: bool = False,
          matching=False
-        ) -> Generator[tuple[str, Object | dict[Any, Any]]]:
+        ) -> typing.Generator[tuple[str, Object | dict[typing.Any, typing.Any]]]:
     if selector is None:
         selector = {}
     fullname = long(kind)
@@ -71,7 +69,7 @@ def find(
         yield pth, obj
 
 
-def fns(kind: str) -> Generator[str]:
+def fns(kind: str) -> typing.Generator[str]:
     path = store(kind)
     for rootdir, dirs, _files in os.walk(path, topdown=True):
         for dname in dirs:

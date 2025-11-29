@@ -1,10 +1,20 @@
 # This file is placed in the Public Domain.
 
 
+import inspect
+import typing
+
+
+from .configs import Config
+from .message import Message
 from .objects import Object, fqn, items
 
 
-def edit(obj: object, setter: dict[str, str], skip: bool = True) -> None:
+def edit(
+         obj: Object,
+         setter: dict[str, str],
+         skip: bool = True
+        ) -> None:
     for key, val in items(setter):
         if skip and val == "":
             continue
@@ -57,26 +67,12 @@ def fmt(
     return txt.strip()
 
 
-def name(obj, short=False):
-    typ = type(obj)
-    res = ""
-    if "__builtins__" in dir(typ):
-        res = obj.__name__
-    elif "__self__" in dir(obj):
-        res = f"{obj.__self__.__class__.__name__}.{obj.__name__}"
-    elif "__class__" in dir(obj) and "__name__" in dir(obj):
-        res = f"{obj.__class__.__name__}.{obj.__name__}"
-    elif "__class__" in dir(obj):
-        res =  f"{obj.__class__.__module__}.{obj.__class__.__name__}"
-    elif "__name__" in dir(obj):
-        res = f"{obj.__class__.__name__}.{obj.__name__}"
-    if short:
-        res = res.split(".")[-1]
-    return res
+def name(obj: typing.Any):
+    return inspect.getmodulename(inspect.getsource(obj))
 
 
-def parse(obj, text):
-    data = {
+def parse(obj: type[Config] | Message, text: str):
+    data: dict[str, typing.Any] = {
         "args": [],
         "cmd": "",
         "gets": {},

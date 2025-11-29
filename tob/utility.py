@@ -6,10 +6,8 @@ import os
 import pathlib
 import sys
 import time
-
-
-from types import ModuleType
-from typing import Any, Callable
+import types
+import typing
 
 
 from .objects import Object
@@ -111,12 +109,12 @@ def forever() -> None:
             break
 
 
-def getmain(name: str) -> Any:
+def getmain(name: str) -> typing.Any:
     main = sys.modules.get("__main__")
     return getattr(main, name, None)
 
 
-def importer(name: str, pth: str = "") -> ModuleType | None:
+def importer(name: str, pth: str = "") -> types.ModuleType | None:
     if pth and os.path.exists(pth):
         spec = importlib.util.spec_from_file_location(name, pth)
     else:
@@ -163,12 +161,12 @@ def spl(txt: str) -> list[str]:
     return [x for x in result if x]
 
 
-def where(obj: Any) -> str:
+def where(obj: typing.Any) -> str:
     import inspect
     return os.path.dirname(inspect.getfile(obj))
 
 
-def wrap(func: Callable) -> None:
+def wrap(func: types.FunctionType) -> None:
     import termios
     old = None
     try:
@@ -182,7 +180,7 @@ def wrap(func: Callable) -> None:
             termios.tcsetattr(sys.stdin.fileno(), termios.TCSADRAIN, old)
 
 
-def wrapped(func: Callable) -> None:
+def wrapped(func: types.FunctionType) -> None:
     try:
         func()
     except (KeyboardInterrupt, EOFError):

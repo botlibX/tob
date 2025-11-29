@@ -2,9 +2,7 @@
 
 
 import queue
-
-
-from typing import Callable
+import types
 
 
 from .message import Message
@@ -39,7 +37,7 @@ class Handler:
     def put(self, event: Message) -> None:
         self.queue.put(event)
 
-    def register(self, kind: str, callback: Callable) -> None:
+    def register(self, kind: str, callback: types.FunctionType) -> None:
         self.cbs[kind] = callback
 
     def start(self) -> None:
