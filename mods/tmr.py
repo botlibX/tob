@@ -24,6 +24,8 @@ def init():
     Timers.path = last(Timers.timers) or getpath(Timers.timers)
     remove = []
     for tme, args in items(Timers.timers):
+        if not args:
+            continue
         orig, channel, txt = args
         for origin in Broker.like(orig):
             if not origin:
