@@ -1,8 +1,6 @@
 # This file is placed in the Public Domain.
 
 
-
-
 class Broker:
 
     objects: dict[str, object] = {}

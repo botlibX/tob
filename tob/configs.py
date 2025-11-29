@@ -6,16 +6,8 @@ from .objects import Default
 
 class Config(Default):
 
-    args: list[str] = []
     debug = False
-    gets: dict[str, str] = {}
-    ignore = ""
-    index = 0
-    local = False
-    mods = False
-    network = False
-    sets: dict[str, str]  = {}
-    silent: dict[str, str] = {}
+    name = ""
     version = 0
 
 

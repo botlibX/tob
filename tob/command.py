@@ -11,8 +11,8 @@ from .methods import parse
 
 class Commands:
 
-    cmds: dict[str, typing.Callable] = {}
-    names: dict[str, str] = {}
+    cmds = {}
+    names = {}
 
     @staticmethod
     def add(*args):

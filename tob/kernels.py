@@ -20,8 +20,6 @@ class Kernel:
         parse(Config, " ".join(sys.argv[1:]))
         level(Config.sets.get("level", "info"))
         Workdir.configure(Config.name)
-        if "n" not in Config.opts:
-            Mods.ignore = Config.ignore
         Mods.configure()
 
 
