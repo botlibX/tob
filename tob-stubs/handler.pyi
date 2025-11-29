@@ -6,7 +6,6 @@ import types
 
 
 from .message import Message
-from .threads import launch
 
 
 class Handler:

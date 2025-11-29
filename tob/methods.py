@@ -1,12 +1,9 @@
 # This file is placed in the Public Domain.
 
 
-import inspect
 
 
-from .configs import Config
-from .message import Message
-from .objects import Object, fqn, items
+from .objects import fqn, items
 
 
 def edit(obj, setter={}, skip=False):

@@ -2,7 +2,6 @@
 
 
 import sys
-import types
 
 
 from .command import scan
@@ -10,7 +9,7 @@ from .configs import Config
 from .loggers import level
 from .methods import parse
 from .package import Mods
-from .threads import Thread, launch
+from .threads import launch
 from .workdir import Workdir
 
 

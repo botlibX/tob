@@ -1,16 +1,13 @@
 # This file is placed in the Public Domain.
 
 
-import logging
 import queue
 import threading
-import _thread
 
 
 from .brokers import Broker
 from .handler import Handler
 from .message import Message
-from .threads import launch
 
 
 class Client(Handler):

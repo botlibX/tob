@@ -1,14 +1,10 @@
 # This file is placed in the Public Domain.
 
 
-import logging
-import os
 import queue
 import threading
 import time
-import types
 import typing
-import _thread
 
 
 from .methods import name

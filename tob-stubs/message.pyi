@@ -2,7 +2,6 @@
 
 
 import threading
-import time
 
 
 from .objects import Default

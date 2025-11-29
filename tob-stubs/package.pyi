@@ -2,13 +2,9 @@
 
 
 import os
-import sys
 import types
 
 
-from .configs import Config
-from .utility import importer, spl
-from .workdir import moddir
 
 
 class Mods:

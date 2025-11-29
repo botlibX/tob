@@ -9,7 +9,6 @@ import _thread
 
 from .brokers import Broker
 from .handler import Handler
-from .message import Message
 from .threads import launch
 
 

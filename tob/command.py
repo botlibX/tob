@@ -6,7 +6,6 @@ import typing
 
 
 from .brokers import display
-from .message import Message
 from .methods import parse
 
 
