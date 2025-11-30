@@ -14,7 +14,7 @@ class Kernel:
 
     @staticmethod
     def configure(txt):
-        parse(Config, " ".join(txt))
+        parse(Config, txt)
         level(Config.sets.get("level", "info"))
         Workdir.configure(Config.name)
         Mods.configure()
