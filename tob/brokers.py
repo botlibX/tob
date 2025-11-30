@@ -3,7 +3,7 @@
 
 class Broker:
 
-    objects: dict[str, object] = {}
+    objects = {}
 
     @staticmethod
     def add(obj):

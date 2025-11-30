@@ -144,7 +144,7 @@ def ver(event):
 
 
 def main():
-    Kernel.configure()
+    Kernel.configure(" ".join(sys.argv[1:]))
     if check("b"):
         threading.excepthook = threadhook
     if check('z'):

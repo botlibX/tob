@@ -30,7 +30,11 @@ Config.debug = True
 Config.name = "objz"
 Config.opts = "m"
 Config.version = 110
-Kernel.configure()
+
+
+Kernel.configure(" ".join(sys.argv[1:]))
+
+
 Workdir.wdr = ".test"
 
 

@@ -5,7 +5,6 @@ import json
 import os
 import threading
 import time
-import typing
 
 
 from .objects import Object, fqn, items, keys, update
@@ -19,18 +18,18 @@ lock = threading.RLock()
 
 class Cache:
 
-    objects: dict[str, typing.Any] = {}
+    objects = {}
 
     @staticmethod
-    def add(path: str, obj: Object | dict[str, typing.Any]) -> None:
+    def add(path, obj):
         Cache.objects[path] = obj
 
     @staticmethod
-    def get(path: str) -> Object | None:
+    def get(path):
         return Cache.objects.get(path, None)
 
     @staticmethod
-    def sync(path: str, obj: Object | dict[str, typing.Any]) -> None:
+    def sync(path, obj):
         if path not in Cache.objects:
             return Cache.add(path, obj)
         update(Cache.objects[path], obj)

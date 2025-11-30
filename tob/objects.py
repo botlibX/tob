@@ -1,8 +1,6 @@
 # This file is placed in the Public Domain.
 
 
-import datetime
-import os
 import types
 
 
@@ -53,10 +51,6 @@ def fqn(obj):
     return kin
 
 
-def ident(obj):
-    return os.path.join(fqn(obj), *str(datetime.datetime.now()).split())
-
-
 def items(obj):
     if isinstance(obj, dict):
         return obj.items()
@@ -101,7 +95,6 @@ def __dir__():
         'construct',
         'fqn',
         'getid',
-        'ident',
         'items',
         'keys',
         'update',

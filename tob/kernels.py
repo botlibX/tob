@@ -1,9 +1,6 @@
 # This file is placed in the Public Domain.
 
 
-import sys
-
-
 from .command import scan
 from .configs import Config
 from .loggers import level
@@ -16,8 +13,8 @@ from .workdir import Workdir
 class Kernel:
 
     @staticmethod
-    def configure():
-        parse(Config, " ".join(sys.argv[1:]))
+    def configure(txt):
+        parse(Config, " ".join(txt))
         level(Config.sets.get("level", "info"))
         Workdir.configure(Config.name)
         Mods.configure()

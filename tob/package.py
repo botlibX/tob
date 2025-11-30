@@ -12,10 +12,10 @@ from .workdir import moddir
 
 class Mods:
 
-    dirs: dict[str, str] = {}
+    dirs = {}
     ignore = ""
     package = __spec__.parent or ""
-    path = os.path.dirname(__spec__.loader.path) # type: ignore
+    path = os.path.dirname(__spec__.loader.path)
 
     @staticmethod
     def add(name: str, path):

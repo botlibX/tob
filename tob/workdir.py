@@ -1,11 +1,12 @@
 # This file is placed in the Public Domain.
 
 
+import datetime
 import os
 import pathlib
 
 
-from .objects import Object, ident
+from .objects import fqn
 
 
 class Workdir:
@@ -13,16 +14,20 @@ class Workdir:
     wdr = ""
 
     @staticmethod
-    def configure(name: str) -> None:
+    def configure(name):
         Workdir.wdr = os.path.expanduser(f"~/.{name}")
         skel()
 
 
-def getpath(obj: Object) -> str:
+def getpath(obj):
     return store(ident(obj))
 
 
-def long(name: str) -> str:
+def ident(obj):
+    return os.path.join(fqn(obj), *str(datetime.datetime.now()).split())
+
+
+def long(name: str):
     split = name.split(".")[-1].lower()
     res = name
     for names in types():
@@ -32,15 +37,15 @@ def long(name: str) -> str:
     return res
 
 
-def moddir(modname: str = "") -> str:
+def moddir(modname: str = ""):
     return os.path.join(Workdir.wdr, modname or "mods")
 
 
-def pidname(name: str) -> str:
+def pidname(name: str):
     return os.path.join(Workdir.wdr, f"{name}.pid")
 
 
-def skel() -> None:
+def skel():
     path = store()
     if os.path.exists(path):
         return
@@ -50,11 +55,11 @@ def skel() -> None:
     pth.mkdir(parents=True, exist_ok=True)
 
 
-def store(fnm: str = "") -> str:
+def store(fnm: str = ""):
     return os.path.join(Workdir.wdr, "store", fnm)
 
 
-def types() -> list[str]:
+def types():
     skel()
     return os.listdir(store())
 
