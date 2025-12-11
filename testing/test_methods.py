@@ -7,7 +7,7 @@
 import unittest
 
 
-from tob.methods import fmt
+from tob.methods import Methods
 from tob.objects import Object
 
 
@@ -16,4 +16,4 @@ class TestMethods(unittest.TestCase):
     def testformat(self):
         o = Object()
         o.a = "b"
-        self.assertEqual(fmt(o), 'a="b"')
+        self.assertEqual(Methods.fmt(o), 'a="b"')

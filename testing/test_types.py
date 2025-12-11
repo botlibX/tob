@@ -4,8 +4,12 @@
 import unittest
 
 
-from tob.objects import Object, update
-from tob.serials import dumps, loads
+from tob.objects import Object
+from tob.serials import Json
+
+
+dumps = Json.dumps
+loads = Json.loads
 
 
 class TestTypes(unittest.TestCase):
@@ -31,12 +35,12 @@ class TestTypes(unittest.TestCase):
         self.assertEqual(obj, True)
 
     def test_false(self):
-        obj = loads(dumps(False))
+        obj = loads(Json.dumps(False))
         self.assertEqual(obj, False)
 
     def test_object(self):
         ooo = Object()
         ooo.a = "b"
         obj = Object()
-        update(obj, loads(dumps(ooo)))
+        Object.update(obj, Json.loads(dumps(ooo)))
         self.assertEqual(obj.a, "b")

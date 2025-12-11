@@ -10,7 +10,7 @@ sys.path.insert(0, ".")
 
 
 from tob.objects import Object
-from tob.persist import Cache, write
+from tob.persist import Cache, Disk
 from tob.workdir import Workdir
 
 
@@ -22,15 +22,7 @@ Workdir.wdr = '.test'
 
 ATTRS1 = (
     'Cache',
-    'attrs',
-    'deleted',
-    'find',
-    'fns', 
-    'fntime',
-    'last',
-    'read',
-    'search',
-    'write'
+    'Disk'
 )
 
 
@@ -56,6 +48,5 @@ class TestStorage(unittest.TestCase):
 
     def test_save(self):
         obj = Object()
-        opath = write(obj)
-        print(opath)
+        opath = Disk.write(obj)
         self.assertTrue(os.path.exists(opath))
