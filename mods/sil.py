@@ -4,13 +4,16 @@
 from tob.brokers import Broker
 
 
+get = Broker.get
+
+
 def sil(event):
-    bot = Broker.get(event.orig)
+    bot = get(event.orig)
     bot.silent = True
     event.reply("ok")
 
 
 def lou(event):
-    bot = Broker.get(event.orig)
+    bot = get(event.orig)
     bot.silent = False
     event.reply("ok")

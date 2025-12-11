@@ -10,18 +10,14 @@ import time
 from http.server import HTTPServer, BaseHTTPRequestHandler
 
 
-from tob.configs import Config
+from tob.kernels import Config
 from tob.objects import Object
-from tob.threads import launch
-from tob.utility import importer
+from tob.package import Mods
+from tob.threads import Threads
 
 
 def init():
-    mod = importer(f"{Config.name}.nucleus")
-    if not mod:
-        logging.warning("can't find web directory")
-        return
-    Cfg.path = mod.__path__[0]
+    Cfg.path = os.path.join(Mods.path, "network", "html")
     if not os.path.exists(os.path.join(Cfg.path, 'index.html')):
         logging.warning("no index.html")
         return
@@ -60,7 +56,7 @@ class HTTP(HTTPServer, Object):
         self.shutdown()
 
     def start(self):
-        launch(self.serve_forever)
+        Threads.launch(self.serve_forever)
         self._status = "ok"
 
     def request(self):

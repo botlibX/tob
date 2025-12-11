@@ -1,11 +1,11 @@
 # This file is been placed in the Public Domain.
 
 
-from tob.workdir import types
+from tob.workdir import Workdir
 
 
 def lst(event):
-    tps = types()
+    tps = Workdir.types()
     if tps:
         event.reply(",".join({x.split(".")[-1].lower() for x in tps}))
     else:

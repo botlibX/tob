@@ -4,19 +4,19 @@
 "fields"
 
 
-from tob.persist import attrs
-from tob.workdir import types
+from tob.locater import Locater
+from tob.workdir import Workdir
 
 
 def atr(event):
     if not event.rest:
-        res = sorted([x.split('.')[-1].lower() for x in types()])
+        res = sorted([x.split('.')[-1].lower() for x in Workdir.types()])
         if res:
             event.reply(",".join(res))
         else:
             event.reply("no types")
         return
-    items = attrs(event.args[0])
+    items = Locater.attrs(event.args[0])
     if not items:
         event.reply("no fields")
     else:

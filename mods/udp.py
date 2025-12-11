@@ -10,9 +10,9 @@ import time
 
 
 from tob.brokers import Broker
-from tob.configs import Config
+from tob.kernels import Config
 from tob.objects import Object
-from tob.threads import launch
+from tob.threads import Threads
 
 
 def init():
@@ -71,7 +71,7 @@ class UDP(Object):
                          )
 
     def start(self):
-        launch(self.loop)
+        Threads.launch(self.loop)
 
 
 def toudp(host, port, txt):

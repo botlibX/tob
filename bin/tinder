@@ -2,7 +2,6 @@
 # This file is placed in the Public Domain.
 
 
-import logging
 import os
 import queue
 import shutil
@@ -15,24 +14,20 @@ sys.path.insert(0, os.getcwd())
 
 
 from tob.clients import Client, Output
-from tob.command import Commands, command
-from tob.configs import Config
-from tob.kernels import Kernel, scanner
+from tob.command import Commands
+from tob.kernels import Config, Kernel
 from tob.message import Message
-from tob.methods import fmt, parse
-from tob.package import modules
-from tob.threads import launch, threadhook
-from tob.utility import elapsed
+from tob.methods import Methods
+from tob.package import Mods
+from tob.threads import Threads
+from tob.utility import Utils
 from tob.workdir import Workdir
 
 
 Config.debug = True
-Config.name = "objz"
+Config.name = "tob"
 Config.opts = "m"
-Config.version = 110
-
-
-Kernel.configure(" ".join(sys.argv[1:]))
+Config.version = 150
 
 
 Workdir.wdr = ".test"
@@ -45,7 +40,7 @@ class CLI(Output):
 
     def __init__(self):
         Output.__init__(self)
-        self.register("command", command)
+        self.register("command", Commands.command)
 
     def raw(self, txt):
         if "v" in Config.opts:
@@ -83,14 +78,25 @@ class Pool:
 
 def banner(name, version):
     tme = time.ctime(time.time()).replace("  ", " ")
-    logger = logging.getLogger()
     print("%s %s since %s (%s)" % (
                                    name.upper(),
                                    version,
                                    tme,
-                                   logging.getLevelName(logger.getEffectiveLevel())
+                                   Config.level
                                   ))
     sys.stdout.flush()
+
+
+def check(text):
+    args = sys.argv[1:]
+    for arg in args:
+        if not arg.startswith("-"):
+            continue
+        for char in text:
+            if char in arg:
+                return True
+
+    return False
 
 
 def consume():
@@ -114,14 +120,16 @@ def payload(todo):
 
 
 def main():
+    launch = Threads.launch
     if os.path.exists(Workdir.wdr):
         shutil.rmtree(Workdir.wdr)
-    parse(Config, " ".join(sys.argv[1:]))
+    Kernel.configure(check("m"), check('n'))
+    Methods.parse(Config, " ".join(sys.argv[1:]))
+    Kernel.scanner(Mods.list())
     if "b" in Config.opts:
-        threading.excepthook = threadhook
+        threading.excepthook = Threading.threadhook
     if "v" in Config.opts:
         banner(Config.name, Config.version)
-    scanner(modules())
     if "z" in Config.opts:
         Pool.init(CLI, os.cpu_count())
     else:
@@ -148,24 +156,24 @@ def main():
     except (KeyboardInterrupt, EOFError):
         os._exit(0)
     endtime = time.time()
-    lap = elapsed(endtime-starttime)
+    lap = Utils.elapsed(endtime-starttime)
     percall = (endtime-starttime)/nrevents
     nrs = events.qsize()
     if "v" in Config.opts:
-        print(fmt(Config))
+        print(f"{Methods.fmt(Config)}")
         print(f"{nrs} events left.")
         print(f"total: {lap} nrs: {nrevents} call: %.6fs" % percall)
-    os._exit(0)
+    sys.stdout.flush()
+    #os._exit(0)
 
 
 examples = {
     "cmd": [""],
     "dis": [""],
-    "dne": ["", "test2"],
+    "dne": ["", "bla"],
     "dpl": ["hnrss title,url", ""],
     "flt": [""],
     "fnd": ["", "log", "rss", "config", "todo"],
-    "log": ["", "test"],
     "man": [""],
     "mod": [""],
     "mre": [""],
@@ -175,7 +183,6 @@ examples = {
     "req": [""],
     "res": ["", "hnrss"],
     "srv": [""],
-    "tdo": ["", "test2", "test3"],
     "thr": [""],
     "upt": [""]
 }
@@ -184,14 +191,14 @@ examples = {
 pre = {
     "cfg": ["", "nick=mekker"],
     "imp": ["", "testing/feeds.opml"],
-    "log": ["", "bla"],
-    "rss": ["","http://hnrss.org/newest"],
-    "tdo": ["", "mekker"]
+    "log": ["", "log add"],
+    "rss": ["", "http://hnrss.org/newest"],
+    "tdo": ["", "todo add"]
 }
 
 
 post = {
-    "dne": ["", "hnrss"],
+    "dne": ["", "mekker"],
     "exp": [""],
     "rem": ["", "hnrss"]
 }

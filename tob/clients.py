@@ -1,6 +1,9 @@
 # This file is placed in the Public Domain.
 
 
+"client-side event handling"
+
+
 import logging
 import queue
 import threading
@@ -8,14 +11,15 @@ import _thread
 
 
 from .brokers import Broker
+from .command import Commands
 from .handler import Handler
-from .threads import launch
+from .threads import Threads
 
 
 class Client(Handler):
 
     def __init__(self):
-        Handler.__init__(self)
+        super().__init__()
         self.olock = threading.RLock()
         self.oqueue = queue.Queue()
         self.silent = True
@@ -27,11 +31,9 @@ class Client(Handler):
 
     def display(self, event):
         with self.olock:
-            for tme in sorted(event._result.keys()):
-                self.dosay(
-                           event.channel,
-                           event._result.get(tme)
-                          )
+            for tme in event.result:
+                txt = event.result.get(tme)
+                self.dosay(event.channel, txt)
 
     def dosay(self, channel, text):
         self.say(channel, text)
@@ -50,6 +52,13 @@ class Client(Handler):
             _thread.interrupt_main()
 
 
+class CLI(Client):
+ 
+     def __init__(self):
+         super().__init__()
+         self.register("command", Commands.command)
+
+
 class Output(Client):
 
     def output(self):
@@ -62,7 +71,7 @@ class Output(Client):
             self.oqueue.task_done()
 
     def start(self):
-        launch(self.output)
+        Threads.launch(self.output)
         super().start()
 
     def stop(self):
@@ -73,5 +82,6 @@ class Output(Client):
 def __dir__():
     return (
         'Client',
+        'CLI',
         'Output'
     )

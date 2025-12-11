@@ -1,16 +1,10 @@
 # This file is placed in the Public Domain.
 
 
+"log exceptions"
+
+
 import logging
-
-
-from .statics import LEVELS
-
-
-class Logging:
-
-    datefmt = "%H:%M:%S"
-    format = "%(module).3s %(message)s"
 
 
 class Format(logging.Formatter):
@@ -20,22 +14,24 @@ class Format(logging.Formatter):
         return logging.Formatter.format(self, record)
 
 
-def level(loglevel):
-    lvl = LEVELS.get(loglevel)
-    if not lvl:
-        return
-    logger = logging.getLogger()
-    for handler in logger.handlers:
-        logger.removeHandler(handler)
-    logger.setLevel(lvl)
-    formatter = Format(Logging.format, datefmt=Logging.datefmt)
-    ch = logging.StreamHandler()
-    ch.setFormatter(formatter)
-    logger.addHandler(ch)
+class Logging:
+
+    datefmt = "%H:%M:%S"
+    format = "%(module).3s %(message)s"
+
+    @staticmethod
+    def level(loglevel):
+        formatter = Format(Logging.format, Logging.datefmt)
+        stream = logging.StreamHandler()
+        stream.setFormatter(formatter)
+        logging.basicConfig(
+                            level=loglevel.upper(),
+                            handlers=[stream,],
+                            force=True
+                           )
 
 
 def __dir__():
     return (
         'Logging',
-        'level'
     )

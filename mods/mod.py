@@ -1,8 +1,8 @@
 # This file is placed in the Public Domain.
 
 
-from tob.package import modules
+from tob.package import Mods
 
 
 def mod(event):
-    event.reply(",".join(modules()))
+    event.reply(Mods.list())

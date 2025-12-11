@@ -2,8 +2,8 @@
 
 
 from tob.brokers import Broker
-from tob.methods import fmt
-from tob.threads import name
+from tob.methods import Methods
+from tob.threads import Threads
 
 
 def flt(event):
@@ -11,8 +11,8 @@ def flt(event):
     if event.args:
         index = int(event.args[0])
         if index < len(clts):
-            event.reply(fmt(list(clts)[index]), empty=True)
+            event.reply(Methods.fmt(list(clts)[index]), empty=True)
         else:
             event.reply(f"only {len(clts)} clients in fleet.")
         return
-    event.reply(' | '.join([name(o) for o in clts]))
+    event.reply(' | '.join([Threads.name(o) for o in clts]))

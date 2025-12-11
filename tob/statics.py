@@ -1,17 +1,7 @@
 # This file is placed in the Public Domain.
 
 
-import logging
-
-
-LEVELS = {
-    'debug': logging.DEBUG,
-    'info': logging.INFO,
-    'warning':logging. WARNING,
-    'warn': logging.WARNING,
-    'error': logging.ERROR,
-    'critical': logging.CRITICAL
-}
+"statics don't change"
 
 
 MONTH = {
@@ -56,7 +46,6 @@ TIMES = [
 
 def __dir__():
     return (
-        'LEVELS',
         'MONTH',
         'SYSTEMD',
         'TIMES'

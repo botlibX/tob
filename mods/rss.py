@@ -20,14 +20,23 @@ from urllib.parse import quote_plus, urlencode
 
 
 from tob.brokers import Broker
-from tob.configs import Config
-from tob.methods import fmt
-from tob.objects import Object, update
-from tob.persist import find, fntime, last, write
+from tob.kernels import Config
+from tob.locater import Locater
+from tob.methods import Methods
+from tob.objects import Object
+from tob.persist import Disk
 from tob.repeats import Repeater
-from tob.threads import launch
-from tob.utility import elapsed, spl
-from tob.workdir import getpath
+from tob.threads import Threads
+from tob.utility import Utils
+from tob.workdir import Workdir
+
+
+elapsed = Utils.elapsed
+fmt     = Methods.fmt
+find    = Locater.find
+fntime  = Locater.fntime
+update  = Object.update
+write   = Disk.write
 
 
 def init():
@@ -36,7 +45,7 @@ def init():
     if fetcher.seenfn:
         logging.warning("since %s", elapsed(time.time()-fntime(fetcher.seenfn)))
     else:
-        logging.warning("since %s", time.ctime(time.time()))
+        logging.warning("since %s", time.ctime(time.time()).replace("  ", " "))
     return fetcher
 
 
@@ -121,7 +130,7 @@ class Fetcher(Object):
                 result.append(fed)
             setattr(self.seen, feed.rss, urls)
             if not self.seenfn:
-                self.seenfn = getpath(self.seen)
+                self.seenfn = Workdir.path(self.seen)
             write(self.seen, self.seenfn)
         if silent:
             return counter
@@ -138,11 +147,11 @@ class Fetcher(Object):
     def run(self, silent=False):
         thrs = []
         for _fn, feed in find("rss.Rss"):
-            thrs.append(launch(self.fetch, feed, silent))
+            thrs.append(Threads.launch(self.fetch, feed, silent))
         return thrs
 
     def start(self, repeat=True):
-        self.seenfn = last(self.seen)
+        self.seenfn = Locater.last(self.seen)
         if repeat:
             repeater = Repeater(300.0, self.run)
             repeater.start()
@@ -188,7 +197,7 @@ class Parser:
         for line in Parser.getitems(txt, toke):
             line = line.strip()
             obj = Object()
-            for itm in spl(items):
+            for itm in Utils.spl(items):
                 val = Parser.getitem(line, itm)
                 if val:
                     val = unescape(val.strip())
@@ -253,7 +262,7 @@ class OPML:
             if not attrz:
                 continue
             obj = Object()
-            for itm in spl(itemz):
+            for itm in Utils.spl(itemz):
                 if itm == "link":
                     itm = "href"
                 val = OPML.getvalue(attrz, itm)

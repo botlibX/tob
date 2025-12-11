@@ -1,6 +1,9 @@
 # This file is placed in the Public Domain.
 
 
+"realisation of serialisation"
+
+
 import json
 import types
 
@@ -23,28 +26,28 @@ class Encoder(json.JSONEncoder):
                 return repr(o)
 
 
-def dump(*args, **kw):
-    kw["cls"] = Encoder
-    return json.dump(*args, **kw)
+class Json:
 
+    @staticmethod
+    def dump(*args, **kw):
+        kw["cls"] = Encoder
+        return json.dump(*args, **kw)
 
-def dumps(*args, **kw):
-    kw["cls"] = Encoder
-    return json.dumps(*args, **kw)
+    @staticmethod
+    def dumps(*args, **kw):
+        kw["cls"] = Encoder
+        return json.dumps(*args, **kw)
 
+    @staticmethod
+    def load(s, *args, **kw):
+        return json.load(s, *args, **kw)
 
-def load(s, *args, **kw):
-    return json.load(s, *args, **kw)
-
-
-def loads(s, *args, **kw):
-    return json.loads(s, *args, **kw)
+    @staticmethod
+    def loads(s, *args, **kw):
+        return json.loads(s, *args, **kw)
 
 
 def __dir__():
    return (
-       'dump',
-       'dumps',
-       'load',
-       'loads'
+       'Json',
    )

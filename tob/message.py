@@ -1,6 +1,9 @@
 # This file is placed in the Public Domain.
 
 
+"only message"
+
+
 import threading
 import time
 
@@ -13,22 +16,23 @@ class Message(Default):
     def __init__(self):
         super().__init__()
         self._ready = threading.Event()
-        self._result = {}
-        self._thr = None
+        self.result = {}
+        self.thr = None
         self.args = []
         self.index = 0
         self.kind = "event"
-        
+        self.orig = ""
+
     def ready(self):
         self._ready.set()
 
     def reply(self, text):
-        self._result[time.time()] = text
+        self.result[time.time()] = text
 
     def wait(self, timeout=0.0):
+        if self.thr:
+            self.thr.join(timeout)
         self._ready.wait(timeout or None)
-        if self._thr:
-            self._thr.join(timeout)
 
 
 def __dir__():

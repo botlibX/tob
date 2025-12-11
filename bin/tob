@@ -12,29 +12,24 @@ import time
 sys.path.insert(0, os.getcwd())
 
 
-from tob.command import Commands, command
-from tob.clients import Client
-from tob.configs import Config
-from tob.kernels import Kernel, scanner
+from tob.clients import CLI
+from tob.command import Commands
+from tob.kernels import Config, Kernel
 from tob.message import Message
-from tob.package import modules
+from tob.methods import Methods
+from tob.package import Mods
 from tob.statics import SYSTEMD
-from tob.threads import threadhook
-from tob.utility import daemon, forever, pidfile, privileges, wrap
-from tob.utility import check, spl, wrapped
-from tob.workdir import pidname
+from tob.utility import Utils
+from tob.workdir import Workdir
 
 
-Config.ignore = "udp"
+Config.ignore = "wsd,udp"
+Config.level = "info"
 Config.name = "tob" 
 Config.version = 150
 
 
-class CLI(Client):
-
-    def __init__(self):
-        Client.__init__(self)
-        self.register("command", command)
+class CLI(CLI):
 
     def raw(self, text):
         print(text.encode('utf-8', 'replace').decode("utf-8"))
@@ -55,108 +50,164 @@ class Console(CLI):
         return evt
 
 
-"in the beginning"
+class Runtime:
+
+    @staticmethod
+    def banner():
+        tme = time.ctime(time.time()).replace("  ", " ")
+        print("%s %s since %s (%s)" % (
+                                       Config.name.upper(),
+                                       Config.version,
+                                       tme,
+                                       Config.level.upper()
+                                      ))
+        sys.stdout.flush()
+
+    @staticmethod
+    def check(text):
+        args = sys.argv[1:]
+        for arg in args:
+            if not arg.startswith("-"):
+                continue
+            for char in text:
+                if char in arg:
+                   return True
+
+        return False
+
+    @staticmethod
+    def daemon(verbose=False, nochdir=False):
+        pid = os.fork()
+        if pid != 0:
+            os._exit(0)
+        os.setsid()
+        pid2 = os.fork()
+        if pid2 != 0:
+            os._exit(0)
+        if not verbose:
+            with open('/dev/null', 'r', encoding="utf-8") as sis:
+                os.dup2(sis.fileno(), sys.stdin.fileno())
+            with open('/dev/null', 'a+', encoding="utf-8") as sos:
+                os.dup2(sos.fileno(), sys.stdout.fileno())
+            with open('/dev/null', 'a+', encoding="utf-8") as ses:
+                os.dup2(ses.fileno(), sys.stderr.fileno())
+        if not nochdir:
+            os.umask(0)
+            os.chdir("/")
+        os.nice(10)
+
+    @staticmethod
+    def privileges():
+        import getpass
+        import pwd
+        pwnam2 = pwd.getpwnam(getpass.getuser())
+        os.setgid(pwnam2.pw_gid)
+        os.setuid(pwnam2.pw_uid)
+
+    @staticmethod
+    def wrap(func):
+        import termios
+        old = None
+        try:
+            old = termios.tcgetattr(sys.stdin.fileno())
+        except termios.error:
+            pass
+        try:
+            Utils.wrapped(func)
+        finally:
+            if old:
+                termios.tcsetattr(sys.stdin.fileno(), termios.TCSADRAIN, old)
 
 
-def banner():
-    tme = time.ctime(time.time()).replace("  ", " ")
-    logger = logging.getLogger()
-    print("%s %s since %s (%s)" % (
-                                   Config.name.upper(),
-                                   Config.version,
-                                   tme,
-                                   logging.getLevelName(logger.getEffectiveLevel())
-                                  ))
-    sys.stdout.flush()
+class Scripts:
+
+    @staticmethod
+    def background():
+        Runtime.daemon(check("v"), check("m"))
+        Runtime.privileges()
+        Workdir.pidfile(Workdir.pidname(Config.name))
+        Commands.add(Cmds.cmd, Cmds.ver)
+        Kernel.scanner(Mods.list() or "irc,rss")
+        Kernel.init(Mods.list() or "irc,rss")
+        Kernel.forever()
+
+    @staticmethod
+    def console():
+        import readline
+        Methods.parse(Config, " ".join(sys.argv[1:]))
+        if "v" in Config.opts:
+            Runtime.banner()
+        if "a" in Config.opts:
+            Config.init = Mods.list()
+        else:
+            Config.init = Config.sets.init or Config.init
+        if Config.init:
+            logging.info(Config.init)
+        Kernel.scanner(Config.init)
+        Commands.add(Cmds.cmd, Cmds.ver)
+        if "i" in Config.opts:
+            Kernel.init(Config.init, "w" in Config.opts)
+        csl = Console()
+        csl.start()
+        Kernel.forever()
+
+    @staticmethod
+    def control():
+        if len(sys.argv) == 1:
+            return
+        Kernel.scanner(Mods.list())
+        Commands.add(Cmds.cmd, Cmds.srv, Cmds.ver)
+        csl = CLI()
+        csl.silent = False
+        evt = Message()
+        evt.orig = repr(csl)
+        evt.text = " ".join(sys.argv[1:])
+        evt.type = "command"
+        Commands.command(evt)
+        evt.wait()
+
+    @staticmethod
+    def service():
+        Runtime.privileges()
+        Workdir.pidfile(Utils.pidname(Config.name))
+        Kernel.scanner(Config.init or "irc,rss")
+        Commands.add(Cmds.cmd, Cmds.ver)
+        Kernel.init(Config.init or "irc,rss")
+        Kernel.forever()
 
 
-"scripts"
+class Cmds:
 
+    @staticmethod
+    def cmd(event):
+        event.reply(",".join(sorted(Commands.names or Commands.cmds)))
 
-def background():
-    daemon(check("v"))
-    privileges()
-    scanner(modules(), True)
-    Commands.add(cmd, ver)
-    pidfile(pidname(Config.name))
-    forever()
+    @staticmethod
+    def srv(event):
+        import getpass
+        name = getpass.getuser()
+        event.reply(SYSTEMD % (Config.name.upper(), name, name, name, Config.name))
 
-
-def console():
-    import readline # noqa: F401
-    if "v" in Config.opts:
-        banner()
-    mods = []
-    if "a" in Config.opts:
-        mods = modules()
-    else:
-        mods = spl(Config.sets.get("init", ""))
-    Commands.add(cmd, ver)
-    csl = Console()
-    for _mod, thr in scanner(mods, True):
-        thr.join(30.0)
-    csl.start()
-    forever()
-
-
-def control():
-    if len(sys.argv) == 1:
-        return
-    scanner(modules(), False)
-    Commands.add(cmd, srv, ver)
-    csl = CLI()
-    csl.silent = False
-    evt = Message()
-    evt.orig = repr(csl)
-    evt.text = " ".join(sys.argv[1:])
-    evt.type = "command"
-    command(evt)
-    evt.wait()
-
-
-def service():
-    privileges()
-    banner(Config.name, Config.version)
-    scanner(modules(), True)
-    Commands.add(cmd, ver)
-    pidfile(pidname(Config.name))
-    forever()
-
-
-"commands"
-
-
-def cmd(event):
-    event.reply(",".join(sorted(Commands.names or Commands.cmds)))
-
-
-def srv(event):
-    import getpass
-    name = getpass.getuser()
-    event.reply(SYSTEMD % (Config.name.upper(), name, name, name, Config.name))
-
-
-def ver(event):
-    event.reply(f"{Config.name.upper()} {Config.version}")
-
-
-"runtime"
+    @staticmethod
+    def ver(event):
+        event.reply(f"{Config.name.upper()} {Config.version}")
 
 
 def main():
-    Kernel.configure(" ".join(sys.argv[1:]))
+    check = Runtime.check
+    Kernel.configure(check("m"), check("n"))
     if check("b"):
         threading.excepthook = threadhook
     if check('z'):
         Config.debug = True
     if check("c"):
-        wrap(console)
+        Runtime.wrap(Scripts.console)
     elif check("d"):
-        background()
+        Scripts.background()
     elif check("s"):
-        wrapped(service)
+        Utils.wrapped(Scripts.service)
     else:
-        wrapped(control)
+        Utils.wrapped(Scripts.control)
 
 
 if __name__ == "__main__":

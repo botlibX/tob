@@ -1,19 +1,21 @@
 # This file is placed in the Public Domain.
 
 
+"things are repeating"
+
+
 import threading
 import time
 
 
-from .methods import name
-from .threads import launch
+from .threads import Threads
 
 
 class Timy(threading.Timer):
 
     def __init__(self, sleep, func, *args, **kwargs):
         super().__init__(sleep, func)
-        self.name = kwargs.get("name", name(func))
+        self.name = kwargs.get("name", Threads.name(func))
         self.sleep = sleep
         self.state = {}
         self.state["latest"] = time.time()
@@ -28,7 +30,7 @@ class Timed:
         self.func = func
         self.kwargs = kwargs
         self.sleep = sleep
-        self.name = thrname or kwargs.get("name", name(func))
+        self.name = thrname or kwargs.get("name", Threads.name(func))
         self.target = time.time() + self.sleep
         self.timer = None
 
@@ -50,7 +52,7 @@ class Timed:
 class Repeater(Timed):
 
     def run(self):
-        launch(self.start)
+        Threads.launch(self.start)
         super().run()
 
 

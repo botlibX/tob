@@ -4,13 +4,9 @@
 import os
 
 
-from tob.configs import Config
-from tob.utility import importer
+from tob.package import Mods
+
 
 def pth(event):
-    mod = importer(f"{Config.name}.nucleus")
-    if not mod:
-        event.reply("can't find web directory.")
-        return
-    path = os.path.join(mod.__path__[0], "index.html")
+    path = os.path.join(Mods.path, 'network', 'html', "index.html")
     event.reply(f"file://{path}")

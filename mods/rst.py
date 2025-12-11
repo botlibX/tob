@@ -10,10 +10,10 @@ import time
 from http.server import HTTPServer, BaseHTTPRequestHandler
 
 
-from tob.configs import Config
+from tob.kernels import Config
 from tob.objects import Object
-from tob.threads import launch
-from tob.workdir import store, types
+from tob.threads import Threads
+from tob.workdir import Workdir
 
 
 def init():
@@ -52,7 +52,7 @@ class REST(HTTPServer, Object):
 
     def start(self):
         self._status = "ok"
-        launch(self.serve_forever)
+        Threads.launch(self.serve_forever)
 
     def request(self):
         self._last = time.time()
@@ -88,11 +88,11 @@ class RESTHandler(BaseHTTPRequestHandler):
         if self.path == "/":
             self.write_header("text/html")
             txt = ""
-            for fnm in types():
+            for fnm in Workdir.types():
                 txt += f'<a href="http://{Cfg.hostname}:{Cfg.port}/{fnm}">{fnm}</a><br>\n'
             self.send(html(txt.strip()))
             return
-        fnm = store() + self.path
+        fnm = Workdir.store() + self.path
         fnm = os.path.abspath(fnm)
         if os.path.isdir(fnm):
             self.write_header("text/html")
@@ -105,7 +105,7 @@ class RESTHandler(BaseHTTPRequestHandler):
         try:
             with open(fnm, "r", encoding="utf-8") as file:
                 txt = file.read()
-                file.ctobe()
+                file.close()
             self.write_header("text/html")
             self.send(html(txt))
         except (TypeError, FileNotFoundError, IsADirectoryError) as ex:

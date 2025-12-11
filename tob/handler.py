@@ -1,10 +1,13 @@
 # This file is placed in the Public Domain.
 
 
+"handle your own events"
+
+
 import queue
 
 
-from .threads import launch
+from .threads import Threads
 
 
 class Handler:
@@ -19,12 +22,12 @@ class Handler:
             event.ready()
             return
         name = event.text and event.text.split()[0]
-        event._thr = launch(func, event, name=name)
+        event._thr = Threads.launch(func, event, name=name)
 
     def loop(self):
         while True:
             event = self.poll()
-            if event is None:
+            if not event:
                 break
             event.orig = repr(self)
             self.callback(event)
@@ -39,7 +42,7 @@ class Handler:
         self.cbs[kind] = callback
 
     def start(self):
-        launch(self.loop)
+        Threads.launch(self.loop)
 
     def stop(self):
         self.queue.put(None)

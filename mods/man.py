@@ -223,7 +223,7 @@ opml
 |
 """
 
-from tob.configs import Config
+from tob.kernels import Config
 
 
 def man(event):

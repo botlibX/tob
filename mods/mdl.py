@@ -8,9 +8,14 @@ import time
 
 from tob.brokers import Broker
 from tob.message import Message
-from tob.objects import Object, construct, keys
+from tob.objects import Object
 from tob.repeats import Repeater
-from tob.utility import elapsed
+from tob.utility import Utils
+
+
+construct = Object.construct
+elapsed   = Utils.elapsed
+keys      = Object.keys
 
 
 def init():
