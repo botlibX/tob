@@ -30,7 +30,14 @@ classifiers=[
 
 
 [tool.setuptools]
-packages=[
+packages = [
     'tob',
+    'tob.modules',
+    'tob.network',
+    'tob.nucleus'
 ]
 include-package-data = true
+
+
+[tool.setuptools.package-data]
+"tob.nucleus" = ["*"]
