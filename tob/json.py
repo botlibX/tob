@@ -4,11 +4,11 @@
 "realisation of serialisation"
 
 
-import json
+import json as jsn
 import types
 
 
-class Encoder(json.JSONEncoder):
+class Encoder(jsn.JSONEncoder):
 
     def default(self, o):
         if isinstance(o, dict):
@@ -18,7 +18,7 @@ class Encoder(json.JSONEncoder):
         if isinstance(o, types.MappingProxyType):
             return dict(o)
         try:
-            return json.JSONEncoder.default(self, o)
+            return jsn.JSONEncoder.default(self, o)
         except TypeError:
             try:
                 return vars(o)
@@ -31,20 +31,20 @@ class Json:
     @staticmethod
     def dump(*args, **kw):
         kw["cls"] = Encoder
-        return json.dump(*args, **kw)
+        return jsn.dump(*args, **kw)
 
     @staticmethod
     def dumps(*args, **kw):
         kw["cls"] = Encoder
-        return json.dumps(*args, **kw)
+        return jsn.dumps(*args, **kw)
 
     @staticmethod
     def load(s, *args, **kw):
-        return json.load(s, *args, **kw)
+        return jsn.load(s, *args, **kw)
 
     @staticmethod
     def loads(s, *args, **kw):
-        return json.loads(s, *args, **kw)
+        return jsn.loads(s, *args, **kw)
 
 
 def __dir__():

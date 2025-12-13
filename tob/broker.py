@@ -19,9 +19,13 @@ class Broker:
                yield obj
 
     @staticmethod
+    def display(evt):
+        bot = Broker.get(evt.orig)
+        bot.display(evt)
+
+    @staticmethod
     def get(origin):
         return Broker.objects.get(origin)
-
 
     @staticmethod
     def like(txt):
@@ -30,13 +34,7 @@ class Broker:
                 yield orig
 
 
-def display(evt):
-    bot = Broker.get(evt.orig)
-    bot.display(evt)
-
-
 def __dir__():
     return (
         'Broker',
-        'display'
     )

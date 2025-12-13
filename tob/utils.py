@@ -12,8 +12,8 @@ import re
 import time
 
 
-from .objects import Object
-from .statics import MONTH, TIMES
+from .object import Object
+from .static import MONTH, TIMES
 
 
 class NoDate(Exception):

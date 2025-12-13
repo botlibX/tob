@@ -8,7 +8,7 @@ import threading
 import time
 
 
-from .threads import Threads
+from .thread import Threads
 
 
 class Timy(threading.Timer):

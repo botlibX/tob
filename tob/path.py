@@ -8,7 +8,7 @@ import os
 import pathlib
 
 
-from .utility import Utils
+from .utils import Utils
 
 
 class Workdir:
@@ -19,11 +19,6 @@ class Workdir:
     def cdir(path):
         pth = pathlib.Path(path)
         pth.parent.mkdir(parents=True, exist_ok=True)
-
-    @staticmethod
-    def configure(name):
-        Workdir.wdr = Workdir.wdr or os.path.expanduser(f"~/.{name}")
-        Workdir.skel()
 
     @staticmethod
     def path(obj):

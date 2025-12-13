@@ -1,17 +1,17 @@
 # This file is placed in the Public Domain.
 
 
-"only message"
+"things happen"
 
 
 import threading
 import time
 
 
-from .objects import Default
+from .object import Default
 
 
-class Message(Default):
+class Event(Default):
 
     def __init__(self):
         super().__init__()
@@ -37,5 +37,5 @@ class Message(Default):
 
 def __dir__():
     return (
-        'Message',
+        'Event',
     )

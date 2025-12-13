@@ -7,8 +7,9 @@
 import os
 
 
-from .workdir import Workdir
-from .utility import Utils
+from .config import Config
+from .path   import Workdir
+from .utils  import Utils
 
 
 class Mods:
@@ -19,19 +20,12 @@ class Mods:
     path = os.path.dirname(__spec__.loader.path)
 
     @staticmethod
-    def add(name: str, path):
+    def add(name, path):
         Mods.dirs[name] = path
 
     @staticmethod
-    def configure(local=False, network=False):
-        name = Mods.package + ".modules" 
-        Mods.add(name, os.path.join(Mods.path, "modules"))
-        Mods.add("modules", Workdir.moddir())
-        if network:
-            name = Mods.package + ".network" 
-            Mods.add(name, os.path.join(Mods.path, "network"))
-        if local:
-            Mods.add("mods", os.path.join(os.getcwd(), "mods"))
+    def addpkg(pkg):
+        Mods.add(pkg.__name__, pkg.__path__[0])
 
     @staticmethod
     def get(name):
@@ -55,22 +49,22 @@ class Mods:
         return mod
 
     @staticmethod
-    def list(ignore=""):
+    def list():
         mods = []
         for name, path in Mods.dirs.items():
-            if name in Utils.spl(ignore):
-                continue
             if not os.path.exists(path):
                 continue
             mods.extend([
                 x[:-3] for x in os.listdir(path)
-                if x.endswith(".py") and not x.startswith("__")
+                if x.endswith(".py") 
+                and not x.startswith("__")
+                and name not in Utils.spl(Config.ignore)
             ])
         return ",".join(sorted(mods)).strip()
 
     @staticmethod
     def mods(names):
-        return [Mods.get(x) for x in sorted(Utils.spl(names))]
+        return [Mods.get(x) for x in sorted(Utils.spl(names)) if x not in Utils.spl(Config.ignore)]
 
 
 def __dir__():

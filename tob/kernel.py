@@ -7,34 +7,16 @@
 import time
 
 
-from .command import Commands
-from .loggers import Logging
-from .objects import Default
-from .package import Mods
-from .threads import Threads
-from .utility import Utils
-from .workdir import Workdir
-
-
-class Config(Default):
-
-    debug = False
-    init = ""
-    level = "info"
-    name = ""
-    opts = ""
-    sets = Default()
-    version = 0
+from .cmnd   import Commands
+from .log    import Logging
+from .object import Default
+from .path   import Workdir
+from .pkg    import Mods
+from .thread import Threads
+from .utils  import Utils
 
 
 class Kernel:
-
-    @staticmethod
-    def configure(local=False, network=False):
-        assert Config.name
-        Logging.level(Config.sets.level or "info")
-        Workdir.configure(Config.name)
-        Mods.configure(local, network)
 
     @staticmethod
     def forever():
@@ -46,15 +28,18 @@ class Kernel:
 
     @staticmethod
     def init(names, wait=False):
+        mods = []
         thrs = []
         for name in Utils.spl(names):
             mod = Mods.get(name)
             if "init" not in dir(mod):
                 continue
             thrs.append(Threads.launch(mod.init))
+            mods.append(name)
         if wait:
             for thr in thrs:
                 thr.join()
+        return mods
 
     @staticmethod
     def scanner(names):
@@ -64,6 +49,5 @@ class Kernel:
 
 def __dir__():
     return (
-        'Config',
-        'Kernel'
+        'Kernel',
     )

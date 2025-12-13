@@ -7,8 +7,8 @@
 import inspect
 
 
-from .brokers import display
-from .methods import Methods
+from .broker import Broker
+from .method import Methods
 
 
 class Commands:
@@ -29,7 +29,7 @@ class Commands:
         func = Commands.get(evt.cmd)
         if func:
            func(evt)
-           display(evt)
+           Broker.display(evt)
         evt.ready()
 
     @staticmethod

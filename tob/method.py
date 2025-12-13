@@ -4,7 +4,7 @@
 "functions with an object as the first argument"
 
 
-from .objects import Default, Object
+from .object import Default, Object
 
 
 class Methods:
