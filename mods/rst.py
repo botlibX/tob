@@ -10,10 +10,10 @@ import time
 from http.server import HTTPServer, BaseHTTPRequestHandler
 
 
-from tob.kernels import Config
-from tob.objects import Object
-from tob.threads import Threads
-from tob.workdir import Workdir
+from tob.config import Config
+from tob.object import Object
+from tob.path   import Workdir
+from tob.thread import Thread
 
 
 def init():
@@ -52,7 +52,7 @@ class REST(HTTPServer, Object):
 
     def start(self):
         self._status = "ok"
-        Threads.launch(self.serve_forever)
+        Thread.launch(self.serve_forever)
 
     def request(self):
         self._last = time.time()

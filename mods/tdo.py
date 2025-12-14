@@ -4,10 +4,7 @@
 import time
 
 
-from tob.locater import Locater
-from tob.objects import Object
-from tob.persist import Disk
-from tob.utility import Utils
+from tob import Disk, Locate, Object, Utils
 
 
 class Todo(Object):
@@ -23,7 +20,7 @@ def dne(event):
         return
     selector = {'txt': event.args[0]}
     nmr = 0
-    for fnm, obj in Locater.find('todo', selector):
+    for fnm, obj in Locate.find('todo', selector):
         nmr += 1
         obj.__deleted__ = True
         Disk.write(obj, fnm)
@@ -36,8 +33,8 @@ def dne(event):
 def tdo(event):
     if not event.rest:
         nmr = 0
-        for fnm, obj in Locater.find('todo', event.gets):
-            lap = Utils.elapsed(time.time()-Locater.fntime(fnm))
+        for fnm, obj in Locate.find('todo', event.gets):
+            lap = Utils.elapsed(time.time()-Locate.fntime(fnm))
             event.reply(f'{nmr} {obj.txt} {lap}')
             nmr += 1
         if not nmr:

@@ -5,7 +5,7 @@ import threading
 import time
 
 
-from tob.utility import Utils
+from tob import Utils
 
 
 STARTTIME = time.time()

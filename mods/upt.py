@@ -4,7 +4,7 @@
 import time
 
 
-from tob.utility import Utils
+from tob.utils import Utils
 
 
 STARTTIME = time.time()

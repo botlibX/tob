@@ -6,17 +6,12 @@ import os
 import time
 
 
-from tob.locater import Locater
-from tob.methods import Methods
-from tob.objects import Object
-from tob.persist import Disk
-from tob.statics import MONTH
-from tob.utility import Utils
-
-
-elapsed = Utils.elapsed
-extract = Utils.extractdate
-fmt = Methods.fmt
+from tob.disk   import Disk
+from tob.locate import Locate
+from tob.method import Method
+from tob.object import Object
+from tob.static import MONTH
+from tob.utils  import Utils
 
 
 class Email(Object):
@@ -74,20 +69,20 @@ def eml(event):
             args.remove(key)
     args = set(args)
     result = sorted(
-                    Locater.find("email", event.gets),
-                    key=lambda x: extract(todate(getattr(x[1], "Date", "")))
+                    Locate.find("email", event.gets),
+                    key=lambda x: Utils/extractdate(todate(getattr(x[1], "Date", "")))
                    )
     if event.index:
         obj = result[event.index]
         if obj:
             obj = obj[-1]
             tme = getattr(obj, "Date", "")
-            event.reply(f'{event.index} {fmt(obj, args, plain=True)} {elapsed(time.time() - extract(todate(tme)))}')
+            event.reply(f'{event.index} {Method.fmt(obj, args, plain=True)} {Utils.elapsed(time.time() - Utils.extractdate(Time.todate(tme)))}')
     else:
         for _fn, obj in result:
             nrs += 1
             tme = getattr(obj, "Date", "")
-            event.reply(f'{nrs} {fmt(obj, args, plain=True)} {elapsed(time.time() - extract(todate(tme)))}')
+            event.reply(f'{nrs} {Method.fmt(obj, args, plain=True)} {Utils.elapsed(time.time() - Utils.extractdate(Time.todate(tme)))}')
     if not result:
         event.reply("no emails found.")
 

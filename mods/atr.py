@@ -4,8 +4,7 @@
 "fields"
 
 
-from tob.locater import Locater
-from tob.workdir import Workdir
+from tob import Locate, Workdir
 
 
 def atr(event):

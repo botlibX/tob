@@ -10,10 +10,10 @@ import time
 from http.server import HTTPServer, BaseHTTPRequestHandler
 
 
-from tob.kernels import Config
-from tob.objects import Object
-from tob.package import Mods
-from tob.threads import Threads
+from tob.config import Config
+from tob.object import Object
+from tob.pkg    import Mods
+from tob.thread import Thread
 
 
 def init():
@@ -56,7 +56,7 @@ class HTTP(HTTPServer, Object):
         self.shutdown()
 
     def start(self):
-        Threads.launch(self.serve_forever)
+        Thread.launch(self.serve_forever)
         self._status = "ok"
 
     def request(self):

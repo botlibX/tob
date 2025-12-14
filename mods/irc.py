@@ -11,20 +11,20 @@ import threading
 import time
 
 
-from tob.brokers import Broker
-from tob.clients import Output
-from tob.command import Commands
-from tob.kernels import Config as Main
-from tob.locater import Locater
-from tob.message import Message
-from tob.methods import Methods
-from tob.persist import Disk
-from tob.objects import Object
-from tob.threads import Threads
-from tob.workdir import Workdir
+from tob.broker import Broker
+from tob.client import Output
+from tob.cmnd   import Command
+from tob.config import Config as Main
+from tob.disk   import Disk
+from tob.event  import Event
+from tob.locate import Locate
+from tob.method import Method
+from tob.object import Object
+from tob.path   import Workdir
+from tob.thread import Thread
 
 
-fmt  = Methods.fmt
+fmt  = Method.fmt
 get  = Broker.get
 keys = Object.keys
 lock = threading.RLock()
@@ -77,7 +77,7 @@ class Config(Object):
         return self.__getattribute__(name)
 
 
-class Event(Message):
+class Event(Event):
 
     def __init__(self):
         super().__init__()
@@ -455,7 +455,7 @@ class IRC(Output):
         self.state.keeprunning = False
         self.state.stopkeep = True
         self.stop()
-        Threads.launch(init)
+        Thread.launch(init)
 
     def size(self, chan):
         if chan in self.cache:
@@ -483,7 +483,7 @@ class IRC(Output):
         self.state.lastline = splitted[-1]
 
     def start(self):
-        Locater.last(self.cfg)
+        Locate.last(self.cfg)
         if self.cfg.channel not in self.channels:
             self.channels.append(self.cfg.channel)
         self.events.ready.clear()
@@ -491,8 +491,8 @@ class IRC(Output):
         self.events.joined.clear()
         Output.start(self)
         if not self.state.keeprunning:
-            Threads.launch(self.keep)
-        Threads.launch(
+            Thread.launch(self.keep)
+        Thread.launch(
             self.doconnect,
             self.cfg.server or "localhost",
             self.cfg.nick,
@@ -583,7 +583,7 @@ def cb_privmsg(evt):
         if evt.text:
             evt.text = evt.text[0].lower() + evt.text[1:]
         if evt.text:
-            Threads.launch(Commands.command, evt)
+            Thread.launch(Command.command, evt)
 
 
 def cb_quit(evt):
@@ -600,7 +600,7 @@ def cb_quit(evt):
 
 def cfg(event):
     config = Config()
-    fnm = Locater.last(config)
+    fnm = Locate.last(config)
     if not event.sets:
         event.reply(
             fmt(
@@ -610,7 +610,7 @@ def cfg(event):
             )
         )
     else:
-        Methods.edit(config, event.sets)
+        Method.edit(config, event.sets)
         Disk.write(config, fnm or Workdir.path(config))
         event.reply("ok")
 

@@ -54,6 +54,7 @@ class Workdir:
     @staticmethod
     def skel():
         path = Workdir.store()
+        print(path)
         if os.path.exists(path):
             return
         pth = pathlib.Path(path)

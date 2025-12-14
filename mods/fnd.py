@@ -4,10 +4,7 @@
 import time
 
 
-from tob.locater import Locater
-from tob.methods import Methods
-from tob.utility import Utils
-from tob.workdir import Workdir
+from tob import Locate, Method, Utils, Workdir
 
 
 def fnd(event):
@@ -18,14 +15,10 @@ def fnd(event):
         else:
             event.reply("no data yet.")
         return
-    elapsed = Utils.elapsed
-    find = Locater.find
-    fmt = Methods.fmt
-    fntime = Locater.fntime
     otype = event.args[0]
     nmr = 0
-    for fnm, obj in sorted(find(otype, event.gets), key=lambda x: fntime(x[0])):
-        event.reply(f"{nmr} {fmt(obj)} {elapsed(time.time()-fntime(fnm))}")
+    for fnm, obj in sorted(Locate.find(otype, event.gets), key=lambda x: Locate.fntime(x[0])):
+        event.reply(f"{nmr} {Method.fmt(obj)} {Utils.elapsed(time.time()-Locate.fntime(fnm))}")
         nmr += 1
     if not nmr:
         event.reply("no result")

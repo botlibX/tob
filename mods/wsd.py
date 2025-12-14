@@ -7,16 +7,16 @@ import logging
 from random import SystemRandom
 
 
-from tob.brokers import Broker
-from tob.message import Message
-from tob.repeats import Repeater
+from tob.broker import Broker
+from tob.event  import Event
+from tob.time   import Repeater
 
 
 rand = SystemRandom()
 
 
 def init():
-    event = Message()
+    event = Event()
     repeater = Repeater(3600.0,  wsd, event)
     repeater.start()
     logging.warning("%s wise", len(TXT.split("\n")))

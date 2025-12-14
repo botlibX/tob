@@ -8,10 +8,10 @@ import inspect
 
 
 from .broker import Broker
-from .method import Methods
+from .method import Method
 
 
-class Commands:
+class Command:
 
     cmds = {}
     names = {}
@@ -20,13 +20,13 @@ class Commands:
     def add(*args):
         for func in args:
             name = func.__name__
-            Commands.cmds[name] = func
-            Commands.names[name] = func.__module__.split(".")[-1]
+            Command.cmds[name] = func
+            Command.names[name] = func.__module__.split(".")[-1]
 
     @staticmethod
     def command(evt):
-        Methods.parse(evt, evt.text)
-        func = Commands.get(evt.cmd)
+        Method.parse(evt, evt.text)
+        func = Command.get(evt.cmd)
         if func:
            func(evt)
            Broker.display(evt)
@@ -34,17 +34,17 @@ class Commands:
 
     @staticmethod
     def get(cmd):
-        return Commands.cmds.get(cmd, None)
+        return Command.cmds.get(cmd, None)
 
     @staticmethod
     def scan(module):
         for key, cmdz in inspect.getmembers(module, inspect.isfunction):
             if 'event' not in inspect.signature(cmdz).parameters:
                 continue
-            Commands.add(cmdz)
+            Command.add(cmdz)
 
 
 def __dir__():
     return (
-        'Commands',
+        'Command',
     )

@@ -7,12 +7,12 @@
 import time
 
 
-from .cmnd   import Commands
+from .cmnd   import Command
 from .log    import Logging
 from .object import Default
 from .path   import Workdir
 from .pkg    import Mods
-from .thread import Threads
+from .thread import Thread
 from .utils  import Utils
 
 
@@ -34,7 +34,7 @@ class Kernel:
             mod = Mods.get(name)
             if "init" not in dir(mod):
                 continue
-            thrs.append(Threads.launch(mod.init))
+            thrs.append(Thread.launch(mod.init))
             mods.append(name)
         if wait:
             for thr in thrs:
@@ -44,7 +44,7 @@ class Kernel:
     @staticmethod
     def scanner(names):
         for mod in Mods.mods(names):
-            Commands.scan(mod)
+            Command.scan(mod)
 
 
 def __dir__():

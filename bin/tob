@@ -12,21 +12,33 @@ import time
 sys.path.insert(0, os.getcwd())
 
 
-from tob.clients import CLI
-from tob.command import Commands
-from tob.kernels import Config, Kernel
-from tob.message import Message
-from tob.methods import Methods
-from tob.package import Mods
-from tob.statics import SYSTEMD
-from tob.utility import Utils
-from tob.workdir import Workdir
+from tob.cmnd   import Command
+from tob.config import Config
+from tob.event  import Event
+from tob.client import CLI
+from tob.kernel import Kernel
+from tob.log    import Logging
+from tob.method import Method
+from tob.pkg    import Mods
+from tob.static import SYSTEMD
+from tob.utils  import Utils
+from tob.path   import Workdir
+
+
+import tob.modules as MODS
 
 
 Config.ignore = "wsd,udp"
 Config.level = "info"
 Config.name = "tob" 
 Config.version = 150
+
+
+Mods.add("mods", "mods")
+Mods.addpkg(MODS)
+
+
+Workdir.wdr = os.path.expanduser(f"~/.{Config.name}")
 
 
 class CLI(CLI):
@@ -44,7 +56,7 @@ class Console(CLI):
         event.wait()
 
     def poll(self):
-        evt = Message()
+        evt = Event()
         evt.text = input("> ")
         evt.kind = "command"
         return evt
@@ -126,7 +138,7 @@ class Scripts:
         Runtime.daemon(check("v"), check("m"))
         Runtime.privileges()
         Workdir.pidfile(Workdir.pidname(Config.name))
-        Commands.add(Cmds.cmd, Cmds.ver)
+        Command.add(Cmds.cmd, Cmds.ver)
         Kernel.scanner(Mods.list() or "irc,rss")
         Kernel.init(Mods.list() or "irc,rss")
         Kernel.forever()
@@ -134,19 +146,18 @@ class Scripts:
     @staticmethod
     def console():
         import readline
-        Methods.parse(Config, " ".join(sys.argv[1:]))
+        Method.parse(Config, " ".join(sys.argv[1:]))
+        Config.ignore = Config.sets.ignore or Config.ignore
+        Logging.level(Config.sets.level or Config.level or "info")
         if "v" in Config.opts:
             Runtime.banner()
         if "a" in Config.opts:
             Config.init = Mods.list()
         else:
             Config.init = Config.sets.init or Config.init
-        if Config.init:
-            logging.info(Config.init)
-        Kernel.scanner(Config.init)
-        Commands.add(Cmds.cmd, Cmds.ver)
-        if "i" in Config.opts:
-            Kernel.init(Config.init, "w" in Config.opts)
+        Kernel.scanner(Mods.list())
+        Command.add(Cmds.cmd, Cmds.ver)
+        Kernel.init(Config.init, "w" in Config.opts)
         csl = Console()
         csl.start()
         Kernel.forever()
@@ -156,22 +167,23 @@ class Scripts:
         if len(sys.argv) == 1:
             return
         Kernel.scanner(Mods.list())
-        Commands.add(Cmds.cmd, Cmds.srv, Cmds.ver)
+        Command.add(Cmds.cmd, Cmds.srv, Cmds.ver)
         csl = CLI()
         csl.silent = False
-        evt = Message()
+        evt = Event()
         evt.orig = repr(csl)
         evt.text = " ".join(sys.argv[1:])
         evt.type = "command"
-        Commands.command(evt)
+        Command.command(evt)
         evt.wait()
 
     @staticmethod
     def service():
         Runtime.privileges()
         Workdir.pidfile(Utils.pidname(Config.name))
+        Logging.level(Config.level)
         Kernel.scanner(Config.init or "irc,rss")
-        Commands.add(Cmds.cmd, Cmds.ver)
+        Command.add(Cmds.cmd, Cmds.ver)
         Kernel.init(Config.init or "irc,rss")
         Kernel.forever()
 
@@ -180,7 +192,7 @@ class Cmds:
 
     @staticmethod
     def cmd(event):
-        event.reply(",".join(sorted(Commands.names or Commands.cmds)))
+        event.reply(",".join(sorted(Command.names or Command.cmds)))
 
     @staticmethod
     def srv(event):
@@ -194,8 +206,8 @@ class Cmds:
 
 
 def main():
+    Workdir.skel()
     check = Runtime.check
-    Kernel.configure(check("m"), check("n"))
     if check("b"):
         threading.excepthook = threadhook
     if check('z'):

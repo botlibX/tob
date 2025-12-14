@@ -13,16 +13,11 @@ import time
 sys.path.insert(0, os.getcwd())
 
 
-from tob.clients import Client, Output
-from tob.command import Commands
-from tob.kernels import Config, Kernel
-from tob.message import Message
-from tob.methods import Methods
-from tob.package import Mods
-from tob.threads import Threads
-from tob.utility import Utils
-from tob.workdir import Workdir
+from tob import Client, Command, Config, Event, Kernel, Method, Output
+from tob import Mods, Thread, Utils, Workdir
 
+
+from tob.path import Workdir
 
 Config.debug = True
 Config.name = "tob"
@@ -30,6 +25,7 @@ Config.opts = "m"
 Config.version = 150
 
 
+Mods.add("mods", "mods")
 Workdir.wdr = ".test"
 
 
@@ -40,7 +36,7 @@ class CLI(Output):
 
     def __init__(self):
         Output.__init__(self)
-        self.register("command", Commands.command)
+        self.register("command", Command.command)
 
     def raw(self, txt):
         if "v" in Config.opts:
@@ -112,7 +108,7 @@ def consume():
 def payload(todo):
     for cmd, example in todo.items():
         for ex in example:
-            evt = Message()
+            evt = Event()
             evt.text = f"{cmd} {ex}"
             evt.kind = "command"
             Pool.put(evt)
@@ -120,11 +116,10 @@ def payload(todo):
 
 
 def main():
-    launch = Threads.launch
     if os.path.exists(Workdir.wdr):
         shutil.rmtree(Workdir.wdr)
-    Kernel.configure(check("m"), check('n'))
-    Methods.parse(Config, " ".join(sys.argv[1:]))
+    Workdir.skel()
+    Method.parse(Config, " ".join(sys.argv[1:]))
     Kernel.scanner(Mods.list())
     if "b" in Config.opts:
         threading.excepthook = Threading.threadhook
@@ -138,18 +133,18 @@ def main():
     thrs = []
     NRS = Config.index or 1
     for _x in range(NRS):
-        thrs.append(launch(payload, pre))
+        thrs.append(Thread.launch(payload, pre))
     for thr in thrs:
         thr.join()
     for _x in range(NRS):
-        thrs.append(launch(payload, examples))
+        thrs.append(Thread.launch(payload, examples))
     for thr in thrs:
         thr.join()
     for _x in range(NRS):
-        thrs.append(launch(payload, post))
+        thrs.append(Thread.launch(payload, post))
     for thr in thrs:
         thr.join()
-    launch(consume)
+    Thread.launch(consume)
     nrevents = events.qsize()
     try:
         events.join()
@@ -160,7 +155,7 @@ def main():
     percall = (endtime-starttime)/nrevents
     nrs = events.qsize()
     if "v" in Config.opts:
-        print(f"{Methods.fmt(Config)}")
+        print(f"{Method.fmt(Config)}")
         print(f"{nrs} events left.")
         print(f"total: {lap} nrs: {nrevents} call: %.6fs" % percall)
     sys.stdout.flush()

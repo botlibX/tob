@@ -6,13 +6,13 @@ import random
 import time
 
 
-from tob.brokers import Broker
-from tob.locater import Locater
-from tob.objects import Object
-from tob.repeats import Timed
-from tob.persist import Disk
-from tob.utility import NoDate, Time, Utils
-from tob.workdir import Workdir
+from tob.broker import Broker
+from tob.disk   import Disk
+from tob.locate import Locate
+from tob.object import Object
+from tob.path   import Workdir
+from tob.time   import Time, Timed
+from tob.utils  import NoDate, Utils
 
 
 items = Object.items
@@ -20,7 +20,7 @@ rand  = random.SystemRandom()
 
 
 def init():
-    Timers.path = Locater.last(Timers.timers) or Workdir.path(Timers.timers)
+    Timers.path = Locate.last(Timers.timers) or Workdir.path(Timers.timers)
     remove = []
     for tme, args in items(Timers.timers):
         if not args:
@@ -69,7 +69,7 @@ def tmr(event):
         for tme, txt in items(Timers.timers):
             lap = float(tme) - time.time()
             if lap > 0:
-                event.reply(f'{nmr} {" ".join(txt)} {Utils.elapsed(lap)}')
+                event.reply(f'{nmr} {" ".join(txt)} {Util.elapsed(lap)}')
                 nmr += 1
         if not nmr:
             event.reply("no timers.")
@@ -106,4 +106,4 @@ def tmr(event):
     bot = Broker.get(event.orig)
     timer = Timed(diff, bot.say, event.orig, event.channel, txt)
     timer.start()
-    event.reply("ok " + Utils.elapsed(diff))
+    event.reply("ok " + Util.elapsed(diff))
