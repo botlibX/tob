@@ -4,7 +4,7 @@
 import os
 
 
-from tob.pkg import Mods
+from tob import Mods
 
 
 def pth(event):

@@ -10,10 +10,7 @@ import time
 from http.server import HTTPServer, BaseHTTPRequestHandler
 
 
-from tob.config import Config
-from tob.object import Object
-from tob.path   import Workdir
-from tob.thread import Thread
+from tob import Main, Object, Thread, Workdir
 
 
 def init():
@@ -81,7 +78,7 @@ class RESTHandler(BaseHTTPRequestHandler):
         self.end_headers()
 
     def do_GET(self):
-        if Config.debug:
+        if Main.debug:
             return
         if "favicon" in self.path:
             return

@@ -1,7 +1,7 @@
 # This file is placed in the Public Domain.
 
 
-from tob.broker import Broker
+from tob import Broker
 
 
 def sil(event):

@@ -1,9 +1,7 @@
 # This file is placed in the Public Domain.
 
 
-from tob.broker import Broker
-from tob.method import Method
-from tob.thread import Thread
+from tob import Broker, Method, Thread
 
 
 def flt(event):

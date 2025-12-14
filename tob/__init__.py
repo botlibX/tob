@@ -8,7 +8,7 @@ from .broker import Broker
 from .cache  import Cache
 from .client import Client, CLI, Output
 from .cmnd   import Command
-from .config import Config
+from .config import Main
 from .disk   import Disk
 from .event  import Event
 from .engine import Engine

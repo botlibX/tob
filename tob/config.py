@@ -7,7 +7,7 @@
 from .object import Default
 
 
-class Config:
+class Main:
 
     debug = False
     ignore = ""
@@ -21,5 +21,5 @@ class Config:
 
 def __dir__():
     return (
-        'Config',
+        'Main',
     )

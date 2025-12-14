@@ -4,10 +4,7 @@
 import time
 
 
-from tob.disk   import Disk
-from tob.locate import Locate
-from tob.object import Object
-from tob.utils  import Utils
+from tob import Disk, Locate, Object, Utils
 
 
 class Log(Object):

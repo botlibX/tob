@@ -7,9 +7,7 @@ import logging
 from random import SystemRandom
 
 
-from tob.broker import Broker
-from tob.event  import Event
-from tob.time   import Repeater
+from tob import Broker, Event, Repeater
 
 
 rand = SystemRandom()

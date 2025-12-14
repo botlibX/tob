@@ -7,7 +7,7 @@
 import os
 
 
-from .config import Config
+from .config import Main
 from .path   import Workdir
 from .utils  import Utils
 
@@ -58,13 +58,13 @@ class Mods:
                 x[:-3] for x in os.listdir(path)
                 if x.endswith(".py") 
                 and not x.startswith("__")
-                and name not in Utils.spl(Config.ignore)
+                and name not in Utils.spl(Main.ignore)
             ])
         return ",".join(sorted(mods)).strip()
 
     @staticmethod
     def mods(names):
-        return [Mods.get(x) for x in sorted(Utils.spl(names)) if x not in Utils.spl(Config.ignore)]
+        return [Mods.get(x) for x in sorted(Utils.spl(names)) if x not in Utils.spl(Main.ignore)]
 
 
 def __dir__():

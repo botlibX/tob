@@ -6,12 +6,8 @@ import os
 import time
 
 
-from tob.disk   import Disk
-from tob.locate import Locate
-from tob.method import Method
-from tob.object import Object
+from tob import Disk, Locate, Method, Object, Utils
 from tob.static import MONTH
-from tob.utils  import Utils
 
 
 class Email(Object):

@@ -9,10 +9,7 @@ import threading
 import time
 
 
-from tob.broker import Broker
-from tob.config import Config
-from tob.object import Object
-from tob.thread import Thread
+from tob import Broker, Main, Object, Thread 
 
 
 def init():
@@ -75,7 +72,7 @@ class UDP(Object):
 
 
 def toudp(host, port, txt):
-    if Config.debug:
+    if Main.debug:
         return
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     sock.sendto(bytes(txt.strip(), "utf-8"), (host, port))

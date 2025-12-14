@@ -19,12 +19,8 @@ from urllib.error import HTTPError, URLError
 from urllib.parse import quote_plus, urlencode
 
 
-from tob import Broker, Config, Disk, Locate, Method, Object
+from tob import Broker, Disk, Locate, Main, Method, Object
 from tob import Repeater, Thread, Utils, Workdir
-
-
-update  = Object.update
-write   = Disk.write
 
 
 def init():
@@ -114,12 +110,12 @@ class Fetcher(Object):
                 if uurl in seen:
                     continue
                 if self.dosave:
-                    write(fed)
+                    Disk.write(fed)
                 result.append(fed)
             setattr(self.seen, feed.rss, urls)
             if not self.seenfn:
                 self.seenfn = Workdir.path(self.seen)
-            write(self.seen, self.seenfn)
+            Disk.write(self.seen, self.seenfn)
         if silent:
             return counter
         txt = ""
@@ -281,7 +277,7 @@ def cdata(line):
 
 def getfeed(url, items):
     result = [Object(), Object()]
-    if Config.debug or url in errors and (time.time() - errors[url]) < 600:
+    if Main.debug or url in errors and (time.time() - errors[url]) < 600:
         return result
     try:
         rest = geturl(url)
@@ -356,7 +352,7 @@ def dpl(event):
     for fnm, feed in Locate.find("rss.Rss", {"rss": event.args[0]}):
         if feed:
             Object.update(feed, setter)
-            write(feed, fnm)
+            Disk.write(feed, fnm)
     event.reply("ok")
 
 
@@ -406,7 +402,7 @@ def imp(event):
             Object.update(feed, obj)
             feed.rss = obj.xmlUrl
             feed.insertid = insertid
-            write(feed)
+            Disk.write(feed)
             nrs += 1
     if nrskip:
         event.reply(f"skipped {nrskip} urls.")
@@ -424,7 +420,7 @@ def nme(event):
         Object.update(feed, fed)
         if feed:
             feed.name = str(event.args[1])
-            write(feed, fnm)
+            Disk.write(feed, fnm)
     event.reply("ok")
 
 
@@ -439,7 +435,7 @@ def rem(event):
             continue
         if feed:
             feed.__deleted__ = True
-            write(feed, fnm)
+            Disk.write(feed, fnm)
             event.reply("ok")
             break
 
@@ -455,7 +451,7 @@ def res(event):
             continue
         if feed:
             feed.__deleted__ = False
-            write(feed, fnm)
+            Disk.write(feed, fnm)
     event.reply("ok")
 
 
@@ -480,12 +476,12 @@ def rss(event):
             return
     feed = Rss()
     feed.rss = event.args[0]
-    write(feed)
+    Disk.write(feed)
     event.reply("ok")
 
 
 def syn(event):
-    if Config.debug:
+    if Main.debug:
         return
     fetcher = Fetcher()
     fetcher.start(False)

@@ -11,17 +11,8 @@ import threading
 import time
 
 
-from tob.broker import Broker
-from tob.client import Output
-from tob.cmnd   import Command
-from tob.config import Config as Main
-from tob.disk   import Disk
-from tob.event  import Event
-from tob.locate import Locate
-from tob.method import Method
-from tob.object import Object
-from tob.path   import Workdir
-from tob.thread import Thread
+from tob import Broker, Command, Event, Main, Output
+from tob import Locate, Method, Object, Thread, Workdir
 
 
 fmt  = Method.fmt

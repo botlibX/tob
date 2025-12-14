@@ -10,10 +10,7 @@ import time
 from http.server import HTTPServer, BaseHTTPRequestHandler
 
 
-from tob.config import Config
-from tob.object import Object
-from tob.pkg    import Mods
-from tob.thread import Thread
+from tob import Main, Object, Mods, Thread
 
 
 def init():
@@ -97,7 +94,7 @@ class HTTPHandler(BaseHTTPRequestHandler):
     def do_GET(self):
         if "favicon" in self.path:
             return
-        if Config.debug:
+        if Main.debug:
             return
         if self.path == "/":
             self.path = "index.html"

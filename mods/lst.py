@@ -1,7 +1,7 @@
 # This file is been placed in the Public Domain.
 
 
-from tob.path import Workdir
+from tob import Workdir
 
 
 def lst(event):
