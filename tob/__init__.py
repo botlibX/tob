@@ -1,7 +1,7 @@
 # This file is placed in the Public Domain
 
 
-"bot in reverse"
+"bot in reverse!"
 
 
 from .broker import Broker as Broker
@@ -23,8 +23,37 @@ from .object import Object as Object
 from .path   import Workdir as Workdir
 from .pkg    import Mods as Mods
 from .thread import Task as Task
-from .threas import Thread as Thread
+from .thread import Thread as Thread
 from .time   import Repeater as Repeater
 from .time   import Time as Time
 from .time   import Timed as Timed
 from .utils  import Utils as Utils
+
+
+def __dir__():
+    return (
+        'Broker',
+        'CLI',
+        'Cache',
+        'Client',
+        'Command',
+        'Disk',
+        'Engine',
+        'Event',
+        'Json',
+        'Kernel',
+        'Locate',
+        'Logging',
+        'Main', 
+        'Method',
+        'Mods',
+        'Object',
+        'Output',
+        'Repeater',
+        'Task',
+        'Thread',
+        'Time',
+        'Timed',
+        'Utils',
+        'Workdir'
+    )

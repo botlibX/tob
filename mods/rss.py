@@ -20,14 +20,14 @@ from urllib.parse import quote_plus, urlencode
 
 
 from tob import Broker, Disk, Locate, Main, Method, Object
-from tob import Repeater, Thread, Utils, Workdir
+from tob import Repeater, Thread, Time, Utils, Workdir
 
 
 def init():
     fetcher = Fetcher()
     fetcher.start()
     if fetcher.seenfn:
-        logging.warning("since %s", Utils.elapsed(time.time()-Locate.fntime(fetcher.seenfn)))
+        logging.warning("since %s", Time.elapsed(time.time()-Locate.fntime(fetcher.seenfn)))
     else:
         logging.warning("since %s", time.ctime(time.time()).replace("  ", " "))
     return fetcher
@@ -460,7 +460,7 @@ def rss(event):
         nrs = 0
         for fnm, fed in Locate.find("rss.Rss"):
             nrs += 1
-            elp = Utils.elapsed(time.time() - Locate.fntime(fnm))
+            elp = Time.elapsed(time.time() - Locate.fntime(fnm))
             txt = Method.fmt(fed)
             event.reply(f"{nrs} {txt} {elp}")
         if not nrs:

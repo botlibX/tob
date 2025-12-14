@@ -6,23 +6,17 @@ import random
 import time
 
 
-from tob.broker import Broker
-from tob.disk   import Disk
-from tob.locate import Locate
-from tob.object import Object
-from tob.path   import Workdir
-from tob.time   import Time, Timed
-from tob.utils  import NoDate, Utils
+from tob import Broker, Disk, Locate, Object, Time, Timed, Utils, Workdir
+from tob.time import NoDate
 
 
-items = Object.items
 rand  = random.SystemRandom()
 
 
 def init():
     Timers.path = Locate.last(Timers.timers) or Workdir.path(Timers.timers)
     remove = []
-    for tme, args in items(Timers.timers):
+    for tme, args in Object.items(Timers.timers):
         if not args:
             continue
         orig, channel, txt = args
@@ -66,7 +60,7 @@ def tmr(event):
     result = ""
     if not event.rest:
         nmr = 0
-        for tme, txt in items(Timers.timers):
+        for tme, txt in Object.items(Timers.timers):
             lap = float(tme) - time.time()
             if lap > 0:
                 event.reply(f'{nmr} {" ".join(txt)} {Utils.elapsed(lap)}')
