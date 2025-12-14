@@ -20,6 +20,6 @@ from .method import Method
 from .object import Object
 from .path   import Workdir
 from .pkg    import Mods
-from .thread import Thread
+from .thread import Task, Thread
 from .time   import Repeater, Time, Timed
 from .utils  import Utils

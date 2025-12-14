@@ -7,11 +7,11 @@
 import unittest
 
 
-from tob.command import Commands
+from tob import Command
 
 
 class TestCommands(unittest.TestCase):
 
     def test_construct(self):
-        cmds = Commands()
-        self.assertEqual(type(cmds), Commands)
+        cmds = Command()
+        self.assertEqual(type(cmds), Command)

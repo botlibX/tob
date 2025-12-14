@@ -4,8 +4,7 @@
 import unittest
 
 
-from tob.objects import Object
-from tob.serials import Json
+from tob import Json, Object
 
 
 dumps = Json.dumps

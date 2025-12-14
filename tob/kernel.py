@@ -8,6 +8,7 @@ import time
 
 
 from .cmnd   import Command
+from .config import Main
 from .log    import Logging
 from .object import Default
 from .path   import Workdir
@@ -31,6 +32,8 @@ class Kernel:
         mods = []
         thrs = []
         for name in Utils.spl(names):
+            if name in Utils.spl(Main.ignore):
+                continue
             mod = Mods.get(name)
             if "init" not in dir(mod):
                 continue

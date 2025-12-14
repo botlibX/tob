@@ -7,11 +7,11 @@
 import unittest
 
 
-from tob.handler import Handler
+from tob import Engine
 
 
 class TestHandler(unittest.TestCase):
 
     def testcomposite(self):
-        eng = Handler()
-        self.assertEqual(type(eng), Handler)
+        eng = Engine()
+        self.assertEqual(type(eng), Engine)

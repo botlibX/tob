@@ -4,7 +4,7 @@
 import unittest
 
 
-from tob.objects import Object
+from tob.object import Object
 
 
 class A(Object):

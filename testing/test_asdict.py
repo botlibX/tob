@@ -4,8 +4,7 @@
 import unittest
 
 
-from tob.methods import Methods
-from tob.objects import Object
+from tob import Method, Object
 
 
 fqn    = Object.fqn
@@ -13,7 +12,7 @@ items  = Object.items
 keys   = Object.keys
 update = Object.update
 values = Object.values
-fmt    = Methods.fmt
+fmt    = Method.fmt
 
 
 VALIDJSON = '{"test": "bla"}'
@@ -135,7 +134,7 @@ class TestObject(unittest.TestCase):
         self.assertTrue(Object().__module__, "tob.obejcts")
 
     def test_kind(self):
-        self.assertEqual(fqn(Object()), "tob.objects.Object")
+        self.assertEqual(fqn(Object()), "tob.object.Object")
 
     def test_repr(self):
         self.assertTrue(update(Object(),

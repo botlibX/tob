@@ -9,20 +9,17 @@ import unittest
 sys.path.insert(0, ".")
 
 
-from tob.objects import Object
-from tob.persist import Cache, Disk
-from tob.workdir import Workdir
+from tob import Cache, Disk, Object, Workdir
 
 
-import tob.persist
+import tob.disk
 
 
 Workdir.wdr = '.test'
 
 
 ATTRS1 = (
-    'Cache',
-    'Disk'
+    'Disk',
 )
 
 
@@ -39,7 +36,7 @@ class TestStorage(unittest.TestCase):
 
     def test_dirmodule(self):
         self.assertEqual(
-                         dir(tob.persist),
+                         dir(tob.disk),
                          list(ATTRS1)
                         )
 

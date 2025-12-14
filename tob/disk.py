@@ -44,5 +44,4 @@ class Disk:
 def __dir__():
     return (
         'Disk',
-        'Locate'
     )

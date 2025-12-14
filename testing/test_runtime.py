@@ -7,7 +7,7 @@
 import unittest
 
 
-from tob.threads import Task
+from tob import Task
 
 
 def func():

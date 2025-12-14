@@ -7,8 +7,7 @@
 import unittest
 
 
-from tob.clients import Client
-from tob.message import Message
+from tob import Client, Event
 
 
 def hello(event):
@@ -24,7 +23,7 @@ clt.start()
 class TestHandler(unittest.TestCase):
 
     def test_loop(self):
-        e = Message()
+        e = Event()
         e.kind = "hello"
         clt.put(e)
         e.wait()

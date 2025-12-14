@@ -4,8 +4,7 @@
 import unittest
 
 
-from tob.objects import Object
-from tob.persist import Disk
+from tob import Disk, Object
 
 
 class TestComposite(unittest.TestCase):
