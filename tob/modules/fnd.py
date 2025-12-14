@@ -4,7 +4,7 @@
 import time
 
 
-from tob import Locate, Method, Utils, Workdir
+from tob import Locate, Method, Time, Workdir
 
 
 def fnd(event):
@@ -18,7 +18,7 @@ def fnd(event):
     otype = event.args[0]
     nmr = 0
     for fnm, obj in sorted(Locate.find(otype, event.gets), key=lambda x: Locate.fntime(x[0])):
-        event.reply(f"{nmr} {Method.fmt(obj)} {Utils.elapsed(time.time()-Locate.fntime(fnm))}")
+        event.reply(f"{nmr} {Method.fmt(obj)} {Time.elapsed(time.time()-Locate.fntime(fnm))}")
         nmr += 1
     if not nmr:
         event.reply("no result")

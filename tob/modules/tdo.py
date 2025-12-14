@@ -4,7 +4,7 @@
 import time
 
 
-from tob import Disk, Locate, Object, Utils
+from tob import Disk, Locate, Object, Time
 
 
 class Todo(Object):
@@ -34,7 +34,7 @@ def tdo(event):
     if not event.rest:
         nmr = 0
         for fnm, obj in Locate.find('todo', event.gets):
-            lap = Utils.elapsed(time.time()-Locate.fntime(fnm))
+            lap = Time.elapsed(time.time()-Locate.fntime(fnm))
             event.reply(f'{nmr} {obj.txt} {lap}')
             nmr += 1
         if not nmr:

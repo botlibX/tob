@@ -4,7 +4,7 @@
 import unittest
 
 
-from mods.rss import Parser
+from tob.modules.rss import Parser
 
 
 class TestParse(unittest.TestCase):

@@ -8,7 +8,7 @@ import os
 import pathlib
 
 
-from .utils import Utils
+from .object import Object
 
 
 class Workdir:
@@ -22,7 +22,7 @@ class Workdir:
 
     @staticmethod
     def path(obj):
-        return Workdir.store(Utils.ident(obj))
+        return Workdir.store(Object.ident(obj))
 
     @staticmethod
     def long(name: str):

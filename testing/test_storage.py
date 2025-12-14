@@ -9,7 +9,8 @@ import unittest
 sys.path.insert(0, ".")
 
 
-from tob import Cache, Disk, Object, Workdir
+from tob import Disk, Object, Workdir
+from tob.disk import Cache
 
 
 import tob.disk
@@ -19,7 +20,9 @@ Workdir.wdr = '.test'
 
 
 ATTRS1 = (
+    'Cache',
     'Disk',
+    'Locate'
 )
 
 

@@ -10,9 +10,8 @@ import threading
 import time
 
 
-from .static import MONTH, TIMES
+from .static import Static
 from .thread import Thread
-from .utils import Utils
 
 
 class NoDate(Exception):
@@ -26,7 +25,7 @@ class Time:
     def date(daystr):
         daystr = daystr.encode('utf-8', 'replace').decode("utf-8")
         res = time.time()
-        for fmat in TIMES:
+        for fmat in Static.TIMES:
             try:
                 res = time.mktime(time.strptime(daystr, fmat))
                 break
@@ -55,7 +54,7 @@ class Time:
             day = int(day)
             month = int(month)
             yea = int(yea)
-            date = f"{day} {MONTH[month]} {yea}"
+            date = f"{day} {Static.MONTH[month]} {yea}"
             return time.mktime(time.strptime(date, r"%d %b %Y"))
         raise NoDate(daystr)
 
@@ -163,7 +162,7 @@ class Time:
             line = previous + " " + word
             previous = word
             try:
-                res = Utils.extractdate(line.strip())
+                res = Time.date(line.strip())
                 break
             except ValueError:
                 res = None

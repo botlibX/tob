@@ -20,7 +20,7 @@ from urllib.parse import quote_plus, urlencode
 
 
 from tob import Broker, Disk, Locate, Main, Method, Object
-from tob import Repeater, Thread, Time, Utils, Workdir
+from tob import Repeater, Thread, Time, Workdir, Utils
 
 
 def init():

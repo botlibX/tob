@@ -78,6 +78,13 @@ class Mods:
         return ",".join(sorted(mods)).strip()
 
     @staticmethod
+    def md5sum(path):
+        import hashlib
+        with open(path, "r", encoding="utf-8") as file:
+            txt = file.read().encode("utf-8")
+            return hashlib.md5(txt, usedforsecurity=False).hexdigest()
+
+    @staticmethod
     def mods(names):
         return [Mods.get(x) for x in sorted(Utils.spl(names)) if x not in Utils.spl(Main.ignore)]
 

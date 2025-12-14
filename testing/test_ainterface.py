@@ -16,13 +16,11 @@ sys.path.insert(0, os.getcwd())
 
 import tob
 import tob.broker
-import tob.cache
 import tob.cmnd
 import tob.config
 import tob.disk
 import tob.engine
 import tob.event
-import tob.locate
 import tob.method
 import tob.object
 import tob.path
@@ -37,13 +35,11 @@ from tob.object import *
 
 PACKAGE = [
     'broker',
-    'cache',
     'cmnd',
     'config',
     'disk',
     'engine',
     'event',
-    'locate',
     'method',
     'object',
     'pkg',

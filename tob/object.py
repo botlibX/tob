@@ -4,6 +4,8 @@
 "a clean namespace"
 
 
+import datetime
+import os
 import types
 
 
@@ -48,6 +50,10 @@ class Object:
         return kin
 
     @staticmethod
+    def ident(obj):
+        return os.path.join(Object.fqn(obj), *str(datetime.datetime.now()).split())
+
+    @staticmethod
     def items(obj):
         if isinstance(obj, dict):
             return obj.items()
@@ -88,7 +94,6 @@ class Default(Object):
 
     def __getattr__(self, key):
         return self.__dict__.get(key, "")
-
 
 
 def __dir__():

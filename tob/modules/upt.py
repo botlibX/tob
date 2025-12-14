@@ -4,11 +4,11 @@
 import time
 
 
-from tob import Utils
+from tob import Time
 
 
 STARTTIME = time.time()
 
 
 def upt(event):
-    event.reply(Utils.elapsed(time.time()-STARTTIME))
+    event.reply(Time.elapsed(time.time()-STARTTIME))

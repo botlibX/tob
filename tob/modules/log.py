@@ -4,7 +4,7 @@
 import time
 
 
-from tob import Disk, Locate, Object, Utils
+from tob import Disk, Locate, Object, Time
 
 
 class Log(Object):
@@ -18,7 +18,7 @@ def log(event):
     if not event.rest:
         nmr = 0
         for fnm, obj in Locate.find('log', event.gets):
-            lap = Utils.elapsed(time.time() - Locate.fntime(fnm))
+            lap = Time.elapsed(time.time() - Locate.fntime(fnm))
             event.reply(f'{nmr} {obj.txt} {lap}')
             nmr += 1
         if not nmr:

@@ -6,8 +6,7 @@ import random
 import time
 
 
-from tob import Broker, Disk, Locate, Object, Time, Timed, Utils, Workdir
-from tob.time import NoDate
+from tob import Broker, Disk, Locate, NoDate, Object, Time, Timed, Workdir
 
 
 rand  = random.SystemRandom()
@@ -63,7 +62,7 @@ def tmr(event):
         for tme, txt in Object.items(Timers.timers):
             lap = float(tme) - time.time()
             if lap > 0:
-                event.reply(f'{nmr} {" ".join(txt)} {Utils.elapsed(lap)}')
+                event.reply(f'{nmr} {" ".join(txt)} {Time.elapsed(lap)}')
                 nmr += 1
         if not nmr:
             event.reply("no timers.")
@@ -100,4 +99,4 @@ def tmr(event):
     bot = Broker.get(event.orig)
     timer = Timed(diff, bot.say, event.orig, event.channel, txt)
     timer.start()
-    event.reply("ok " + Utils.elapsed(diff))
+    event.reply("ok " + Time.elapsed(diff))

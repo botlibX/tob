@@ -6,8 +6,10 @@ import os
 import time
 
 
-from tob import Disk, Locate, Method, Object, Time
-from tob.static import MONTH
+from tob import Disk, Locate, Method, Object, Static, Time
+
+
+MONTH = Static.MONTH
 
 
 class Email(Object):

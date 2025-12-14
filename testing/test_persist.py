@@ -7,7 +7,7 @@
 import unittest
 
 
-from tob import Cache
+from tob.disk import Cache
 
 
 class TestPersist(unittest.TestCase):
