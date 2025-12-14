@@ -6,7 +6,7 @@ import os
 import time
 
 
-from tob import Disk, Locate, Method, Object, Utils
+from tob import Disk, Locate, Method, Object, Time
 from tob.static import MONTH
 
 
@@ -66,19 +66,19 @@ def eml(event):
     args = set(args)
     result = sorted(
                     Locate.find("email", event.gets),
-                    key=lambda x: Utils/extractdate(todate(getattr(x[1], "Date", "")))
+                    key=lambda x: Time.date(todate(getattr(x[1], "Date", "")))
                    )
     if event.index:
         obj = result[event.index]
         if obj:
             obj = obj[-1]
             tme = getattr(obj, "Date", "")
-            event.reply(f'{event.index} {Method.fmt(obj, args, plain=True)} {Utils.elapsed(time.time() - Utils.extractdate(Time.todate(tme)))}')
+            event.reply(f'{event.index} {Method.fmt(obj, args, plain=True)} {Time.elapsed(time.time() - Time.date(Time.todate(tme)))}')
     else:
         for _fn, obj in result:
             nrs += 1
             tme = getattr(obj, "Date", "")
-            event.reply(f'{nrs} {Method.fmt(obj, args, plain=True)} {Utils.elapsed(time.time() - Utils.extractdate(Time.todate(tme)))}')
+            event.reply(f'{nrs} {Method.fmt(obj, args, plain=True)} {Time.elapsed(time.time() - Time.date(Time.todate(tme)))}')
     if not result:
         event.reply("no emails found.")
 

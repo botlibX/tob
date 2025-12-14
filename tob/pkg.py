@@ -4,11 +4,11 @@
 "multiple directory modules"
 
 
+import importlib.util
 import os
 
 
 from .config import Main
-from .path   import Workdir
 from .utils  import Utils
 
 
@@ -42,11 +42,26 @@ class Mods:
             break
         if not mname:
             return
-        mod = Utils.importer(mname, pth)
+        mod = Mods.importer(mname, pth)
         if not mod:
             return
         Mods.modules[name] = mod
         return mod
+
+    @staticmethod
+    def importer(name, pth=""):
+        if pth and os.path.exists(pth):
+            spec = importlib.util.spec_from_file_location(name, pth)
+        else:
+            spec = importlib.util.find_spec(name)
+        if not spec or not spec.loader:
+            return None
+        mod = importlib.util.module_from_spec(spec)
+        if not mod:
+            return None
+        spec.loader.exec_module(mod)
+        return mod
+
 
     @staticmethod
     def list():

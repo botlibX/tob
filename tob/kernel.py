@@ -9,9 +9,6 @@ import time
 
 from .cmnd   import Command
 from .config import Main
-from .log    import Logging
-from .object import Default
-from .path   import Workdir
 from .pkg    import Mods
 from .thread import Thread
 from .utils  import Utils

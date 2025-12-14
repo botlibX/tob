@@ -11,7 +11,7 @@ import threading
 import time
 
 
-from tob import Broker, Command, Event, Main, Output
+from tob import Broker, Command, Disk, Event, Main, Output
 from tob import Locate, Method, Object, Thread, Workdir
 
 

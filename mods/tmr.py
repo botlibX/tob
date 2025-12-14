@@ -69,7 +69,7 @@ def tmr(event):
         for tme, txt in items(Timers.timers):
             lap = float(tme) - time.time()
             if lap > 0:
-                event.reply(f'{nmr} {" ".join(txt)} {Util.elapsed(lap)}')
+                event.reply(f'{nmr} {" ".join(txt)} {Utils.elapsed(lap)}')
                 nmr += 1
         if not nmr:
             event.reply("no timers.")
@@ -106,4 +106,4 @@ def tmr(event):
     bot = Broker.get(event.orig)
     timer = Timed(diff, bot.say, event.orig, event.channel, txt)
     timer.start()
-    event.reply("ok " + Util.elapsed(diff))
+    event.reply("ok " + Utils.elapsed(diff))

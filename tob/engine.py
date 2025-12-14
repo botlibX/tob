@@ -4,13 +4,9 @@
 "callback engine"
 
 
-import logging
 import queue
-import threading
-import _thread
 
 
-from .broker  import Broker
 from .thread  import Thread
 
 
