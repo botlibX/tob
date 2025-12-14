@@ -12,7 +12,7 @@ version = "150"
 authors = [
     {name = "Bart Thate", email = "bthate@dds.nl" },
 ]
-description = "bot library"
+description = "bot library."
 readme = "README.rst"
 license = "Unlicense"
 classifiers=[
@@ -34,4 +34,3 @@ packages = [
     'tob',
     'tob.modules'
 ]
-include-package-data = true

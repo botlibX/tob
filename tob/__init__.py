@@ -21,7 +21,7 @@ from .method import Method as Method
 from .object import Object as Object
 from .path   import Workdir as Workdir
 from .pkg    import Mods as Mods
-from .static import Static
+from .static import Static as Static
 from .thread import Task as Task
 from .thread import Thread as Thread
 from .time   import Repeater as Repeater
