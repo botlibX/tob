@@ -136,7 +136,7 @@ class Scripts:
     @staticmethod
     def console():
         import readline
-        readline.redisply()
+        readline.redisplay()
         Method.parse(Main, " ".join(sys.argv[1:]))
         Main.ignore = Main.sets.ignore or Main.ignore
         Logging.level(Main.sets.level or Main.level or "info")

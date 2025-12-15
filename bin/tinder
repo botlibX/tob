@@ -17,14 +17,14 @@ from tob import Client, Command, Event, Kernel, Main, Method, Output
 from tob import Mods, Thread, Time, Workdir
 
 
-from tob.path import Workdir
-
+import tob.modules as MODS
 
 Main.debug = True
 Main.name = "tob"
-Main.opts = "m"
+Main.opts = ""
 Main.version = 150
-Mods.add("mods", "mods")
+Mods.addpkg(MODS)
+#Mods.add("mods", "mods")
 Workdir.wdr = ".test"
 
 
