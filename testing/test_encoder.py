@@ -4,7 +4,8 @@
 import unittest
 
 
-from tob import Json, Object
+from tob.objects import Object
+from tob.serials import dumps
 
 
 VALIDJSON = '{"test": "bla"}'
@@ -15,4 +16,4 @@ class TestEncoder(unittest.TestCase):
     def test_dumps(self):
         obj = Object()
         obj.test = "bla"
-        self.assertEqual(Json.dumps(obj), VALIDJSON)
+        self.assertEqual(dumps(obj), VALIDJSON)

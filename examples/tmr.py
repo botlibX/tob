@@ -6,25 +6,30 @@ import random
 import time
 
 
-from tob import Broker, Disk, Locate, NoDate, Object, Time, Timed, Workdir
+from tob.brokers import broker, like
+from tob.objects import Object, items
+from tob.persist import last, write
+from tob.repeats import Timed
+from tob.timings import NoDate, day, elapsed, extract, hour, today
+from tob.workdir import getpath
 
 
-rand  = random.SystemRandom()
+rand = random.SystemRandom()
 
 
 def init():
-    Timers.path = Locate.last(Timers.timers) or Workdir.path(Timers.timers)
+    Timers.path = last(Timers.timers) or getpath(Timers.timers)
     remove = []
-    for tme, args in Object.items(Timers.timers):
+    for tme, args in items(Timers.timers):
         if not args:
             continue
         orig, channel, txt = args
-        for origin in Broker.like(orig):
+        for origin in like(orig):
             if not origin:
                 continue
             diff = float(tme) - time.time()
             if diff > 0:
-                bot = Broker.get(origin)
+                bot = broker(origin)
                 timer = Timed(diff, bot.say, channel, txt)
                 timer.start()
             else:
@@ -32,8 +37,8 @@ def init():
     for tme in remove:
         Timers.delete(tme)
     if Timers.timers:
-        Disk.write(Timers.timers, Timers.path)
-    logging.warning("%s timers", len(Timers.timers))
+        write(Timers.timers, Timers.path)
+    logging.warning("TMR %s timers", len(Timers.timers))
 
 
 class Timer(Object):
@@ -59,10 +64,10 @@ def tmr(event):
     result = ""
     if not event.rest:
         nmr = 0
-        for tme, txt in Object.items(Timers.timers):
+        for tme, txt in items(Timers.timers):
             lap = float(tme) - time.time()
             if lap > 0:
-                event.reply(f'{nmr} {" ".join(txt)} {Time.elapsed(lap)}')
+                event.reply(f'{nmr} {" ".join(txt)} {elapsed(lap)}')
                 nmr += 1
         if not nmr:
             event.reply("no timers.")
@@ -82,12 +87,12 @@ def tmr(event):
         target = time.time() + seconds
     else:
         try:
-            target = Time.day(event.rest)
+            target = day(event.rest)
         except NoDate:
-            target = Time.extract(Time.today())
-        hour =  Time.hour(event.rest)
-        if hour:
-            target += hour
+            target = extract(today())
+        hours =  hour(event.rest)
+        if hours:
+            target += hours
     target += rand.random() 
     if not target or time.time() > target:
         event.reply("already passed given time.")
@@ -95,8 +100,8 @@ def tmr(event):
     diff = target - time.time()
     txt = " ".join(event.args[1:])
     Timers.add(target, event.orig, event.channel, txt)
-    Disk.write(Timers.timers, Timers.path or Workdir.path(Timers.timers))
-    bot = Broker.get(event.orig)
+    write(Timers.timers, Timers.path or getpath(Timers.timers))
+    bot = broker(event.orig)
     timer = Timed(diff, bot.say, event.orig, event.channel, txt)
     timer.start()
-    event.reply("ok " + Time.elapsed(diff))
+    event.reply("ok " + elapsed(diff))

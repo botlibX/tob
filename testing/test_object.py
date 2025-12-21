@@ -7,20 +7,15 @@
 import unittest
 
 
-from tob import Object
+from tob.methods import fmt
+from tob.objects import Object, items, keys, update, values
 
 
-import tob.object
-
-
-items  = Object.items
-keys   = Object.keys
-update = Object.update
-values = Object.values
+import tob.objects
 
 
 OBJECT = Object()
-PACKAGE = tob.object
+PACKAGE = tob.objects
 VALIDJSON = "{'test': 'bla'}"
 VALIDPYTHON = '{"test": "bla"}'
 
@@ -106,6 +101,10 @@ class TestObject(unittest.TestCase):
         obj = Object()
         self.assertEqual(obj.__dict__, {})
 
+    def test_fmt(self):
+        obj = Object()
+        self.assertEqual(fmt(obj), "{}")
+
     def test_format(self):
         obj = Object()
         self.assertEqual(format(obj), "{}")
@@ -163,7 +162,7 @@ class TestObject(unittest.TestCase):
         self.assertTrue(okd)
 
     def test_module(self):
-        self.assertEqual(Object().__module__, "tob.object")
+        self.assertEqual(Object().__module__, "tob.objects")
 
     def test_register(self):
         obj = Object()

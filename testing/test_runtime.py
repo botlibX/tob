@@ -7,7 +7,7 @@
 import unittest
 
 
-from tob import Task
+from tob.threads import Thread
 
 
 def func():
@@ -17,7 +17,7 @@ def func():
 class TestTask(unittest.TestCase):
 
     def test_construct(self):
-        task = Task(func)
+        task = Thread(func)
         task.start()
         result = task.join()
         self.assertEqual(result, "ok")

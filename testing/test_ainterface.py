@@ -15,37 +15,34 @@ sys.path.insert(0, os.getcwd())
 
 
 import tob
-import tob.broker
-import tob.cmnd
-import tob.config
-import tob.disk
-import tob.engine
-import tob.event
-import tob.method
-import tob.object
-import tob.path
-import tob.pkg
-import tob.time
-import tob.thread
-import tob.utils
+import tob.brokers
+import tob.command
+import tob.handler
+import tob.message
+import tob.methods
+import tob.objects
+import tob.package
+import tob.persist
+import tob.repeats
+import tob.threads
+import tob.utility
 
 
-from tob.object import *
+from tob.objects import *
 
 
 PACKAGE = [
-    'broker',
-    'cmnd',
-    'config',
-    'disk',
-    'engine',
-    'event',
-    'method',
-    'object',
-    'pkg',
-    'time',
-    'thread',
-    'utils'
+    'brokers',
+    'command',
+    'handler',
+    'message',
+    'methods',
+    'objects',
+    'package',
+    'persist',
+    'repeats',
+    'threads',
+    'utility'
 ]
 
 

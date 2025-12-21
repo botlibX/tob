@@ -1,16 +1,18 @@
 # This file is placed in the Public Domain.
 
 
-from tob import Broker, Method, Thread
+from tob.brokers import objs
+from tob.methods import fmt
+from tob.threads import name
 
 
 def flt(event):
-    clts = Broker.all("announce")
+    clts = objs("announce")
     if event.args:
         index = int(event.args[0])
         if index < len(clts):
-            event.reply(Method.fmt(list(clts)[index]), empty=True)
+            event.reply(fmt(list(clts)[index]), empty=True)
         else:
             event.reply(f"only {len(clts)} clients in fleet.")
         return
-    event.reply(' | '.join([Thread.name(o) for o in clts]))
+    event.reply(' | '.join([name(o) for o in clts]))

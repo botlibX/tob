@@ -4,15 +4,7 @@
 import unittest
 
 
-from tob import Method, Object
-
-
-fqn    = Object.fqn
-items  = Object.items
-keys   = Object.keys
-update = Object.update
-values = Object.values
-fmt    = Method.fmt
+from tob.objects import Object, items, keys, update, values
 
 
 VALIDJSON = '{"test": "bla"}'
@@ -133,9 +125,6 @@ class TestObject(unittest.TestCase):
     def test_module(self):
         self.assertTrue(Object().__module__, "tob.obejcts")
 
-    def test_kind(self):
-        self.assertEqual(fqn(Object()), "tob.object.Object")
-
     def test_repr(self):
         self.assertTrue(update(Object(),
                                {"key": "value"}).__repr__(), {"key": "value"})
@@ -148,10 +137,6 @@ class TestObject(unittest.TestCase):
     def test_str(self):
         obj = Object()
         self.assertEqual(str(obj), "{}")
-
-    def test_printable(self):
-        obj = Object()
-        self.assertEqual(fmt(obj), "{}")
 
     def test_getattr(self):
         obj = Object()

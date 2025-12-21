@@ -32,7 +32,7 @@ classifiers=[
 [tool.setuptools]
 packages = [
     'tob',
-    'tob.modules'
+    'tob.modules',
     'tob.network',
     'tob.nucleus'
 ]

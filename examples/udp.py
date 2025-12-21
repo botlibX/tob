@@ -9,13 +9,16 @@ import threading
 import time
 
 
-from tob import Broker, Main, Object, Thread 
+from tob.brokers import objs
+from tob.configs import Config
+from tob.objects import Object
+from tob.threads import launch
 
 
 def init():
     udp = UDP()
     udp.start()
-    logging.warning("http://%s:%s", Cfg.host, Cfg.port)
+    logging.warning("UDP http://%s:%s", Cfg.host, Cfg.port)
     return udp
 
 
@@ -41,7 +44,7 @@ class UDP(Object):
     def output(self, txt, addr=None):
         if addr:
             Cfg.addr = addr
-        for bot in Broker.all("announce"):
+        for bot in objs("announce"):
             bot.announce(txt.replace("\00", ""))
 
     def loop(self):
@@ -68,11 +71,11 @@ class UDP(Object):
                          )
 
     def start(self):
-        Thread.launch(self.loop)
+        launch(self.loop)
 
 
 def toudp(host, port, txt):
-    if Main.debug:
+    if Config.debug:
         return
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     sock.sendto(bytes(txt.strip(), "utf-8"), (host, port))

@@ -4,7 +4,8 @@
 import unittest
 
 
-from tob import Json, Object
+from tob.objects import Object
+from tob.serials import dumps, loads
 
 
 class TestDecoder(unittest.TestCase):
@@ -12,7 +13,7 @@ class TestDecoder(unittest.TestCase):
     def test_loads(self):
         obj = Object()
         obj.test = "bla"
-        oobj = Json.loads(Json.dumps(obj))
+        oobj = loads(dumps(obj))
         self.assertEqual(oobj["test"], "bla")
 
     def test_doctest(self):

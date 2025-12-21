@@ -9,11 +9,12 @@ import unittest
 sys.path.insert(0, ".")
 
 
-from tob import Disk, Object, Workdir
-from tob.disk import Cache
+from tob.objects import Object
+from tob.persist import Cache, write
+from tob.workdir import Workdir
 
 
-import tob.disk
+import tob.persist
 
 
 Workdir.wdr = '.test'
@@ -21,8 +22,15 @@ Workdir.wdr = '.test'
 
 ATTRS1 = (
     'Cache',
-    'Disk',
-    'Locate'
+    'add',
+    'attrs',
+    'find',
+    'fns',
+    'get',
+    'last',
+    'read',
+    'update',
+    'write'
 )
 
 
@@ -39,7 +47,7 @@ class TestStorage(unittest.TestCase):
 
     def test_dirmodule(self):
         self.assertEqual(
-                         dir(tob.disk),
+                         dir(tob.persist),
                          list(ATTRS1)
                         )
 
@@ -48,5 +56,5 @@ class TestStorage(unittest.TestCase):
 
     def test_save(self):
         obj = Object()
-        opath = Disk.write(obj)
+        opath = write(obj)
         self.assertTrue(os.path.exists(opath))
