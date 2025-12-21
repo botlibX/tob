@@ -13,18 +13,23 @@ import time
 sys.path.insert(0, os.getcwd())
 
 
-from tob import Client, Command, Event, Kernel, Main, Method, Output
-from tob import Mods, Thread, Time, Workdir
+from nixt.command import command
+from nixt.configs import Config
+from nixt.handler import Output
+from nixt.kernels import parse, scanner
+from nixt.message import Message
+from nixt.methods import fmt
+from nixt.threads import launch
+from nixt.timings import elapsed
+from nixt.workdir import Workdir, skel
 
 
-import tob.modules as MODS
+import examples as MODS
 
-Main.debug = True
-Main.name = "tob"
-Main.opts = ""
-Main.version = 150
-Mods.addpkg(MODS)
-#Mods.add("mods", "mods")
+
+Config.debug = True
+Config.name = "nixt"
+Config.version = 110
 Workdir.wdr = ".test"
 
 
@@ -35,16 +40,16 @@ class CLI(Output):
 
     def __init__(self):
         Output.__init__(self)
-        self.register("command", Command.command)
+        self.register("command", command)
 
     def raw(self, txt):
-        if "v" in Main.opts:
+        if "v" in Config.opts:
             print(txt)
 
 
 class Pool:
 
-    clients: list[Client] = []
+    clients = []
     lock = threading.RLock()
     nrcpu = 1
     nrlast = 0
@@ -73,12 +78,7 @@ class Pool:
 
 def banner(name, version):
     tme = time.ctime(time.time()).replace("  ", " ")
-    print("%s %s since %s (%s)" % (
-                                   name.upper(),
-                                   version,
-                                   tme,
-                                   Main.level
-                                  ))
+    print(f"{name.upper()} {version} since {tme} ({Config.level})")
     sys.stdout.flush()
 
 
@@ -90,7 +90,6 @@ def check(text):
         for char in text:
             if char in arg:
                 return True
-
     return False
 
 
@@ -107,58 +106,11 @@ def consume():
 def payload(todo):
     for cmd, example in todo.items():
         for ex in example:
-            evt = Event()
+            evt = Message()
             evt.text = f"{cmd} {ex}"
             evt.kind = "command"
             Pool.put(evt)
             events.put(evt)
-
-
-def main():
-    if os.path.exists(Workdir.wdr):
-        shutil.rmtree(Workdir.wdr)
-    Workdir.skel()
-    Method.parse(Main, " ".join(sys.argv[1:]))
-    Kernel.scanner(Mods.list())
-    if "b" in Main.opts:
-        threading.excepthook = Threading.threadhook
-    if "v" in Main.opts:
-        banner(Main.name, Main.version)
-    if "z" in Main.opts:
-        Pool.init(CLI, os.cpu_count())
-    else:
-        Pool.init(CLI, 1)
-    starttime = time.time()
-    thrs = []
-    NRS = Main.index or 1
-    for _x in range(NRS):
-        thrs.append(Thread.launch(payload, pre))
-    for thr in thrs:
-        thr.join()
-    for _x in range(NRS):
-        thrs.append(Thread.launch(payload, examples))
-    for thr in thrs:
-        thr.join()
-    for _x in range(NRS):
-        thrs.append(Thread.launch(payload, post))
-    for thr in thrs:
-        thr.join()
-    Thread.launch(consume)
-    nrevents = events.qsize()
-    try:
-        events.join()
-    except (KeyboardInterrupt, EOFError):
-        os._exit(0)
-    endtime = time.time()
-    lap = Time.elapsed(endtime-starttime)
-    percall = (endtime-starttime)/nrevents
-    nrs = events.qsize()
-    if "v" in Main.opts:
-        print(f"{Method.fmt(Main)}")
-        print(f"{nrs} events left.")
-        print(f"total: {lap} nrs: {nrevents} call: %.6fs" % percall)
-    sys.stdout.flush()
-    #os._exit(0)
 
 
 examples = {
@@ -181,7 +133,6 @@ examples = {
     "upt": [""]
 }
 
-
 pre = {
     "cfg": ["", "nick=mekker"],
     "imp": ["", "testing/feeds.opml"],
@@ -190,12 +141,57 @@ pre = {
     "tdo": ["", "todo add"]
 }
 
-
 post = {
+    "dbg": [""],
     "dne": ["", "mekker"],
     "exp": [""],
     "rem": ["", "hnrss"]
 }
+
+
+
+def main():
+    if os.path.exists(Workdir.wdr):
+        shutil.rmtree(Workdir.wdr)
+    skel()
+    parse(Config, " ".join(sys.argv[1:]))
+    scanner(MODS)
+    if "v" in Config.opts:
+        banner(Config.name, Config.version)
+    if "z" in Config.opts:
+        Pool.init(CLI, os.cpu_count())
+    else:
+        Pool.init(CLI, 1)
+    starttime = time.time()
+    thrs = []
+    nrs = Config.index or 1
+    for _x in range(nrs):
+        thrs.append(launch(payload, pre))
+    for thr in thrs:
+        thr.join()
+    for _x in range(nrs):
+        thrs.append(launch(payload, examples))
+    for thr in thrs:
+        thr.join()
+    for _x in range(nrs):
+        thrs.append(launch(payload, post))
+    for thr in thrs:
+        thr.join()
+    launch(consume)
+    nrevents = events.qsize()
+    try:
+        events.join()
+    except (KeyboardInterrupt, EOFError):
+        os._exit(0)
+    endtime = time.time()
+    lap = elapsed(endtime-starttime)
+    percall = (endtime-starttime)/nrevents
+    nrs = events.qsize()
+    if "v" in Config.opts:
+        print(f"{fmt(Config)}")
+        print(f"{nrs} events left.")
+        print(f"total: {lap} nrs: {nrevents} call: %.6fs" % percall)
+    os._exit(0)
 
 
 if __name__ == "__main__":

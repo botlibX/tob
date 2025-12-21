@@ -6,10 +6,11 @@ import os
 import time
 
 
-from tob import Disk, Locate, Method, Object, Static, Time
-
-
-MONTH = Static.MONTH
+from tob.defines import MONTH
+from tob.methods import fmt
+from tob.objects import Object, keys, update
+from tob.persist import find, write
+from tob.timings import date, elapsed
 
 
 class Email(Object):
@@ -61,26 +62,26 @@ def eml(event):
     if len(event.args) > 1:
         args.extend(event.args[1:])
     if event.gets:
-        args.extend(Object.keys(event.gets))
+        args.extend(keys(event.gets))
     for key in event.silent:
         if key in args:
             args.remove(key)
     args = set(args)
     result = sorted(
-                    Locate.find("email", event.gets),
-                    key=lambda x: Time.date(todate(getattr(x[1], "Date", "")))
+                    find("email", event.gets),
+                    key=lambda x: date(todate(getattr(x[1], "Date", "")))
                    )
     if event.index:
         obj = result[event.index]
         if obj:
             obj = obj[-1]
             tme = getattr(obj, "Date", "")
-            event.reply(f'{event.index} {Method.fmt(obj, args, plain=True)} {Time.elapsed(time.time() - Time.date(Time.todate(tme)))}')
+            event.reply(f'{event.index} {fmt(obj, args, plain=True)} {elapsed(time.time() - date(todate(tme)))}')
     else:
         for _fn, obj in result:
             nrs += 1
             tme = getattr(obj, "Date", "")
-            event.reply(f'{nrs} {Method.fmt(obj, args, plain=True)} {Time.elapsed(time.time() - Time.date(Time.todate(tme)))}')
+            event.reply(f'{nrs} {fmt(obj, args, plain=True)} {elapsed(time.time() - date(todate(tme)))}')
     if not result:
         event.reply("no emails found.")
 
@@ -104,13 +105,13 @@ def mbx(event):
     nrs = 0
     for mail in thing:
         obj = Email()
-        Object.update(obj, dict(mail._headers))
+        update(obj, dict(mail._headers))
         obj.text = ""
         for payload in mail.walk():
             if payload.get_content_type() == 'text/plain':
                 obj.text += payload.get_payload()
         obj.text = obj.text.replace("\\n", "\n")
-        Disk.write(obj)
+        write(obj)
         nrs += 1
     if nrs:
         event.reply("ok %s" % nrs)
