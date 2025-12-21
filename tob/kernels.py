@@ -80,13 +80,6 @@ def scanner(pkg, names=""):
         scan(module)
 
 
-def wrapped(func):
-    try:
-        func()
-    except (KeyboardInterrupt, EOFError):
-        pass
-
-
 def __dir__():
     return (
         'banner',
@@ -94,6 +87,5 @@ def __dir__():
         'forever',
         'init',
         'pidfile',
-        'scanner',
-        'wrapped'
+        'scanner'
     )

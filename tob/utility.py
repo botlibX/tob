@@ -41,11 +41,19 @@ def where(obj):
     return os.path.dirname(inspect.getfile(obj))
 
 
+def wrapped(func):
+    try:
+        func()
+    except (KeyboardInterrupt, EOFError):
+        pass
+
+
 def __dir__():
     return (
         'cdir',
         'ident',
         'md5sum',
         'spl',
-        'where'
+        'where',
+        'wrap'
     )

@@ -14,13 +14,11 @@ from tob.command import Commands, enable, command
 from tob.configs import Config
 from tob.defines import SYSTEMD
 from tob.handler import CLI
-from tob.kernels import boot, forever, init, pidfile, scanner, wrapped
+from tob.kernels import boot, forever, init, pidfile, scanner
 from tob.message import Message
 from tob.package import Mods, modules
+from tob.utility import wrapped
 from tob.workdir import Workdir, moddir, pidname
-
-
-TXT = " ".join(sys.argv[1:])
 
 
 Config.ignore = "rst,web,wsd,udp"
@@ -30,6 +28,9 @@ Config.version = 151
 
 
 Workdir.wdr = os.path.expanduser(f"~/.{Config.name}")
+
+
+TXT = " ".join(sys.argv[1:])
 
 
 class Line(CLI):
