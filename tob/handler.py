@@ -82,7 +82,7 @@ class Client(Handler):
                 self.dosay(event.channel, txt)
 
     def dosay(self, channel, text):
-        "say called by display.""
+        "say called by display."
         self.say(channel, text)
 
     def raw(self, text):

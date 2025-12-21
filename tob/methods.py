@@ -64,7 +64,7 @@ def fmt(obj, args=[], skip=[], plain=False, empty=False):
 
 
 def fqn(obj):
-   "full qualified name."
+    "full qualified name."
     kin = str(type(obj)).split()[-1][1:-2]
     if kin == "type":
         tpe = type(obj)

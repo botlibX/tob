@@ -21,7 +21,7 @@ from tob.utility import wrapped
 from tob.workdir import Workdir, pidname
 
 
-Config.ignore = "rst,web,wsd,udp"
+Config.ignore = "udp"
 Config.level = "info"
 Config.name = "tob" 
 Config.version = 151

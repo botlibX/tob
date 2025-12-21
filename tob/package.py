@@ -6,7 +6,6 @@
 
 import importlib.util
 import os
-import sys
 
 
 from .configs import Config
@@ -16,10 +15,8 @@ from .workdir import moddir
 
 class Mods:
 
-    "holds modules directories."
-
     dirs = {}
-    ignore = ""
+    modules = {}
     package = __spec__.parent or ""
     path = os.path.dirname(__spec__.loader.path)
 
@@ -49,30 +46,32 @@ def importer(name, pth=""):
     mod = importlib.util.module_from_spec(spec)
     if not mod:
         return None
-    sys.modules[name] = mod
+    Mods.modules[name] = mod
     spec.loader.exec_module(mod)
     return mod
 
 
 def mod(name):
     "import module by name." 
+    if name in spl(Config.ignore):
+        return None
+    if name in Mods.modules:
+        return Mods.modules[name]
     mname = ""
     pth = ""
-    if name in spl(Mods.ignore):
-        return None
     for packname, path in Mods.dirs.items():
         modpath = os.path.join(path, name + ".py")
         if os.path.exists(modpath):
             pth = modpath
             mname = f"{packname}.{name}"
             break
-    return sys.modules.get(mname, None) or importer(mname, pth)
+    return importer(mname, pth)
 
 
 def mods(names):
     "list of named modules."
     return [
-        Mods.get(x) for x in sorted(spl(names))
+        mod(x) for x in sorted(spl(names))
         if x not in spl(Config.ignore)
         or x in spl(Config.sets.init)
     ]
@@ -82,13 +81,13 @@ def modules():
     "comma seperated list of available modules."
     mods = []
     for name, path in Mods.dirs.items():
-        if name in spl(Mods.ignore):
+        if name in spl(Config.ignore):
             continue
         if not os.path.exists(path):
             continue
         mods.extend([
             x[:-3] for x in os.listdir(path)
-            if x.endswith(".py") and not x.startswith("__") and x not in spl(Mods.ignore)
+            if x.endswith(".py") and not x.startswith("__") and x not in spl(Config.ignore)
         ])
     return ",".join(sorted(mods))
 
