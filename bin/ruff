@@ -1,0 +1,1 @@
+ruff check tob examples bin/tob bin/tinder

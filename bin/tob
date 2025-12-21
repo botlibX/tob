@@ -16,9 +16,9 @@ from tob.defines import SYSTEMD
 from tob.handler import CLI
 from tob.kernels import boot, forever, init, pidfile, scanner
 from tob.message import Message
-from tob.package import Mods, modules
+from tob.package import modules
 from tob.utility import wrapped
-from tob.workdir import Workdir, moddir, pidname
+from tob.workdir import Workdir, pidname
 
 
 Config.ignore = "rst,web,wsd,udp"

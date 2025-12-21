@@ -224,7 +224,7 @@ opml
 """
 
 
-from tob import Main
+from tob.configs import Config
 
 
 def man(event):
@@ -233,10 +233,10 @@ def man(event):
         return
     descr = event.rest
     event.reply(__doc__ % (
-        Main.name.upper(),
+        Config.name.upper(),
         descr,
-        *(Main.name,) * 4,
-        *(Main.name.upper(),) * 4,
-        *(Main.name,) * 32,
-        Main.name.upper()
+        *(Config.name,) * 4,
+        *(Config.name.upper(),) * 4,
+        *(Config.name,) * 32,
+        Config.name.upper()
         ))

@@ -55,5 +55,5 @@ def __dir__():
         'md5sum',
         'spl',
         'where',
-        'wrap'
+        'wrapped'
     )
