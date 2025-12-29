@@ -224,7 +224,7 @@ opml
 """
 
 
-from tob.configs import Config
+from tob.defines import Config
 
 
 def man(event):

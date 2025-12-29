@@ -10,10 +10,8 @@ import time
 from http.server import HTTPServer, BaseHTTPRequestHandler
 
 
-from tob.configs import Config
-from tob.objects import Object
-from tob.threads import launch
-from tob.workdir import storage, types
+from tob.defines import Config, Object
+from tob.defines import launch, storage, kinds
 
 
 def init():
@@ -88,7 +86,7 @@ class RESTHandler(BaseHTTPRequestHandler):
         if self.path == "/":
             self.write_header("text/html")
             txt = ""
-            for fnm in types():
+            for fnm in kinds():
                 txt += f'<a href="http://{Cfg.hostname}:{Cfg.port}/{fnm}">{fnm}</a><br>\n'
             self.send(html(txt.strip()))
             return

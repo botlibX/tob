@@ -10,14 +10,12 @@ import time
 from http.server import HTTPServer, BaseHTTPRequestHandler
 
 
-from tob.configs import Config
-from tob.objects import Object
-from tob.package import Mods
-from tob.threads import launch
+from tob.defines import Config, Object, launch, where
 
 
 def init():
-    Cfg.path = os.path.join(Mods.path, "network", "html")
+    Cfg.path = where(Config)
+    #Cfg.path = os.path.join(Mods.path, "network", "html")
     if not os.path.exists(os.path.join(Cfg.path, 'index.html')):
         logging.warning("no index.html")
         return

@@ -7,7 +7,7 @@
 import unittest
 
 
-from examples.rss import Parser
+from tob.modules.rss import Parser
 
 
 class TestAtom(unittest.TestCase):

@@ -4,8 +4,8 @@
 "persistence through storage"
 
 
-import json
 import os
+import json
 import threading
 
 
@@ -119,13 +119,13 @@ def write(obj, path=""):
 def __dir__():
     return (
         'Cache',
-        'add',
         'attrs',
+        'cache',
         'find',
         'fns',
-        'get',
         'last',
+        'put',
         'read',
-        'update',
+        'sync',
         'write'
     )

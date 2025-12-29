@@ -7,9 +7,7 @@ import logging
 from random import SystemRandom
 
 
-from tob.brokers import objs
-from tob.message import Message
-from tob.repeats import Repeater
+from tob.defines import Message, Repeater, objs
 
 
 rand = SystemRandom()

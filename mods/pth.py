@@ -4,9 +4,10 @@
 import os
 
 
-from tob.package import Mods
+from tob.defines import Config, where
 
 
 def pth(event):
-    path = os.path.join(Mods.path, 'network', 'html', "index.html")
+    fn = where(Config)
+    path = os.path.join(fn, 'nucleus', "index.html")
     event.reply(f"file://{path}")

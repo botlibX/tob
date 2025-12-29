@@ -22,14 +22,14 @@ Workdir.wdr = '.test'
 
 ATTRS1 = (
     'Cache',
-    'add',
     'attrs',
+    'cache',
     'find',
     'fns',
-    'get',
     'last',
+    'put',
     'read',
-    'update',
+    'sync',
     'write'
 )
 
@@ -57,4 +57,5 @@ class TestStorage(unittest.TestCase):
     def test_save(self):
         obj = Object()
         opath = write(obj)
+        print(opath)
         self.assertTrue(os.path.exists(opath))

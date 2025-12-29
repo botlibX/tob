@@ -25,7 +25,7 @@ def long(name):
     "match full qualified name by substring."
     split = name.split(".")[-1].lower()
     res = name
-    for names in types():
+    for names in kinds():
         if split == names.split(".")[-1].lower():
             res = names
             break
@@ -56,7 +56,7 @@ def storage(fnm: str = ""):
     return os.path.join(Workdir.wdr, "store", fnm)
 
 
-def types():
+def kinds():
     "return stored types."
     return os.listdir(storage())
 

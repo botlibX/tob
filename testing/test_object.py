@@ -7,7 +7,6 @@
 import unittest
 
 
-from tob.methods import fmt
 from tob.objects import Object, items, keys, update, values
 
 
@@ -103,7 +102,7 @@ class TestObject(unittest.TestCase):
 
     def test_fmt(self):
         obj = Object()
-        self.assertEqual(fmt(obj), "{}")
+        self.assertEqual(format(obj), "{}")
 
     def test_format(self):
         obj = Object()

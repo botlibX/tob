@@ -16,16 +16,18 @@ sys.path.insert(0, os.getcwd())
 
 import tob
 import tob.brokers
+import tob.clients
 import tob.command
 import tob.handler
 import tob.message
 import tob.methods
 import tob.objects
-import tob.package
 import tob.persist
 import tob.repeats
+import tob.timings
 import tob.threads
 import tob.utility
+import tob.workdir
 
 
 from tob.objects import *
@@ -33,16 +35,18 @@ from tob.objects import *
 
 PACKAGE = [
     'brokers',
+    'clients',
     'command',
     'handler',
     'message',
     'methods',
     'objects',
-    'package',
     'persist',
     'repeats',
     'threads',
-    'utility'
+    'timings',
+    'utility',
+    'workdir'
 ]
 
 
