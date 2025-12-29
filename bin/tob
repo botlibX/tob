@@ -23,7 +23,7 @@ from tob.defines import moddir, pidname, skel, where, wrapped
 Config.ignore = "man,mbx,rst,udp,web"
 Config.level = "info"
 Config.name = "tob" 
-Config.version = 230
+Config.version = 151
 
 
 TXT = " ".join(sys.argv[1:])
