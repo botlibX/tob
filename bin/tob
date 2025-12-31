@@ -6,6 +6,7 @@
 
 
 import importlib.util
+import inspect
 import os
 import pathlib
 import time
@@ -15,18 +16,25 @@ import sys
 sys.path.insert(0, os.getcwd())
 
 
-from tob.defines import SYSTEMD, CLI, Commands, Config, Message, Workdir
+from tob.defines import SYSTEMD, CLI
+from tob.defines import Commands, Config, Default, Message, Workdir
 from tob.defines import command, enable, parse, launch, level, scan, spl
 from tob.defines import moddir, pidname, skel, where, wrapped
 
 
+"config"
+
+
+Config.debug = False
+Config.gets = Default()
 Config.ignore = "man,mbx,rst,udp,web"
+Config.init = ""
 Config.level = "info"
-Config.name = "tob" 
-Config.version = 151
-
-
-TXT = " ".join(sys.argv[1:])
+Config.name = "tob"
+Config.opts = ""
+Config.sets = Default()
+Config.txt = " ".join(sys.argv[1:])
+Config.version = 111
 
 
 "clients"
@@ -199,18 +207,15 @@ class Mods:
 
     dirs = {}
     modules = {}
-    path = where(scan)
-    package = os.path.dirname(path).split(os.sep)[-1]
 
 
 def configure():
     "configure directories to load modules from."
-    name = Mods.package + ".modules" 
-    dirs(name, os.path.join(Mods.path, "modules"))
+    dirs(f"{Config.name}.modules", os.path.dirname(inspect.getfile(importer(f"{Config.name}.modules"))))
     dirs("modules", moddir())
     if "m" in Config.opts:
         dirs("mods", "mods")
-
+    print(Mods.dirs)
 
 def dirs(name: str, path):
     "add module directory."
@@ -281,7 +286,7 @@ def background():
     "background script."
     daemon(check("v"), check("m"))
     privileges()
-    boot(TXT)
+    boot(Config.txt)
     pidfile(pidname(Config.name))
     enable(cmd, mod, ver)
     scanner(modules())
@@ -295,7 +300,7 @@ def console():
     readline.redisplay()
     if check("0"):
         Config.ignore = list()
-    boot(TXT)
+    boot(Config.txt)
     if "v" in Config.opts:
         banner()
     scanner()
@@ -314,7 +319,7 @@ def control():
     "cli script."
     if len(sys.argv) == 1:
         return
-    boot(TXT)
+    boot(Config.txt)
     scanner()
     enable(cmd, mod, srv, ver)
     cli = Line()
@@ -329,7 +334,7 @@ def control():
 def service():
     "service script."
     privileges()
-    boot(TXT)
+    boot(Config.txt)
     banner()
     pidfile(pidname(Config.name))
     enable(cmd, mod, ver)
