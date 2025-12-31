@@ -14,11 +14,10 @@ T O B
 
 ::
 
-    >>> from tob.objects import Object
-    >>> from tob.serials import Json
+    >>> from tob.defines import Object, dumps, loads
     >>> o = Object()
     >>> o.a = "b"
-    >>> print(Json.loads(Json.dumps(o)))
+    >>> print(loads(dumps(o)))
     {'a': 'b'}
 
 

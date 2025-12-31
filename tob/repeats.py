@@ -1,7 +1,7 @@
 # This file is placed in the Public Domain.
 
 
-"things are repeating."
+"things are repeating"
 
 
 import threading
