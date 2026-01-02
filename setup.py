@@ -9,7 +9,7 @@ import setuptools
 
 setuptools.setup(
     data_files=[
-        ('share/nixt/examples', [
+        ('share/tob/examples', [
             'examples/__init__.py',
             'examples/atr.py',
             'examples/flt.py',
@@ -24,7 +24,6 @@ setuptools.setup(
             'examples/rss.py',
             'examples/rst.py',
             'examples/sil.py',
-            'examples/slg.py',
             'examples/tdo.py',
             'examples/thr.py',
             'examples/tmr.py',

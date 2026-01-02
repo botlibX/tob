@@ -19,8 +19,10 @@ from tob.defines import forever, init, modules, pidfile, pidname
 from tob.defines import privileges, scanner, wrap, wrapped
 
 
-import tob.modules as MODS
-
+try:
+    import examples as MODS
+except ModuleNotFoundError:
+    MODS = None
 
 "config"
 
@@ -166,10 +168,11 @@ def ver(event):
 
 def main():
     "runtime."
+    adddir("mods", ".local/share/pipx/venvs/tob/share/tob/examples/")
     if check('z'):
         Config.debug = True
     if check('m'):
-        adddir("mods", "mods")
+        adddir("mods", "examples")
     if check("c"):
         wrap(console)
     elif check("d"):
