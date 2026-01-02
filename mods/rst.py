@@ -10,8 +10,7 @@ import time
 from http.server import HTTPServer, BaseHTTPRequestHandler
 
 
-from tob.defines import Config, Object
-from tob.defines import launch, storage, kinds
+from tob.defines import Config, Object, getstore, launch, kinds
 
 
 def init():
@@ -79,7 +78,7 @@ class RESTHandler(BaseHTTPRequestHandler):
         self.end_headers()
 
     def do_GET(self):
-        if Config.debug:
+        if getattr(Config, 'debug', False):
             return
         if "favicon" in self.path:
             return
@@ -90,7 +89,7 @@ class RESTHandler(BaseHTTPRequestHandler):
                 txt += f'<a href="http://{Cfg.hostname}:{Cfg.port}/{fnm}">{fnm}</a><br>\n'
             self.send(html(txt.strip()))
             return
-        fnm = storage() + self.path
+        fnm = getstore() + self.path
         fnm = os.path.abspath(fnm)
         if os.path.isdir(fnm):
             self.write_header("text/html")

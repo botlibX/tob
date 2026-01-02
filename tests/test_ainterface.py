@@ -22,9 +22,9 @@ import tob.handler
 import tob.message
 import tob.methods
 import tob.objects
+import tob.package
 import tob.persist
-import tob.repeats
-import tob.timings
+import tob.runtime
 import tob.threads
 import tob.utility
 import tob.workdir
@@ -41,10 +41,10 @@ PACKAGE = [
     'message',
     'methods',
     'objects',
+    'package',
     'persist',
-    'repeats',
+    'runtime',
     'threads',
-    'timings',
     'utility',
     'workdir'
 ]

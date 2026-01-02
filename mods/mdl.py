@@ -12,8 +12,8 @@ import time
 from tob.brokers import objs
 from tob.message import Message
 from tob.objects import Object, construct, keys
-from tob.repeats import Repeater
-from tob.timings import elapsed
+from tob.threads import Repeater
+from tob.utility import elapsed
 
 
 def init():
