@@ -60,6 +60,10 @@ def importer(name, pth=""):
     return mod
 
 
+def pkgdir(name):
+    return f".local/share/pipx/venvs/{name}/share/{name}/examples"
+
+
 def mods(names):
     "list of named modules."
     return [getmod(x) for x in sorted(spl(names))]

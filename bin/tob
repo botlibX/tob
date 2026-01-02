@@ -13,16 +13,11 @@ import time
 sys.path.insert(0, os.getcwd())
 
 
-from tob.defines import SYSTEMD, CLI, Commands, Config, Message
+from tob.defines import SYSTEMD, CLI, Commands, Config, Message, Mods
 from tob.defines import adddir, boot, check, command, daemon, enable
-from tob.defines import forever, init, modules, pidfile, pidname
-from tob.defines import privileges, scanner, wrap, wrapped
+from tob.defines import forever, init, moddir, modules, pidfile, pidname
+from tob.defines import pkgdir, privileges, scanner, wrap, wrapped
 
-
-try:
-    import examples as MODS
-except ModuleNotFoundError:
-    MODS = None
 
 "config"
 
@@ -30,6 +25,7 @@ except ModuleNotFoundError:
 Config.ignore = ""
 Config.level = "info"
 Config.name = "tob" 
+Config.opts = ""
 Config.txt = " ".join(sys.argv[1:])
 Config.version = 151
 
@@ -74,6 +70,22 @@ def banner():
     sys.stdout.flush()
 
 
+def configure():
+    path = os.path.expanduser(f"~/.local/share/pipx/venvs/{Config.name}/share/{Config.name}/examples/")
+    print(path)
+    if os.path.exists(path):
+        adddir(f"{Config.name}.modules", path)
+    path = moddir()
+    if os.path.exists(path):
+        adddir("modules", path)
+    if "m" in Config.opts:
+        if os.path.exists("examples"):
+            adddir("mods", "examples")
+        elif os.path.exists("mods"):
+            adddir("mods", "mods")
+    print(Mods.dirs)
+
+
 "scripts"
 
 
@@ -81,7 +93,7 @@ def background():
     "background script."
     daemon(check("v"), check("m"))
     privileges()
-    boot(Config, MODS)
+    boot(Config)
     pidfile(pidname(Config.name))
     enable(cmd, mod, ver)
     scanner(modules())
@@ -93,9 +105,7 @@ def console():
     "console script."
     import readline
     readline.redisplay()
-    if check("0"):
-        Config.ignore = list()
-    boot(Config, MODS)
+    boot(Config)
     if "v" in Config.opts:
         banner()
     scanner()
@@ -114,7 +124,7 @@ def control():
     "cli script."
     if len(sys.argv) == 1:
         return
-    boot(Config, MODS)
+    boot(Config)
     scanner()
     enable(cmd, mod, srv, ver)
     cli = Line()
@@ -129,7 +139,7 @@ def control():
 def service():
     "service script."
     privileges()
-    boot(Config, MODS)
+    boot(Config)
     banner()
     pidfile(pidname(Config.name))
     enable(cmd, mod, ver)
@@ -168,11 +178,9 @@ def ver(event):
 
 def main():
     "runtime."
-    adddir("mods", ".local/share/pipx/venvs/tob/share/tob/examples/")
+    configure()
     if check('z'):
         Config.debug = True
-    if check('m'):
-        adddir("mods", "examples")
     if check("c"):
         wrap(console)
     elif check("d"):

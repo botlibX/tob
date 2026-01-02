@@ -16,7 +16,7 @@ from .methods import deleted, edit, fmt, fqn, parse, search
 from .objects import Default, Object
 from .objects import asdict , construct, items, keys, update, values
 from .package import Mods, adddir, addpkg, getmod, importer, mods
-from .package import modules, scanner
+from .package import modules, pkgdir, scanner
 from .persist import attrs, cache, last, find, put, read, sync, write
 from .runtime import boot, check, daemon, forever, init, pidfile
 from .runtime import privileges, wrap

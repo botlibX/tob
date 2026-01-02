@@ -19,17 +19,11 @@ from .utility import spl, wrapped
 from .workdir import Workdir, skel
 
 
-def boot(cfg, *pkgs):
+def boot(cfg):
     "in the beginning."
     Workdir.wdr = Workdir.wdr or os.path.expanduser(f"~/.{cfg.name}")
     skel()
     parse(cfg, cfg.txt)
-    for pkg in pkgs:
-        if not pkg:
-            continue
-        addpkg(pkg)
-    if "ignore" in cfg.sets:
-        cfg.ignore = cfg.sets.ignore
     level(cfg.sets.level or cfg.level or "info")
 
 
