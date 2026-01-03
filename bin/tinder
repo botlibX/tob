@@ -14,15 +14,15 @@ import time
 sys.path.insert(0, os.getcwd())
 
 
-from nixt.defines import Config, Message, Output, Workdir
-from nixt.defines import command, elapsed, fmt, launch, moddir, parse
-from nixt.defines import scan, skel, spl
+from tob.defines import Config, Message, Output, Workdir
+from tob.defines import command, elapsed, fmt, launch, moddir, parse
+from tob.defines import scan, skel, spl
 
 
 Config.debug = True
 Config.level = "info"
-Config.name = "rssbot"
-Config.version = 658
+Config.name = "tob"
+Config.version = 151
 Workdir.wdr = ".test"
 
 
