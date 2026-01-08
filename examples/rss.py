@@ -28,7 +28,7 @@ from tob.persist import write
 from tob.threads import launch
 from tob.timings import Repeater, elapsed, fntime
 from tob.utility import spl
-from tob.workdir import getpath
+from tob.workdir import getident
 
 
 def init():
@@ -122,7 +122,7 @@ class Fetcher(Object):
                 result.append(fed)
             setattr(self.seen, feed.rss, urls)
             if not self.seenfn:
-                self.seenfn = getpath(self.seen)
+                self.seenfn = getident(self.seen)
             write(self.seen, self.seenfn)
         if silent:
             return counter

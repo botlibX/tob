@@ -12,14 +12,14 @@ from tob.locater import last
 from tob.objects import Object, items
 from tob.persist import write
 from tob.timings import NoDate, Timed, day, elapsed, extract, hour, today
-from tob.workdir import getpath
+from tob.workdir import getident
 
 
 rand = random.SystemRandom()
 
 
 def init():
-    Timers.path = last(Timers.timers) or getpath(Timers.timers)
+    Timers.path = last(Timers.timers) or getident(Timers.timers)
     remove = []
     for tme, args in items(Timers.timers):
         if not args:
@@ -104,7 +104,7 @@ def tmr(event):
     diff = target - time.time()
     txt = " ".join(event.args[1:])
     Timers.add(target, event.orig, event.channel, txt)
-    write(Timers.timers, Timers.path or getpath(Timers.timers))
+    write(Timers.timers, Timers.path or getident(Timers.timers))
     bot = getobj(event.orig)
     timer = Timed(diff, bot.say, event.orig, event.channel, txt)
     timer.start()

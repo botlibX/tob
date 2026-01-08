@@ -21,7 +21,7 @@ from tob.methods import edit, fmt
 from tob.objects import Object, keys
 from tob.persist import write
 from tob.threads import launch
-from tob.workdir import getpath
+from tob.workdir import getident
 
  
 lock = threading.RLock()
@@ -608,7 +608,7 @@ def cfg(event):
         )
     else:
         edit(config, event.sets)
-        write(config, fnm or getpath(config))
+        write(config, fnm or getident(config))
         event.reply("ok")
 
 
