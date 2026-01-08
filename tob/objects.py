@@ -90,6 +90,7 @@ def update(obj, data, empty=True):
                 continue
             setattr(obj, key, value)
 
+
 def values(obj):
     "object's values/"
     if isinstance(obj, dict):

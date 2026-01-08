@@ -21,6 +21,7 @@ class Client(Handler):
         super().__init__()
         self.olock = threading.RLock()
         self.silent = True
+        self.stopped = threading.Event()
         addobj(self)
 
     def announce(self, text):
@@ -39,6 +40,18 @@ class Client(Handler):
         "say called by display."
         self.say(channel, text)
 
+    def input(self):
+        "event loop."
+        while True:
+            event = self.poll()
+            if not event or self.stopped.is_set():
+                break
+            self.put(event)
+
+    def poll(self):
+        "return event."
+        raise NotImplementedError("poll")
+
     def raw(self, text):
         "raw output."
         raise NotImplementedError("raw")
@@ -46,6 +59,14 @@ class Client(Handler):
     def say(self, channel, text):
         "say text in channel."
         self.raw(text)
+
+    def start(self):
+        super().start()
+        launch(self.input)
+
+    def stop(self):
+        self.stopped.set()
+        super().stop()
 
 
 class Output(Client):

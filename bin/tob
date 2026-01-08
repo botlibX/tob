@@ -62,15 +62,6 @@ class Console(Line):
         super().__init__()
         self.done = threading.Event()
         self.done.set()
-        self.stopped = threading.Event()
-
-    def input(self):
-        "event loop."
-        while True:
-            event = self.poll()
-            if not event or self.stopped.is_set():
-                break
-            self.put(event)
 
     def callback(self, event):
         "wait for callback result."
@@ -90,11 +81,6 @@ class Console(Line):
         evt.text = input("> ")
         evt.kind = "command"
         return evt
-
-    def start(self):
-        "starting"
-        launch(self.input)
-        Line.start(self)
 
 
 "utility"

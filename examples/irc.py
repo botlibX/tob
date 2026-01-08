@@ -14,7 +14,7 @@ import time
 from tob.brokers import getobj
 from tob.clients import Output
 from tob.command import command
-from tob.configs import Cfg as Main
+from tob.configs import Cfg
 from tob.locater import last
 from tob.message import Message
 from tob.methods import edit, fmt
@@ -40,20 +40,20 @@ def init():
 
 class Config(Object):
 
-    channel = f"#{Main.name}"
+    channel = f"#{Cfg.name}"
     commands = True
     control = "!"
     ignore = ["PING", "PONG", "PRIVMSG"] 
-    name = Main.name
-    nick = Main.name
+    name = Cfg.name
+    nick = Cfg.name
     word = ""
     port = 6667
-    realname = Main.name
+    realname = Cfg.name
     sasl = False
     server = "localhost"
     servermodes = ""
     sleep = 60
-    username = Main.name
+    username = Cfg.name
     users = False
     version = 1
 
