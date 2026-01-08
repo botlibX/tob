@@ -1,1 +1,1 @@
-ruff check tob examples bin/tob bin/tinder
+ruff check tob/*.py examples/*.py testing/*.py bin/tob bin/tinder 

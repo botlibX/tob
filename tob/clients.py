@@ -19,6 +19,7 @@ class Client(Handler):
 
     def __init__(self):
         super().__init__()
+        self.iqueue = queue.Queue()
         self.olock = threading.RLock()
         self.silent = True
         self.stopped = threading.Event()
@@ -50,7 +51,7 @@ class Client(Handler):
 
     def poll(self):
         "return event."
-        raise NotImplementedError("poll")
+        return self.iqueue.get()
 
     def raw(self, text):
         "raw output."

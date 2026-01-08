@@ -20,10 +20,9 @@ from tob.configs import Cfg
 from tob.loggers import level
 from tob.message import Message
 from tob.methods import parse
-from tob.package import Mods, adddir, init, modules, scanner
+from tob.package import adddir, init, modules, scanner
 from tob.statics import SYSTEMD
-from tob.threads import launch
-from tob.utility import check, forever, pipxdir, where, wrapped
+from tob.utility import forever, pipxdir, where, wrapped
 from tob.workdir import Workdir, moddir, pidfile, pidname, skel
 
 

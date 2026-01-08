@@ -13,15 +13,15 @@ import time
 sys.path.insert(0, os.getcwd())
 
 
-from tob.clients import Client, Output
+from tob.clients import Output
 from tob.command import command
 from tob.configs import Cfg
 from tob.message import Message
 from tob.methods import fmt, parse
-from tob.package import Mods, adddir, modules, scanner
+from tob.package import adddir, modules, scanner
 from tob.threads import launch
 from tob.timings import elapsed
-from tob.utility import where, wrapped
+from tob.utility import wrapped
 from tob.workdir import Workdir, skel
 
 
@@ -205,7 +205,6 @@ def main():
         payload(examples)
     for _x in range(nrs):
         payload(post)
-    print("yo!")
     launch(consume)
     nrevents = events.qsize()
     try:
@@ -213,7 +212,6 @@ def main():
     except (KeyboardInterrupt, EOFError):
         pass
     endtime = time.time()
-    print("yo!")
     lap = elapsed(endtime-starttime)
     percall = (endtime-starttime)/nrevents
     nrs = events.qsize()
