@@ -41,7 +41,7 @@ def command(evt):
     evt.ready()
 
 
-def scan(module):
+def scancmd(module):
     "scan a module for functions with event as first argument."
     for key, cmdz in inspect.getmembers(module, inspect.isfunction):
         if 'event' not in inspect.signature(cmdz).parameters:
@@ -55,5 +55,5 @@ def __dir__():
         'addcmd',
         'command',
         'getcmd',
-        'scan'
+        'scancmd'
     )

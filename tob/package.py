@@ -7,7 +7,7 @@
 import os
 
 
-from .command import scan
+from .command import scancmd
 from .threads import launch
 from .utility import importer, spl
 
@@ -92,7 +92,7 @@ def scanner(names):
         module = getmod(name)
         if not module:
             continue
-        scan(module)
+        scancmd(module)
     return mods
 
 

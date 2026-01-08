@@ -19,17 +19,17 @@ lock = threading.RLock()
 
 class Cache:
 
-    objects = {}
+    paths = {}
 
 
-def addcache(path, obj):
+def addpath(path, obj):
     "put object into cache."
-    Cache.objects[path] = obj
+    Cache.paths[path] = obj
 
 
-def getcache(path):
+def getpath(path):
     "get object from cache."
-    return Cache.objects.get(path, None)
+    return Cache.paths.get(path, None)
 
 
 def read(obj, path):
@@ -43,12 +43,12 @@ def read(obj, path):
                 raise ex
 
 
-def synccache(path, obj):
+def syncpath(path, obj):
     "update cached object."
     try:
-        update(Cache.objects[path], obj)
+        update(Cache.paths[path], obj)
     except KeyError:
-        addcache(path, obj)
+        addpath(path, obj)
 
 
 def write(obj, path=""):
@@ -59,16 +59,16 @@ def write(obj, path=""):
         cdir(path)
         with open(path, "w", encoding="utf-8") as fpt:
             dump(obj, fpt, indent=4)
-        synccache(path, obj)
+        syncpath(path, obj)
         return path
 
 
 def __dir__():
     return (
         'Cache',
-        'addcache',
-        'getcache',
+        'addpath',
+        'getpath',
         'read',
-        'synccache',
+        'syncpath',
         'write'
     )
