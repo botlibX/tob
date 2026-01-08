@@ -1,7 +1,8 @@
 # This file is placed in the Public Domain.
 
 
-from tob.defines import fmt, name, objs
+from tob.brokers import objs
+from tob.methods import fqn
 
 
 def flt(event):
@@ -9,8 +10,8 @@ def flt(event):
     if event.args:
         index = int(event.args[0])
         if index < len(clts):
-            event.reply(fmt(clts[index]))
+            event.reply(str(clts[index]))
         else:
-            event.reply(f"only {len(clts)} clients in fleet.")
+            event.reply("no matching client in fleet.")
         return
-    event.reply(' | '.join([name(o) for o in clts]))
+    event.reply(' | '.join([fqn(o).split(".")[-1] for o in clts]))

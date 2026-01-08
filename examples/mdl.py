@@ -12,8 +12,7 @@ import time
 from tob.brokers import objs
 from tob.message import Message
 from tob.objects import Object, construct, keys
-from tob.threads import Repeater
-from tob.utility import elapsed
+from tob.timings import Repeater, elapsed
 
 
 def init():
@@ -37,7 +36,7 @@ def init():
 
 DAY = 24*60*60
 YEAR = 365*DAY
-SOURCE = "https://github.com/bthate/tob"
+SOURCE = "https://otpcr.github.io"
 STARTDATE = "2019-03-04 00:00:00"
 STARTTIME = time.mktime(time.strptime(STARTDATE, "%Y-%m-%d %H:%M:%S"))
 
@@ -141,7 +140,7 @@ def cbnow(_evt):
             continue
         nrtimes = int(delta/needed)
         txt += f"{getalias(nme)} {nrtimes} | "
-    txt += "https://pypi.org/project/tob"
+    txt += SOURCE
     for bot in objs("announce"):
         bot.announce(txt)
 
@@ -180,8 +179,9 @@ def dis(event):
         if needed > 60*60:
             continue
         nrtimes = int(delta/needed)
-        txt += f"{getalias(nme)} {nrtimes} | "
-    txt += "https://pypi.org/project/tob"
+        pertime = elapsed(needed)
+        txt += f"{getalias(nme)} {nrtimes} ({pertime}) | "
+    txt += SOURCE
     event.reply(txt)
 
 

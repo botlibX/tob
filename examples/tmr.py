@@ -3,12 +3,16 @@
 
 import logging
 import random
+import threading
 import time
 
 
-from tob.defines import NoDate, Object, Timed
-from tob.defines import extract, hour, items, today, write
-from tob.defines import broker, elapsed, day, getpath, last, like
+from tob.brokers import getobj, likeobj
+from tob.locater import last
+from tob.objects import Object, items
+from tob.persist import write
+from tob.timings import NoDate, Timed, day, elapsed, extract, hour, today
+from tob.workdir import getpath
 
 
 rand = random.SystemRandom()
@@ -21,12 +25,12 @@ def init():
         if not args:
             continue
         orig, channel, txt = args
-        for origin in like(orig):
+        for origin in likeobj(orig):
             if not origin:
                 continue
             diff = float(tme) - time.time()
             if diff > 0:
-                bot = broker(origin)
+                bot = getobj(origin)
                 timer = Timed(diff, bot.say, channel, txt)
                 timer.start()
             else:
@@ -47,14 +51,17 @@ class Timers(Object):
 
     path = ""
     timers = Timer()
-
+    lock = threading.RLock()
+    
     @staticmethod
     def add(tme, orig, channel,  txt):
-        setattr(Timers.timers, str(tme), (orig, channel, txt))
+        with Timers.lock:
+            setattr(Timers.timers, str(tme), (orig, channel, txt))
 
     @staticmethod
     def delete(tme):
-         delattr(Timers.timers, str(tme))
+        with Timers.lock:
+            delattr(Timers.timers, str(tme))
 
 
 def tmr(event):
@@ -98,7 +105,7 @@ def tmr(event):
     txt = " ".join(event.args[1:])
     Timers.add(target, event.orig, event.channel, txt)
     write(Timers.timers, Timers.path or getpath(Timers.timers))
-    bot = broker(event.orig)
+    bot = getobj(event.orig)
     timer = Timed(diff, bot.say, event.orig, event.channel, txt)
     timer.start()
     event.reply("ok " + elapsed(diff))

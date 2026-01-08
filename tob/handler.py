@@ -1,7 +1,7 @@
 # This file is placed in the Public Domain.
 
 
-"handle your own events"
+"handle events"
 
 
 import queue
@@ -28,15 +28,11 @@ class Handler:
     def loop(self):
         "event loop."
         while True:
-            event = self.poll()
+            event = self.queue.get()
             if not event:
                 break
             event.orig = repr(self)
             self.callback(event)
-
-    def poll(self):
-        "return an event to process."
-        return self.queue.get()
 
     def put(self, event):
         "put event on queue."
@@ -46,9 +42,9 @@ class Handler:
         "register callback."
         self.cbs[kind] = callback
 
-    def start(self):
+    def start(self, daemon=True):
         "start event handler loop."
-        launch(self.loop)
+        launch(self.loop, daemon=daemon)
 
     def stop(self):
         "stop event handler loop."
@@ -57,7 +53,5 @@ class Handler:
 
 def __dir__():
     return (
-        'CLI',
-        'Client',
-        'Output'
+        'Handler',
     )

@@ -11,11 +11,18 @@ import threading
 import time
 
 
-from tob.defines import Config as Main
-from tob.defines import Message, Object, Output
-from tob.defines import broker, command, edit, fmt, getpath, last, launch
-from tob.defines import keys, write
- 
+from tob.brokers import getobj
+from tob.clients import Output
+from tob.command import command
+from tob.configs import Cfg as Main
+from tob.locater import last
+from tob.message import Message
+from tob.methods import edit, fmt
+from tob.objects import Object, keys
+from tob.persist import write
+from tob.threads import launch
+from tob.workdir import getpath
+
  
 lock = threading.RLock()
 
@@ -84,7 +91,7 @@ class Event(Message):
         self.text = ""
 
     def dosay(self, txt):
-        bot = broker(self.orig)
+        bot = getobj(self.orig)
         bot.dosay(self.channel, txt)
 
 
@@ -501,12 +508,12 @@ class IRC(Output):
 
 
 def cb_auth(evt):
-    bot = broker(evt.orig)
+    bot = getobj(evt.orig)
     bot.docommand(f"AUTHENTICATE {bot.cfg.word or bot.cfg.password}")
 
 
 def cb_cap(evt):
-    bot = broker(evt.orig)
+    bot = getobj(evt.orig)
     if (bot.cfg.word or bot.cfg.password) and "ACK" in evt.arguments:
         bot.direct("AUTHENTICATE PLAIN")
     else:
@@ -514,20 +521,20 @@ def cb_cap(evt):
 
 
 def cb_error(evt):
-    bot = broker(evt.orig)
+    bot = getobj(evt.orig)
     bot.state.nrerror += 1
     bot.state.error = evt.text
     logging.debug(fmt(evt))
 
 
 def cb_h903(evt):
-    bot = broker(evt.orig)
+    bot = getobj(evt.orig)
     bot.direct("CAP END")
     bot.events.authed.set()
 
 
 def cb_h904(evt):
-    bot = broker(evt.orig)
+    bot = getobj(evt.orig)
     bot.direct("CAP END")
     bot.events.authed.set()
 
@@ -541,24 +548,24 @@ def cb_log(evt):
 
 
 def cb_ready(evt):
-    bot = broker(evt.orig)
+    bot = getobj(evt.orig)
     bot.events.ready.set()
 
 
 def cb_001(evt):
-    bot = broker(evt.orig)
+    bot = getobj(evt.orig)
     bot.events.logon.set()
 
 
 def cb_notice(evt):
-    bot = broker(evt.orig)
+    bot = getobj(evt.orig)
     if evt.text.startswith("VERSION"):
         txt = f"\001VERSION {Config.name.upper()} {Config.version} - {bot.cfg.username}\001"
         bot.docommand("NOTICE", evt.channel, txt)
 
 
 def cb_privmsg(evt):
-    bot = broker(evt.orig)
+    bot = getobj(evt.orig)
     if not bot.cfg.commands:
         return
     if evt.text:
@@ -577,7 +584,7 @@ def cb_privmsg(evt):
 
 
 def cb_quit(evt):
-    bot = broker(evt.orig)
+    bot = getobj(evt.orig)
     logging.debug("quit from %s", bot.cfg.server)
     bot.state.nrerror += 1
     bot.state.error = evt.text
@@ -609,7 +616,7 @@ def mre(event):
     if not event.channel:
         event.reply("channel is not set.")
         return
-    bot = broker(event.orig)
+    bot = getobj(event.orig)
     if "cache" not in dir(bot):
         event.reply("bot is missing cache")
         return

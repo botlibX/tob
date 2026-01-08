@@ -1,7 +1,7 @@
 # This file is been placed in the Public Domain.
 
 
-from tob.defines import kinds
+from tob.workdir import kinds
 
 
 def lst(event):

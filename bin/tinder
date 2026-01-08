@@ -2,7 +2,6 @@
 # This file is placed in the Public Domain.
 
 
-import importlib.util
 import os
 import queue
 import shutil
@@ -14,29 +13,37 @@ import time
 sys.path.insert(0, os.getcwd())
 
 
-from tob.defines import Config, Message, Output, Workdir
-from tob.defines import command, elapsed, fmt, launch, moddir, parse
-from tob.defines import scan, skel, spl
+from bigtalk.clients import Client, Output
+from bigtalk.command import command
+from bigtalk.configs import Cfg
+from bigtalk.message import Message
+from bigtalk.methods import fmt, parse
+from bigtalk.package import adddir, modules, scanner
+from bigtalk.threads import launch
+from bigtalk.timings import elapsed
+from bigtalk.utility import where, wrapped
+from bigtalk.workdir import Workdir, skel
 
 
-Config.debug = True
-Config.level = "info"
-Config.name = "tob"
-Config.version = 151
+Cfg.debug = True
+Cfg.level = "info"
+Cfg.name = "bigtalk"
+Cfg.version = 3
 Workdir.wdr = ".test"
 
 
 events = queue.Queue()
 
 
-class CLI(Output):
+class CLI(Client, Output):
 
     def __init__(self):
+        Client.__init__(self)
         Output.__init__(self)
         self.register("command", command)
 
     def raw(self, txt):
-        if "v" in Config.opts:
+        if "v" in Cfg.opts:
             print(txt)
 
 
@@ -69,111 +76,12 @@ class Pool:
             Pool.nrlast += 1
 
 
-class Mods:
-
-    dirs = {}
-    modules = {}
-
-
-def adddir(name, path):
-    "add module directory."
-    Mods.dirs[name] = path
-
-
-def addpkg(*pkgs):
-    "register package directory."
-    for pkg in pkgs:
-        adddir(pkg.__name__, pkg.__path__[0])
-
-
-def configure():
-    if os.path.exists("examples"):
-        adddir("mods", "examples")
-        return
-    if os.path.exists("mods"):
-        adddir("mods", "mods")
-        return
-    path = os.path.expanduser(f"~/.local/share/pipx/venvs/{Config.name}/share/{Config.name}/examples/")
-    if os.path.exists(path):
-        adddir(f"{Config.name}.modules", path)
-        return
-    path = moddir()
-    if os.path.exists(path):
-        adddir("modules", path)
-
-
-def getmod(name):
-    "import module by name." 
-    if name in Mods.modules:
-        return Mods.modules[name]
-    mname = ""
-    pth = ""
-    for packname, path in Mods.dirs.items():
-        modpath = os.path.join(path, name + ".py")
-        if os.path.exists(modpath):
-            pth = modpath
-            mname = f"{packname}.{name}"
-            break
-    return importer(mname, pth)
-
-
-def importer(name, pth=""):
-    "import module by path."
-    if pth and os.path.exists(pth):
-        spec = importlib.util.spec_from_file_location(name, pth)
-    else:
-        spec = importlib.util.find_spec(name)
-    if not spec or not spec.loader:
-        return None
-    mod = importlib.util.module_from_spec(spec)
-    if not mod:
-        return None
-    Mods.modules[name] = mod
-    spec.loader.exec_module(mod)
-    return mod
-
-
-def pkgdir(name):
-    return f".local/share/pipx/venvs/{name}/share/{name}/examples"
-
-
-def mods(names):
-    "list of named modules."
-    return [getmod(x) for x in sorted(spl(names))]
-
-
-def modules():
-    "comma seperated list of available modules."
-    mods = []
-    for name, path in Mods.dirs.items():
-        if not os.path.exists(path):
-            continue
-        mods.extend([
-            x[:-3] for x in os.listdir(path)
-            if x.endswith(".py") and not x.startswith("__")
-        ])
-    return ",".join(sorted(mods))
-
-
-def scanner(names=None):
-    "scan named modules for commands."
-    if names is None:
-        names = modules()
-    mods = []
-    for name in spl(names):
-        module = getmod(name)
-        if not module:
-            continue
-        scan(module)
-    return mods
-
-
-"runtime"
+"utilities"
 
 
 def banner(name, version):
     tme = time.ctime(time.time()).replace("  ", " ")
-    print(f"{name.upper()} {version} since {tme} ({Config.level})")
+    print(f"{name.upper()} {version} since {tme} ({Cfg.level})")
     sys.stdout.flush()
 
 
@@ -206,6 +114,9 @@ def payload(todo):
             evt.kind = "command"
             Pool.put(evt)
             events.put(evt)
+
+
+"defines"
 
 
 examples = {
@@ -255,51 +166,61 @@ post = {
 }
 
 
+"runtime"
+
+
+def wrap(func):
+    "restore console."
+    import termios
+    old = None
+    try:
+        old = termios.tcgetattr(sys.stdin.fileno())
+    except termios.error:
+        pass
+    try:
+        wrapped(func)
+    finally:
+        pass
+    if old:
+        termios.tcsetattr(sys.stdin.fileno(), termios.TCSADRAIN, old)
+
 
 def main():
     if os.path.exists(Workdir.wdr):
         shutil.rmtree(Workdir.wdr)
     skel()
-    parse(Config, " ".join(sys.argv[1:]))
-    configure()
-    scanner()
-    if "v" in Config.opts:
-        banner(Config.name, Config.version)
-    if "z" in Config.opts:
+    parse(Cfg, " ".join(sys.argv[1:]))
+    adddir("modules", os.path.join(where(Message), "modules"))
+    scanner(modules())
+    if "v" in Cfg.opts:
+        banner(Cfg.name, Cfg.version)
+    if "z" in Cfg.opts:
         Pool.init(CLI, os.cpu_count())
     else:
         Pool.init(CLI, 1)
     starttime = time.time()
-    thrs = []
-    nrs = Config.index or 1
+    nrs = Cfg.index or 1
     for _x in range(nrs):
-        thrs.append(launch(payload, pre))
-    for thr in thrs:
-        thr.join()
+        payload(pre)
     for _x in range(nrs):
-        thrs.append(launch(payload, examples))
-    for thr in thrs:
-        thr.join()
+        payload(examples)
     for _x in range(nrs):
-        thrs.append(launch(payload, post))
-    for thr in thrs:
-        thr.join()
+        payload(post)
     launch(consume)
     nrevents = events.qsize()
     try:
         events.join()
     except (KeyboardInterrupt, EOFError):
-        os._exit(0)
+        pass
     endtime = time.time()
     lap = elapsed(endtime-starttime)
     percall = (endtime-starttime)/nrevents
     nrs = events.qsize()
-    if "v" in Config.opts:
-        print(f"{fmt(Config)}")
+    if "v" in Cfg.opts:
+        print(f"{fmt(Cfg)}")
         print(f"{nrs} events left.")
         print(f"total: {lap} nrs: {nrevents} call: %.6fs" % percall)
-    os._exit(0)
 
 
 if __name__ == "__main__":
-    main()
+    wrap(main)

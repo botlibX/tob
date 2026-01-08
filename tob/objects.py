@@ -42,7 +42,7 @@ def construct(obj, *args, **kwargs):
 
 
 def asdict(obj):
-    "return object as dictionary."
+    "object as dictionary."
     res = {}
     for key in dir(obj):
         if key.startswith("_"):
@@ -52,7 +52,7 @@ def asdict(obj):
 
 
 def items(obj):
-    "return object's key,valye pairs."
+    "object's key,value pairs."
     if isinstance(obj, dict):
         return obj.items()
     if isinstance(obj, types.MappingProxyType):
@@ -66,7 +66,7 @@ def items(obj):
 
 
 def keys(obj):
-    "return object keys."
+    "object keys."
     if isinstance(obj, dict):
         return obj.keys()
     return obj.__dict__.keys()
@@ -76,6 +76,8 @@ def update(obj, data, empty=True):
     "update object,"
     if isinstance(obj, type):
         for k, v in items(data):
+            if k == "__dict__":
+                continue
             if isinstance(getattr(obj, k, None), types.MethodType):
                 raise Reserved(k)
             setattr(obj, k, v)
@@ -89,7 +91,7 @@ def update(obj, data, empty=True):
             setattr(obj, key, value)
 
 def values(obj):
-    "return object's values/"
+    "object's values/"
     if isinstance(obj, dict):
         return obj.values()
     res = []

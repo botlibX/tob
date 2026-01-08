@@ -19,9 +19,16 @@ from urllib.error import HTTPError, URLError
 from urllib.parse import quote_plus, urlencode
 
 
-from tob.defines import Config, Object, Repeater
-from tob.defines import elapsed, fmt, find, last, launch, objs
-from tob.defines import fntime, getpath, spl, update, write
+from tob.brokers import objs
+from tob.configs import Cfg
+from tob.locater import find, last
+from tob.methods import fmt
+from tob.objects import Object, update
+from tob.persist import write
+from tob.threads import launch
+from tob.timings import Repeater, elapsed, fntime
+from tob.utility import spl
+from tob.workdir import getpath
 
 
 def init():
@@ -278,7 +285,7 @@ def cdata(line):
 
 def getfeed(url, items):
     result = [Object(), Object()]
-    if getattr(Config, 'debug', False) or url in errors and (time.time() - errors[url]) < 600:
+    if Cfg.debug or url in errors and (time.time() - errors[url]) < 600:
         return result
     try:
         rest = geturl(url)
@@ -482,7 +489,7 @@ def rss(event):
 
 
 def syn(event):
-    if Config.debug:
+    if Cfg.debug:
         return
     fetcher = Fetcher()
     fetcher.start(False)

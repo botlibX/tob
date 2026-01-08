@@ -1,13 +1,18 @@
 # This file is placed in the Public Domain.
 
 
+"time related functions"
+
+
 import datetime
 import os
 import re
+import threading
 import time
 
 
 from .statics import MONTH, TIMES
+from .threads import launch, name
 
 
 class NoDate(Exception):
@@ -15,8 +20,57 @@ class NoDate(Exception):
     pass
 
 
+class Timy(threading.Timer):
+
+    def __init__(self, sleep, func, *args, **kwargs):
+        super().__init__(sleep, func)
+        self.name = kwargs.get("name", name(func))
+        self.sleep = sleep
+        self.state = {}
+        self.state["latest"] = time.time()
+        self.state["starttime"] = time.time()
+        self.starttime = time.time()
+
+
+class Timed:
+
+    def __init__(self, sleep, func, *args, thrname="", **kwargs):
+        self.args = args
+        self.func = func
+        self.kwargs = kwargs
+        self.sleep = sleep
+        self.name = thrname or kwargs.get("name", name(func))
+        self.target = time.time() + self.sleep
+        self.timer = None
+
+    def run(self):
+        "run timed function."
+        self.timer.latest = time.time()
+        self.func(*self.args)
+
+    def start(self):
+        "start timer."
+        self.kwargs["name"] = self.name
+        timer = Timy(self.sleep, self.run, *self.args, **self.kwargs)
+        timer.start()
+        self.timer = timer
+
+    def stop(self):
+        "stop timer."
+        if self.timer:
+            self.timer.cancel()
+
+
+class Repeater(Timed):
+
+    def run(self):
+        "run function and launch timer for next run."
+        launch(self.start)
+        super().run()
+
+
 def date(daystr):
-    "return date from string."
+    "date from string."
     daystr = daystr.encode('utf-8', 'replace').decode("utf-8")
     res = time.time()
     for fmat in TIMES:
@@ -114,7 +168,7 @@ def extract(daystr):
 
 
 def fntime(daystr):
-    "return time from path."
+    "time from path."
     datestr = " ".join(daystr.split(os.sep)[-2:])
     datestr = datestr.replace("_", " ")
     if "." in datestr:
@@ -128,7 +182,7 @@ def fntime(daystr):
 
 
 def hour(daystr):
-    "return hour in string."
+    "hour in string."
     try:
         hmsre = re.search(r'(\d+):(\d+):(\d+)', str(daystr))
         hours = 60 * 60 * (int(hmsre.group(1)))
@@ -185,13 +239,15 @@ def parsetxt(txt):
 
 
 def today():
-    "return start of the day."
+    "start of the day."
     return str(datetime.datetime.today()).split()[0]
 
 
 def __dir__():
     return (
         'NoDate',
+        'Repeater',
+        'Timed',
         'date',
         'day',
         'elapsed',

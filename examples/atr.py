@@ -1,10 +1,8 @@
 # This file is placed in the Public Domain.
 
 
-"fields"
-
-
-from tob.defines import attrs, kinds
+from tob.locater import attrs
+from tob.workdir import kinds
 
 
 def atr(event):
@@ -17,6 +15,6 @@ def atr(event):
         return
     itms = attrs(event.args[0])
     if not itms:
-        event.reply("no fields")
+        event.reply("no attributes")
     else:
         event.reply(",".join(itms))

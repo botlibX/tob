@@ -4,9 +4,9 @@
 import os
 
 
-from tob.defines import Config, where
+from tob.utility import where
 
 
 def pth(event):
-    path = os.path.join(where(Config), "nucleus", "index.html")
+    path = os.path.join(where(where), "nucleus", "index.html")
     event.reply(f"file://{path}")

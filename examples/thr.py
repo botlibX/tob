@@ -5,7 +5,7 @@ import threading
 import time
 
 
-from tob.defines import elapsed
+from tob.timings import elapsed
 
 
 STARTTIME = time.time()

@@ -1,7 +1,7 @@
 # This file is placed in the Public Domain.
 
 
-"handle your own events"
+"client event handler"
 
 
 import logging
@@ -11,7 +11,6 @@ import _thread
 
 
 from .brokers import addobj
-from .command import command
 from .handler import Handler
 from .threads import launch
 
@@ -21,7 +20,6 @@ class Client(Handler):
     def __init__(self):
         super().__init__()
         self.olock = threading.RLock()
-        self.oqueue = queue.Queue()
         self.silent = True
         addobj(self)
 
@@ -49,23 +47,16 @@ class Client(Handler):
         "say text in channel."
         self.raw(text)
 
-    def wait(self):
-        "wait for output to finish."
-        try:
-            self.oqueue.join()
-        except Exception as ex:
-            logging.exception(ex)
-            _thread.interrupt_main()
 
-
-class CLI(Client):
+class Output(Client):
 
     def __init__(self):
         super().__init__()
-        self.register("command", command)
+        self.oqueue = queue.Queue()
 
-
-class Output(Client):
+    def display(self, event):
+        "display event result."
+        raise NotImplementedError
 
     def output(self):
         "output loop."
@@ -78,19 +69,24 @@ class Output(Client):
             self.oqueue.task_done()
 
     def start(self):
-        "start output loop."
+        "start loop."
         launch(self.output)
-        super().start()
 
     def stop(self):
-        "stop output loop."
+        "stop loop."
         self.oqueue.put(None)
-        super().stop()
+
+    def wait(self):
+        "wait for output to finish."
+        try:
+            self.oqueue.join()
+        except Exception as ex:
+            logging.exception(ex)
+            _thread.interrupt_main()
 
 
 def __dir__():
     return (
-        'CLI',
         'Client',
         'Output'
     )

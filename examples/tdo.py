@@ -4,7 +4,10 @@
 import time
 
 
-from tob.defines import Object, elapsed, find, fntime, write
+from tob.locater import find
+from tob.objects import Object
+from tob.persist import write
+from tob.timings import elapsed, fntime
 
 
 class Todo(Object):

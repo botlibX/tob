@@ -10,20 +10,23 @@ import time
 from http.server import HTTPServer, BaseHTTPRequestHandler
 
 
-from tob.defines import Config, Object, getstore, launch, kinds
+from tob.configs import Cfg
+from tob.objects import Object
+from tob.threads import launch
+from tob.workdir import getstore, kinds
 
 
 def init():
     try:
-        rest = REST((Cfg.hostname, int(Cfg.port)), RESTHandler)
+        rest = REST((Config.hostname, int(Config.port)), RESTHandler)
         rest.start()
-        logging.warning("http://%s:%s", Cfg.hostname, Cfg.port)
+        logging.warning("http://%s:%s", Config.hostname, Config.port)
         return rest
     except OSError as ex:
         logging.error(str(ex))
 
 
-class Cfg:
+class Config:
 
     hostname = "localhost"
     port     = 10102
@@ -78,7 +81,7 @@ class RESTHandler(BaseHTTPRequestHandler):
         self.end_headers()
 
     def do_GET(self):
-        if getattr(Config, 'debug', False):
+        if Cfg.debug:
             return
         if "favicon" in self.path:
             return
