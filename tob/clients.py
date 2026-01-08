@@ -54,10 +54,6 @@ class Output(Client):
         super().__init__()
         self.oqueue = queue.Queue()
 
-    def display(self, event):
-        "display event result."
-        raise NotImplementedError
-
     def output(self):
         "output loop."
         while True:
@@ -70,10 +66,12 @@ class Output(Client):
 
     def start(self):
         "start loop."
+        super().start()
         launch(self.output)
 
     def stop(self):
         "stop loop."
+        super().stop()
         self.oqueue.put(None)
 
     def wait(self):

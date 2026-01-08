@@ -34,6 +34,7 @@ def command(evt):
     "command callback."
     parse(evt, evt.text)
     func = getcmd(evt.cmd)
+    print(func, evt)
     if func:
         func(evt)
         bot = getobj(evt.orig)

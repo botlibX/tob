@@ -72,7 +72,6 @@ class Console(Line):
                 break
             self.put(event)
 
-
     def callback(self, event):
         "wait for callback result."
         if not event.text:

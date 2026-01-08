@@ -13,21 +13,21 @@ import time
 sys.path.insert(0, os.getcwd())
 
 
-from bigtalk.clients import Client, Output
-from bigtalk.command import command
-from bigtalk.configs import Cfg
-from bigtalk.message import Message
-from bigtalk.methods import fmt, parse
-from bigtalk.package import adddir, modules, scanner
-from bigtalk.threads import launch
-from bigtalk.timings import elapsed
-from bigtalk.utility import where, wrapped
-from bigtalk.workdir import Workdir, skel
+from tob.clients import Client, Output
+from tob.command import command
+from tob.configs import Cfg
+from tob.message import Message
+from tob.methods import fmt, parse
+from tob.package import Mods, adddir, modules, scanner
+from tob.threads import launch
+from tob.timings import elapsed
+from tob.utility import where, wrapped
+from tob.workdir import Workdir, skel
 
 
 Cfg.debug = True
 Cfg.level = "info"
-Cfg.name = "bigtalk"
+Cfg.name = "tob"
 Cfg.version = 3
 Workdir.wdr = ".test"
 
@@ -35,10 +35,9 @@ Workdir.wdr = ".test"
 events = queue.Queue()
 
 
-class CLI(Client, Output):
+class CLI(Output):
 
     def __init__(self):
-        Client.__init__(self)
         Output.__init__(self)
         self.register("command", command)
 
@@ -190,7 +189,7 @@ def main():
         shutil.rmtree(Workdir.wdr)
     skel()
     parse(Cfg, " ".join(sys.argv[1:]))
-    adddir("modules", os.path.join(where(Message), "modules"))
+    adddir("modules", "examples")
     scanner(modules())
     if "v" in Cfg.opts:
         banner(Cfg.name, Cfg.version)
@@ -206,6 +205,7 @@ def main():
         payload(examples)
     for _x in range(nrs):
         payload(post)
+    print("yo!")
     launch(consume)
     nrevents = events.qsize()
     try:
@@ -213,6 +213,7 @@ def main():
     except (KeyboardInterrupt, EOFError):
         pass
     endtime = time.time()
+    print("yo!")
     lap = elapsed(endtime-starttime)
     percall = (endtime-starttime)/nrevents
     nrs = events.qsize()
