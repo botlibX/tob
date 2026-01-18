@@ -12,18 +12,19 @@ import time
 
 
 from tob.brokers import getobj
-from tob.clients import Output
+from tob.caching import last, write
 from tob.command import command
-from tob.configs import Cfg
-from tob.locater import last
+from tob.handler import Output
 from tob.message import Message
 from tob.methods import edit, fmt
 from tob.objects import Object, keys
-from tob.persist import write
 from tob.threads import launch
-from tob.workdir import getident
+from tob.utility import ident
 
- 
+
+NAME = "tob"
+
+
 lock = threading.RLock()
 
 
@@ -40,20 +41,20 @@ def init():
 
 class Config(Object):
 
-    channel = f"#{Cfg.name}"
+    channel = f"#{NAME}"
     commands = True
     control = "!"
     ignore = ["PING", "PONG", "PRIVMSG"] 
-    name = Cfg.name
-    nick = Cfg.name
+    name = NAME
+    nick = NAME
     word = ""
     port = 6667
-    realname = Cfg.name
+    realname = NAME
     sasl = False
     server = "localhost"
     servermodes = ""
     sleep = 60
-    username = Cfg.name
+    username = NAME
     users = False
     version = 1
 
@@ -480,7 +481,6 @@ class IRC(Output):
         self.state.lastline = splitted[-1]
 
     def start(self):
-        last(self.cfg)
         if self.cfg.channel not in self.channels:
             self.channels.append(self.cfg.channel)
         self.events.ready.clear()
@@ -569,9 +569,7 @@ def cb_privmsg(evt):
     if not bot.cfg.commands:
         return
     if evt.text:
-        if evt.text[0] in [
-            "!",
-        ]:
+        if evt.text[0] in ["!",]:
             evt.text = evt.text[1:]
         elif evt.text.startswith(f"{bot.cfg.nick}:"):
             evt.text = evt.text[len(bot.cfg.nick) + 1 :]
@@ -597,18 +595,18 @@ def cb_quit(evt):
 
 def cfg(event):
     config = Config()
-    fnm = last(config)
+    fnm = last(config) or ident(config)
     if not event.sets:
         event.reply(
             fmt(
                 config,
                 keys(config),
-                skip="control,name,word,realname,sleep,username".split(",")
+                skip="control,name,password,realname,sleep,username".split(",")
             )
         )
     else:
         edit(config, event.sets)
-        write(config, fnm or getident(config))
+        write(config, fnm or ident(config))
         event.reply("ok")
 
 

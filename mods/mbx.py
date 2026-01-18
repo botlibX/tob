@@ -6,12 +6,10 @@ import os
 import time
 
 
-from tob.locater import find
+from tob.caching import find, write
 from tob.methods import fmt
 from tob.objects import Object, keys, update
-from tob.persist import write
-from tob.statics import MONTH
-from tob.timings import date, elapsed
+from tob.timings import MONTH, date, elapsed
 
 
 class Email(Object):

@@ -9,10 +9,12 @@ import threading
 import time
 
 
-from tob.brokers import objs
-from tob.configs import Cfg
+from tob.brokers import getobjs
 from tob.objects import Object
 from tob.threads import launch
+
+
+DEBUG = False
 
 
 def init():
@@ -44,7 +46,7 @@ class UDP(Object):
     def output(self, txt, addr=None):
         if addr:
             Config.addr = addr
-        for bot in objs("announce"):
+        for bot in getobjs("announce"):
             bot.announce(txt.replace("\00", ""))
 
     def loop(self):
@@ -75,7 +77,7 @@ class UDP(Object):
 
 
 def toudp(host, port, txt):
-    if Cfg.debug:
+    if DEBUG:
         return
     sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     sock.sendto(bytes(txt.strip(), "utf-8"), (host, port))

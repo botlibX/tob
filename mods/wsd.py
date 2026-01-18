@@ -7,7 +7,7 @@ import logging
 from random import SystemRandom
 
 
-from tob.brokers import objs
+from tob.brokers import getobjs
 from tob.message import Message
 from tob.timings import Repeater
 
@@ -23,7 +23,7 @@ def init():
 
 
 def wsd(event):
-    for bot in objs("announce"):
+    for bot in getobjs("announce"):
         bot.announce(rand.choice(TXT.split("\n")).strip()[2:])
 
 

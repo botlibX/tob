@@ -4,78 +4,47 @@
 "module management"
 
 
+import importlib.util
 import os
 
 
 from .command import scancmd
 from .threads import launch
-from .utility import importer, spl
+from .utility import spl
 
 
 class Mods:
 
     dirs = {}
-    modules = {}
 
 
 def adddir(name, path):
-    "add module directory."
     Mods.dirs[name] = path
 
 
-def addpkg(*pkgs):
-    "register package directory."
-    for pkg in pkgs:
-        adddir(pkg.__name__, pkg.__path__[0])
+def addpkg(pkg):
+    Mods.dirs[pkg.__name__] = pkg.__path__[0]
 
 
-def getmod(name):
-    "import module by name." 
-    if name in Mods.modules:
-        return Mods.modules[name]
-    mname = ""
-    pth = ""
-    for packname, path in Mods.dirs.items():
-        modpath = os.path.join(path, name + ".py")
-        if os.path.exists(modpath):
-            pth = modpath
-            mname = f"{packname}.{name}"
-            break
-    mod = importer(mname, pth)
-    if mod:
-        Mods.modules[name] = mod
+def importer(name, pth=""):
+    "import module by path."
+    if pth and os.path.exists(pth):
+        spec = importlib.util.spec_from_file_location(name, pth)
+    else:
+        spec = importlib.util.find_spec(name)
+    if not spec or not spec.loader:
+        return None
+    mod = importlib.util.module_from_spec(spec)
+    if not mod:
+        return None
+    spec.loader.exec_module(mod)
     return mod
-
-
-def init(names=None, wait=False):
-    "run init function of modules."
-    if names is None:
-        names = modules()
-    mods = []
-    for name in spl(names):
-        module = getmod(name)
-        if not module:
-            continue
-        if "init" in dir(module):
-            thr = launch(module.init)
-            mods.append((module, thr))
-    if wait:
-        for module, thr in mods:
-            thr.join()
-    return mods
-
-
-def mods(names):
-    "list of named modules."
-    return [getmod(x) for x in sorted(spl(names))]
 
 
 def modules(ignore=""):
     "comma seperated list of available modules."
     mods = []
-    for name, path in Mods.dirs.items():
-        if not os.path.exists(path):
-            continue
+    for pkgname, path in Mods.dirs.items():
         mods.extend([
             x[:-3] for x in os.listdir(path)
             if x.endswith(".py") and
@@ -85,14 +54,31 @@ def modules(ignore=""):
     return ",".join(sorted(mods))
 
 
-def scanner(names):
+def scanner(inits="", wait=False):
     "scan named modules for commands."
     mods = []
-    for name in spl(names):
-        module = getmod(name)
-        if not module:
-            continue
-        scancmd(module)
+    thrs = []
+    for pkgname, path in Mods.dirs.items():
+        for fnm in os.listdir(path):
+            if fnm.startswith("__"):
+                continue
+            if not fnm.endswith(".py"):
+                continue
+            name = fnm[:-3]
+            modname = f"{pkgname}.{name}"
+            mod = importer(modname, os.path.join(path, fnm))
+            if not mod:
+                continue
+            scancmd(mod)
+            mods.append(mod)
+            if name not in spl(inits):
+                continue
+            if "init" not in dir(mod):
+                continue
+            thrs.append(launch(mod.init))
+    if wait:
+        for thr in thrs:
+            thr.join()
     return mods
 
 
@@ -101,8 +87,7 @@ def __dir__():
         'Mods',
         'adddir',
         'addpkg',
-        'init',
-        'mods',
+        'importer',
         'modules',
         'scanner'
     )

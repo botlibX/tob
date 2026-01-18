@@ -6,24 +6,25 @@
 
 
 import os
+import pathlib
 import sys
-import threading
 import time
 
 
 sys.path.insert(0, os.getcwd())
 
 
-from tob.clients import Client
+from tob.caching import persist
 from tob.command import Commands, addcmd, command
-from tob.configs import Cfg
-from tob.loggers import level
+from tob.handler import Console
 from tob.message import Message
 from tob.methods import parse
-from tob.package import adddir, init, modules, scanner
-from tob.statics import SYSTEMD
-from tob.utility import forever, pipxdir, where, wrapped
-from tob.workdir import Workdir, moddir, pidfile, pidname, skel
+from tob.objects import Config
+from tob.package import adddir, addpkg, modules, scanner
+from tob.utility import forever, level, wrapped
+
+
+from tob import modules as MODS
 
 
 "defines"
@@ -32,19 +33,21 @@ from tob.workdir import Workdir, moddir, pidfile, pidname, skel
 TXT = " ".join(sys.argv[1:])
 
 
-"config"
+Cfg = Config()
 
 
-Cfg.ignore = "rst,udp,web"
+Cfg.debug = False
+Cfg.init = ""
 Cfg.level = "info"
-Cfg.name = "tob" 
+Cfg.name = "tob"
 Cfg.version = 152
+Cfg.wdr = os.path.expanduser(f"~/.{Cfg.name}")
 
 
 "clients"
 
 
-class Line(Client):
+class Line(Console):
 
     def __init__(self):
         super().__init__()
@@ -55,27 +58,19 @@ class Line(Client):
         print(text.encode('utf-8', 'replace').decode("utf-8"))
 
 
-class Console(Line):
+class Term(Line):
 
-    def __init__(self):
-        super().__init__()
-        self.done = threading.Event()
-        self.done.set()
 
     def callback(self, event):
         "wait for callback result."
         if not event.text:
             event.ready()
-            self.done.set()
             return
         super().callback(event)
         event.wait()
-        self.done.set()
 
     def poll(self):
         "poll for an event."
-        self.done.wait()
-        self.done.clear()
         evt = Message()
         evt.text = input("> ")
         evt.kind = "command"
@@ -88,34 +83,39 @@ class Console(Line):
 def banner():
     "hello."
     tme = time.ctime(time.time()).replace("  ", " ")
-    print("%s %s %s since %s (%s)" % (
+    print("%s %s since %s %s in %s" % (
         Cfg.name.upper(),
         Cfg.version,
-        Cfg.opts.strip().upper(),
         tme,
-        Cfg.level.upper()
+        Cfg.level.upper(),
+        Cfg.wdr
     ))
     sys.stdout.flush()
 
 
-def boot(cfg):
+def boot(*pkgs, inits=""):
     "in the beginning."
-    Workdir.wdr = Workdir.wdr or os.path.expanduser(f"~/.{cfg.name}")
-    skel()
-    parse(cfg, TXT)
-    level(cfg.sets.level or cfg.level or "info")
-    adddir(f"{Cfg.name}.modules", os.path.join(where(Message), "modules"))
-    adddir("modules", moddir())
-    if os.path.exists('examples'):
-        adddir("mods", "examples")
-    elif os.path.exists('mods'):
+    parse(Cfg, TXT)
+    Cfg.init = Cfg.sets.init or Cfg.init or ""
+    Cfg.level = Cfg.sets.level or Cfg.level or "info"
+    Cfg.wdr = Cfg.sets.wdr or Cfg.wdr or ""
+    level(Cfg.level)
+    addpkg(MODS)
+    if "m" in Cfg.opts:
         adddir("mods", "mods")
+    if "v" in Cfg.opts:
+        banner()
+    if 'p' not in Cfg.opts:
+        persist(Cfg.wdr)
+    if 'a' in Cfg.opts:
+        mds = modules()
     else:
-        path = pipxdir(Cfg.name)
-        if os.path.exists(path):
-            adddir("mods", path)
+        mds = inits or Cfg.init
+    for mod in scanner(inits=mds, wait="w" in Cfg.opts):
+        mod.DEBUG = Cfg.debug
+        mod.NAME = Cfg.name
+            
 
- 
 def check(text):
     "check for options."
     for arg in TXT.split():
@@ -127,6 +127,18 @@ def check(text):
         return False
 
 
+def docmd(text):
+    "parse text for command and run it."
+    cli = Line()
+    for txt in text.split(" ! "):
+        evt = Message()
+        evt.orig = repr(cli)
+        evt.text = txt
+        evt.type = "command"
+        command(evt)
+        evt.wait()
+
+ 
 def daemon(verbose=False, nochdir=False):
     "run in the background."
     pid = os.fork()
@@ -145,6 +157,21 @@ def daemon(verbose=False, nochdir=False):
     os.umask(0)
     os.chdir("/")
     os.nice(10)
+
+
+def pidfile(filename):
+    "write pidfile."
+    if os.path.exists(filename):
+        os.unlink(filename)
+    path2 = pathlib.Path(filename)
+    path2.parent.mkdir(parents=True, exist_ok=True)
+    with open(filename, "w", encoding="utf-8") as fds:
+        fds.write(str(os.getpid()))
+
+
+def pidname(name: str):
+    "name of pidfile."
+    return os.path.join(Cfg.wdr, f"{name}.pid")
 
 
 def privileges():
@@ -179,11 +206,9 @@ def background():
     "background script."
     daemon()
     privileges()
-    boot(Cfg)
     pidfile(pidname(Cfg.name))
     addcmd(cmd, mod, ver)
-    scanner(modules(Cfg.ignore))
-    init(modules(Cfg.ignore))
+    boot(MODS, inits=Cfg.init or "irc,rss")
     forever()
 
 
@@ -191,16 +216,10 @@ def console():
     "console script."
     import readline
     readline.redisplay()
-    boot(Cfg)
-    if "v" in Cfg.opts:
-        banner()
-    scanner(modules(Cfg.ignore))
+    boot(MODS)
     addcmd(cmd, mod, ver)
-    mds = Cfg.sets.init
-    if not mds and "a" in Cfg.opts:
-        mds = modules(Cfg.ignore)
-    init(mds, "w" in Cfg.opts)
-    csl = Console()
+    docmd(TXT)
+    csl = Term()
     csl.start()
     forever()
 
@@ -209,27 +228,18 @@ def control():
     "cli script."
     if len(sys.argv) == 1:
         return
-    boot(Cfg)
-    scanner(modules(Cfg.ignore))
-    addcmd(cmd, exa, mod, srv, ver)
-    cli = Line()
-    evt = Message()
-    evt.orig = repr(cli)
-    evt.text = " ".join(sys.argv[1:])
-    evt.type = "command"
-    command(evt)
-    evt.wait()
+    boot(MODS)
+    addcmd(cmd, mod, ver)
+    docmd(TXT)
 
 
 def service():
     "service script."
     privileges()
-    boot(Cfg)
     banner()
     pidfile(pidname(Cfg.name))
     addcmd(cmd, mod, ver)
-    scanner(modules(Cfg.ignore))
-    init(modules(Cfg.ignore))
+    boot(MODS, inits=Cfg.init or "irc,rss")
     forever()
 
 
@@ -241,30 +251,14 @@ def cmd(event):
     event.reply(",".join(sorted(Commands.names or Commands.cmds)))
 
 
-def exa(event):
-    "location of examples."
-    path = pipxdir(Cfg.name)
-    if not os.path.exists(os.path.expanduser(path)):
-        event.reply("pipx examples directory is not there.")
-        return
-    event.reply(f"examples are at {path}")
-
-
 def mod(event):
     "list available commands."
-    event.reply(modules())
-
-
-def srv(event):
-    "generate systemd service file."
-    import getpass
-    name = getpass.getuser()
-    event.reply(SYSTEMD % (Cfg.name.upper(), name, name, name, Cfg.name))
+    event.reply(",".join([x[:-3] for x in os.listdir(MODS.__path__[0]) if not x.startswith("__")]))
 
 
 def ver(event):
     "show version."
-    event.reply(f"{Cfg.name.upper()} {Cfg.version} {Cfg.opts.upper()}")
+    event.reply(f"{Cfg.name.upper()} {Cfg.version}")
 
 
 "runtime"

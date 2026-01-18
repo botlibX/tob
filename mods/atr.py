@@ -1,8 +1,7 @@
 # This file is placed in the Public Domain.
 
 
-from tob.locater import attrs
-from tob.workdir import kinds
+from tob.caching import attrs, kinds
 
 
 def atr(event):

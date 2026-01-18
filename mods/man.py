@@ -224,7 +224,7 @@ opml
 """
 
 
-from tob.configs import Cfg
+NAME = "tob"
 
 
 def man(event):
@@ -233,10 +233,10 @@ def man(event):
         return
     descr = event.rest
     event.reply(__doc__ % (
-        Cfg.name.upper(),
+        NAME.upper(),
         descr,
-        *(Cfg.name,) * 4,
-        *(Cfg.name.upper(),) * 4,
-        *(Cfg.name,) * 32,
-        Cfg.name.upper()
+        *(NAME,) * 4,
+        *(NAME.upper(),) * 4,
+        *(NAME,) * 32,
+        NAME.upper()
         ))

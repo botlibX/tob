@@ -10,10 +10,12 @@ import time
 from http.server import HTTPServer, BaseHTTPRequestHandler
 
 
-from tob.configs import Cfg
+from tob.caching import kinds, workdir
 from tob.objects import Object
 from tob.threads import launch
-from tob.workdir import getstore, kinds
+
+
+DEBUG = False
 
 
 def init():
@@ -92,7 +94,7 @@ class RESTHandler(BaseHTTPRequestHandler):
                 txt += f'<a href="http://{Cfg.hostname}:{Cfg.port}/{fnm}">{fnm}</a><br>\n'
             self.send(html(txt.strip()))
             return
-        fnm = getstore() + self.path
+        fnm = os.path.join(workdir(), self.path)
         fnm = os.path.abspath(fnm)
         if os.path.isdir(fnm):
             self.write_header("text/html")

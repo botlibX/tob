@@ -41,16 +41,6 @@ def construct(obj, *args, **kwargs):
         update(obj, kwargs)
 
 
-def asdict(obj):
-    "object as dictionary."
-    res = {}
-    for key in dir(obj):
-        if key.startswith("_"):
-            continue
-        res[key] = getattr(obj, key)
-    return res
-
-
 def items(obj):
     "object's key,value pairs."
     if isinstance(obj, dict):
@@ -66,7 +56,7 @@ def items(obj):
 
 
 def keys(obj):
-    "object keys."
+    "object's keys."
     if isinstance(obj, dict):
         return obj.keys()
     return obj.__dict__.keys()
@@ -92,7 +82,7 @@ def update(obj, data, empty=True):
 
 
 def values(obj):
-    "object's values/"
+    "object's values."
     if isinstance(obj, dict):
         return obj.values()
     res = []
@@ -109,11 +99,16 @@ class Default(Object):
         return self.__dict__.get(key, "")
 
 
+class Config(Default):
+
+    pass
+
+
 def __dir__():
     return (
+        'Config',
         'Default',
         'Object',
-        'asdict',
         'construct',
         'items',
         'keys',

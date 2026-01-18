@@ -4,10 +4,9 @@
 import time
 
 
-from tob.locater import find
+from tob.caching import find, kinds
 from tob.methods import fmt
 from tob.timings import elapsed, fntime
-from tob.workdir import kinds
 
 
 def fnd(event):

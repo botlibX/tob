@@ -4,9 +4,8 @@
 import time
 
 
-from tob.locater import find
+from tob.caching import find, write
 from tob.objects import Object
-from tob.persist import write
 from tob.timings import elapsed, fntime
 
 

@@ -1,7 +1,7 @@
 # This file is placed in the Public Domain.
 
 
-"write your commands"
+"commands"
 
 
 import inspect
@@ -26,8 +26,19 @@ def addcmd(*args):
 
 
 def getcmd(cmd):
-    "command by string."
+    "get function for command."
     return Commands.cmds.get(cmd, None)
+        
+
+def scancmd(module):
+    "scan a module for functions with event as argument."
+    for key, cmdz in inspect.getmembers(module, inspect.isfunction):
+        if 'event' not in inspect.signature(cmdz).parameters:
+            continue
+        addcmd(cmdz)
+
+
+"callback"
 
 
 def command(evt):
@@ -39,14 +50,6 @@ def command(evt):
         bot = getobj(evt.orig)
         bot.display(evt)
     evt.ready()
-
-
-def scancmd(module):
-    "scan a module for functions with event as first argument."
-    for key, cmdz in inspect.getmembers(module, inspect.isfunction):
-        if 'event' not in inspect.signature(cmdz).parameters:
-            continue
-        addcmd(cmdz)
 
 
 def __dir__():

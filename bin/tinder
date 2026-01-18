@@ -28,7 +28,7 @@ from tob.workdir import Workdir, skel
 Cfg.debug = True
 Cfg.level = "info"
 Cfg.name = "tob"
-Cfg.version = 3
+Cfg.version = 152
 Workdir.wdr = ".test"
 
 

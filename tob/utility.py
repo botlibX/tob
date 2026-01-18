@@ -5,31 +5,26 @@
 
 
 import datetime
-import importlib.util
 import inspect
+import logging
 import os
-import pathlib
 import time
 
 
 from .methods import fqn
 
 
-def cdir(path):
-    "create directory."
-    pth = pathlib.Path(path)
-    pth.parent.mkdir(parents=True, exist_ok=True)
+class Log:
+
+    datefmt = "%H:%M:%S"
+    format = "%(module).3s %(message)s"
 
 
-def check(text, argstr):
-    "check for options."
-    for arg in argstr.split():
-        if not arg.startswith("-"):
-            continue
-        for char in text:
-               if char in arg:
-                   return True
-        return False
+class Format(logging.Formatter):
+
+    def format(self, record):
+        record.module = record.module.upper()
+        return logging.Formatter.format(self, record)
 
 
 def forever():
@@ -46,19 +41,16 @@ def ident(obj):
     return os.path.join(fqn(obj), *str(datetime.datetime.now()).split())
 
 
-def importer(name, pth=""):
-    "import module by path."
-    if pth and os.path.exists(pth):
-        spec = importlib.util.spec_from_file_location(name, pth)
-    else:
-        spec = importlib.util.find_spec(name)
-    if not spec or not spec.loader:
-        return None
-    mod = importlib.util.module_from_spec(spec)
-    if not mod:
-        return None
-    spec.loader.exec_module(mod)
-    return mod
+def level(loglevel):
+    "set log level."
+    formatter = Format(Log.format, Log.datefmt)
+    stream = logging.StreamHandler()
+    stream.setFormatter(formatter)
+    logging.basicConfig(
+        level=loglevel.upper(),
+        handlers=[stream,],
+        force=True
+    )
 
 
 def md5sum(path):
@@ -67,6 +59,10 @@ def md5sum(path):
     with open(path, "r", encoding="utf-8") as file:
         txt = file.read().encode("utf-8")
         return hashlib.md5(txt, usedforsecurity=False).hexdigest()
+
+
+def pkgname(obj):
+    return obj.__module__.split(".")[0]
 
 
 def pipxdir(name):
@@ -98,14 +94,15 @@ def wrapped(func):
 
 def __dir__():
     return (
-        'cdir',
-        'check',
+        'Log',
         'forever',
         'ident',
-        'importer',
+        'level',
         'md5sum',
         'pipxdir',
+        'pkgname',
         'spl',
         'where',
         'wrapped'
     )
+

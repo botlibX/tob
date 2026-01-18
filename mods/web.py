@@ -10,10 +10,12 @@ import time
 from http.server import HTTPServer, BaseHTTPRequestHandler
 
 
-from tob.configs import Cfg
 from tob.objects import Object
 from tob.threads import launch
 from tob.utility import where
+
+
+DEBUG = True
 
 
 def init():
@@ -97,7 +99,7 @@ class HTTPHandler(BaseHTTPRequestHandler):
     def do_GET(self):
         if "favicon" in self.path:
             return
-        if Cfg.debug:
+        if DEBUG:
             return
         if self.path == "/":
             self.path = "index.html"
