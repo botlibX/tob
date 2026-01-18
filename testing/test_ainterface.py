@@ -16,20 +16,14 @@ sys.path.insert(0, os.getcwd())
 
 import tob
 import tob.brokers
-import tob.clients
-import tob.command
 import tob.handler
 import tob.message
 import tob.methods
 import tob.objects
-import tob.package
-import tob.persist
 import tob.serials
-import tob.statics
 import tob.threads
 import tob.timings
 import tob.utility
-import tob.workdir
 
 
 from tob.objects import *
@@ -37,20 +31,14 @@ from tob.objects import *
 
 PACKAGE = [
     'brokers',
-    'clients',
-    'command',
     'handler',
     'message',
     'methods',
     'objects',
-    'package',
-    'persist',
     'serials',
-    'statics',
     'threads',
     'timings',
-    'utility',
-    'workdir'
+    'utility'
 ]
 
 
@@ -87,10 +75,13 @@ METHODS = [
 
 
 class TestInterface(unittest.TestCase):
+
     def test_package(self):
         okd = True
         for mod in PACKAGE:
             mod1 = getattr(tob, mod, None)
+            if not mod1:
+                mod1 = getattr(tob, mod, None)
             if not mod1:
                 okd = False
                 print(mod)

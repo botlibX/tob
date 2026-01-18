@@ -7,7 +7,7 @@
 import unittest
 
 
-from tob.clients import Client
+from tob.handler import Client
 from tob.message import Message
 
 

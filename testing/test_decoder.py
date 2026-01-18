@@ -8,6 +8,7 @@ from tob.objects import Object
 from tob.serials import dumps, loads
 
 
+
 class TestDecoder(unittest.TestCase):
 
     def test_loads(self):
