@@ -24,8 +24,8 @@ from tob.package import adddir, addpkg, modules, scanner
 from tob.utility import forever, level, wrapped
 
 
-from tob import modules as MODS
-
+#from tob import modules as MODS
+import mods as MODS
 
 "defines"
 

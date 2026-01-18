@@ -13,32 +13,41 @@ import time
 sys.path.insert(0, os.getcwd())
 
 
-from tob.clients import Output
+from tob.caching import persist
 from tob.command import command
-from tob.configs import Cfg
 from tob.message import Message
 from tob.methods import fmt, parse
-from tob.package import adddir, modules, scanner
+from tob.handler import Client
+from tob.objects import Config
+from tob.package import adddir, scanner
 from tob.threads import launch
 from tob.timings import elapsed
 from tob.utility import wrapped
-from tob.workdir import Workdir, skel
+
+
+#from tobot import modules as MODS
+import mods as MODS
+
+Cfg = Config()
 
 
 Cfg.debug = True
 Cfg.level = "info"
-Cfg.name = "tob"
-Cfg.version = 152
-Workdir.wdr = ".test"
+Cfg.name = "nixt"
+Cfg.version = 10
+Cfg.wdr = ".test"
 
 
 events = queue.Queue()
 
 
-class CLI(Output):
+"clients"
+
+
+class CLI(Client):
 
     def __init__(self):
-        Output.__init__(self)
+        Client.__init__(self)
         self.register("command", command)
 
     def raw(self, txt):
@@ -115,7 +124,65 @@ def payload(todo):
             events.put(evt)
 
 
-"defines"
+"runtime"
+
+
+def wrap(func):
+    "restore console."
+    import termios
+    old = None
+    try:
+        old = termios.tcgetattr(sys.stdin.fileno())
+    except termios.error:
+        pass
+    try:
+        wrapped(func)
+    finally:
+        pass
+    if old:
+        termios.tcsetattr(sys.stdin.fileno(), termios.TCSADRAIN, old)
+
+
+def main():
+    if "p" not in Cfg.opts and os.path.exists(Cfg.wdr):
+        shutil.rmtree(Cfg.wdr)
+    parse(Cfg, " ".join(sys.argv[1:]))
+    persist(Cfg.wdr)
+    adddir("modules", MODS.__path__[0])
+    adddir('mods', 'mods')
+    for mod in scanner():
+        mod.DEBUG = True
+    if "v" in Cfg.opts:
+        banner(Cfg.name, Cfg.version)
+    if "z" in Cfg.opts:
+        Pool.init(CLI, os.cpu_count())
+    else:
+        Pool.init(CLI, 1)
+    starttime = time.time()
+    nrs = Cfg.index or 1
+    for _x in range(nrs):
+        payload(pre)
+    for _x in range(nrs):
+        payload(examples)
+    for _x in range(nrs):
+        payload(post)
+    launch(consume)
+    nrevents = events.qsize()
+    try:
+        events.join()
+    except (KeyboardInterrupt, EOFError):
+        pass
+    endtime = time.time()
+    lap = elapsed(endtime-starttime)
+    percall = (endtime-starttime)/nrevents
+    nrs = events.qsize()
+    if "v" in Cfg.opts:
+        print(f"{fmt(Cfg)}")
+        print(f"{nrs} events left.")
+        print(f"total: {lap} nrs: {nrevents} call: %.6fs" % percall)
+
+
+"date"
 
 
 examples = {
@@ -165,60 +232,7 @@ post = {
 }
 
 
-"runtime"
-
-
-def wrap(func):
-    "restore console."
-    import termios
-    old = None
-    try:
-        old = termios.tcgetattr(sys.stdin.fileno())
-    except termios.error:
-        pass
-    try:
-        wrapped(func)
-    finally:
-        pass
-    if old:
-        termios.tcsetattr(sys.stdin.fileno(), termios.TCSADRAIN, old)
-
-
-def main():
-    if os.path.exists(Workdir.wdr):
-        shutil.rmtree(Workdir.wdr)
-    skel()
-    parse(Cfg, " ".join(sys.argv[1:]))
-    adddir("modules", "examples")
-    scanner(modules())
-    if "v" in Cfg.opts:
-        banner(Cfg.name, Cfg.version)
-    if "z" in Cfg.opts:
-        Pool.init(CLI, os.cpu_count())
-    else:
-        Pool.init(CLI, 1)
-    starttime = time.time()
-    nrs = Cfg.index or 1
-    for _x in range(nrs):
-        payload(pre)
-    for _x in range(nrs):
-        payload(examples)
-    for _x in range(nrs):
-        payload(post)
-    launch(consume)
-    nrevents = events.qsize()
-    try:
-        events.join()
-    except (KeyboardInterrupt, EOFError):
-        pass
-    endtime = time.time()
-    lap = elapsed(endtime-starttime)
-    percall = (endtime-starttime)/nrevents
-    nrs = events.qsize()
-    if "v" in Cfg.opts:
-        print(f"{fmt(Cfg)}")
-        print(f"{nrs} events left.")
-        print(f"total: {lap} nrs: {nrevents} call: %.6fs" % percall)
+"trampoline"
 
 
 if __name__ == "__main__":
