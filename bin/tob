@@ -205,9 +205,9 @@ def console():
     scanner(Cfg.ignore)
     addcmd(cmd, mod, ver)
     docmd(TXT)
+    inits(Cfg.init, Cfg.ignore, "w" in Cfg.opts)
     csl = Term()
     csl.start()
-    inits(Cfg.init, Cfg.ignore, "w" in Cfg.opts)
     forever()
 
 
