@@ -441,12 +441,9 @@ def rem(event):
     if len(event.args) != 1:
         event.reply("rem <stringinurl>")
         return
-    print(fqn(Rss))
     for fnm, fed in find(fqn(Rss)):
-        print(fnm)
         feed = Rss()
         update(feed, fed)
-        print(event.args[0])
         if event.args[0] not in feed.rss:
             continue
         if feed:

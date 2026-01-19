@@ -146,9 +146,7 @@ def main():
         shutil.rmtree(Cfg.wdr)
     parse(Cfg, " ".join(sys.argv[1:]))
     setwd(Cfg.wdr)
-    #adddir("modules", MODS.__path__[0])
-    if os.path.exists("mods"):
-        adddir('mods', 'mods')
+    adddir("modules", MODS.__path__[0])
     for name, mod in scanner():
         mod.DEBUG = True
     if "v" in Cfg.opts:
