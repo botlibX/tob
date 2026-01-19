@@ -14,7 +14,7 @@ sys.path.insert(0, os.getcwd())
 
 
 from tob.caching import persist
-from tob.command import command
+from tob.command import Cfg, command
 from tob.message import Message
 from tob.methods import fmt, parse
 from tob.handler import Client
@@ -25,15 +25,14 @@ from tob.timings import elapsed
 from tob.utility import wrapped
 
 
-#from tobot import modules as MODS
-import mods as MODS
-
-Cfg = Config()
+from tobot import modules as MODS
+#import mods as MODS
 
 
 Cfg.debug = True
 Cfg.level = "info"
-Cfg.name = "nixt"
+Cfg.name = "tobot"
+Cfg.opts = ""
 Cfg.version = 10
 Cfg.wdr = ".test"
 
@@ -149,7 +148,8 @@ def main():
     parse(Cfg, " ".join(sys.argv[1:]))
     persist(Cfg.wdr)
     adddir("modules", MODS.__path__[0])
-    adddir('mods', 'mods')
+    if os.path.exists("mods"):
+        adddir('mods', 'mods')
     for mod in scanner():
         mod.DEBUG = True
     if "v" in Cfg.opts:

@@ -9,6 +9,12 @@ import inspect
 
 from .brokers import getobj
 from .methods import parse
+from .objects import Config
+
+
+class Cfg(Config):
+
+    pass
 
 
 class Commands:
@@ -54,6 +60,7 @@ def command(evt):
 
 def __dir__():
     return (
+        'Cfg',
         'Commands',
         'addcmd',
         'command',
