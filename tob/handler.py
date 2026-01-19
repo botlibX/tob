@@ -94,6 +94,9 @@ class Client(Handler):
         "return event."
         return self.iqueue.get()
 
+    def put(self, event):
+        self.iqueue.put(event)
+
     def raw(self, text):
         "raw output."
         raise NotImplementedError("raw")
