@@ -18,7 +18,6 @@ from tob.command import Cfg, command
 from tob.message import Message
 from tob.methods import fmt, parse
 from tob.handler import Client
-from tob.objects import Config
 from tob.package import adddir, scanner
 from tob.threads import launch
 from tob.timings import elapsed

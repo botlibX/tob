@@ -211,7 +211,6 @@ def __dir__():
         'getpath',
         'kinds',
         'last',
-        'persist',
         'pidfile',
         'pidname',
         'read',

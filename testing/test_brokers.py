@@ -6,9 +6,7 @@ import unittest
 
 from tob.brokers import Broker
 from tob.handler import Client
-
-
-from tob.objects import Object, update, values
+from tob.objects import update, values
 from tob.serials import dumps, loads
 
 

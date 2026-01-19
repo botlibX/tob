@@ -81,6 +81,19 @@ class Client(Handler):
         "say called by display."
         self.say(channel, text)
 
+    def loop(self):
+        "input loop."
+        while True:
+            event = self.poll()
+            if not event or self.stopped.is_set():
+                break
+            event.orig = repr(self)
+            self.callback(event)
+
+    def poll(self):
+        "return event."
+        return self.iqueue.get()
+
     def raw(self, text):
         "raw output."
         raise NotImplementedError("raw")
@@ -107,7 +120,7 @@ class Console(Client):
         return self.iqueue.get()
 
 
-class Output(Console):
+class Output(Client):
 
     def __init__(self):
         super().__init__()

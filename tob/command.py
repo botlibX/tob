@@ -9,12 +9,16 @@ import inspect
 
 from .brokers import getobj
 from .methods import parse
-from .objects import Config
 
 
-class Cfg(Config):
+class Cfg:
 
-    pass
+
+    def __getattr__(self, key):
+        return self.__dict__.get(key, "")
+
+    def __str__(self):
+        return str(self.__dict__)
 
 
 class Commands:
