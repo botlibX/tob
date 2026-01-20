@@ -1,0 +1,31 @@
+#!/usr/bin/env python3
+# This file is placed in the Public Domain.
+
+
+"check type conversion"
+
+
+import builtins
+import inspect
+import logging
+import os
+import sys
+
+
+sys.path.insert(0, os.getcwd())
+
+
+from tob.objects import Object
+from tob.serials import dump, loads
+
+
+for name, tpe in inspect.getmembers(builtins, inspect.isclass):
+    if "_" in name:
+        continue
+    if name[0] != name[0].lower():
+        try:
+            obj = tpe()
+        except Exception as ex:
+            logging.exception(ex)
+        print(f"{tpe} {obj}")
+       
