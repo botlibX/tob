@@ -33,6 +33,5 @@ classifiers=[
 packages = [
     'tob',
     'tob.modules',
-    'tob.network',
     'tob.nucleus'
 ]
