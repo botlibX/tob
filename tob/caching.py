@@ -20,6 +20,9 @@ from .utility import ident
 lock = threading.RLock()
 
 
+"cache"
+
+
 class Cache:
 
     paths = {}
@@ -42,6 +45,35 @@ def syncpath(path, obj):
         update(Cache.paths[path], obj)
     except KeyError:
         addpath(path, obj)
+
+
+"storage"
+
+
+def read(obj, path):
+    "read object from path."
+    with lock:
+        pth = os.path.join(Cache.workdir, "store", path)
+        with open(pth, "r", encoding="utf-8") as fpt:
+            try:
+                update(obj, load(fpt))
+            except json.decoder.JSONDecodeError as ex:
+                ex.add_note(path)
+                raise ex
+
+
+
+def write(obj, path=""):
+    "write object to disk."
+    with lock:
+        if path == "":
+            path = ident(obj)
+        pth = os.path.join(Cache.workdir, "store", path)
+        cdir(pth)
+        with open(pth, "w", encoding="utf-8") as fpt:
+            dump(obj, fpt, indent=4)
+        syncpath(path, obj)
+        return path
 
 
 "workdir"
@@ -102,20 +134,6 @@ def workdir():
     return Cache.workdir
 
 
-"utility"
-
-
-def cdir(path):
-    "create directory."
-    pth = pathlib.Path(path)
-    pth.parent.mkdir(parents=True, exist_ok=True)
-
-
-def strip(path):
-    "strip filename from path."
-    return path.split('store')[-1][1:]
-
-
 "find"
 
 
@@ -174,33 +192,21 @@ def last(obj, selector={}):
     return res
 
 
-"storage"
+"utility"
 
 
-def read(obj, path):
-    "read object from path."
-    with lock:
-        pth = os.path.join(Cache.workdir, "store", path)
-        with open(pth, "r", encoding="utf-8") as fpt:
-            try:
-                update(obj, load(fpt))
-            except json.decoder.JSONDecodeError as ex:
-                ex.add_note(path)
-                raise ex
+def cdir(path):
+    "create directory."
+    pth = pathlib.Path(path)
+    pth.parent.mkdir(parents=True, exist_ok=True)
 
 
+def strip(path):
+    "strip filename from path."
+    return path.split('store')[-1][1:]
 
-def write(obj, path=""):
-    "write object to disk."
-    with lock:
-        if path == "":
-            path = ident(obj)
-        pth = os.path.join(Cache.workdir, "store", path)
-        cdir(pth)
-        with open(pth, "w", encoding="utf-8") as fpt:
-            dump(obj, fpt, indent=4)
-        syncpath(path, obj)
-        return path
+
+"interface"
 
 
 def __dir__():

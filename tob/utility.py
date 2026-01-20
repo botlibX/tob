@@ -14,6 +14,9 @@ import time
 from .methods import fqn
 
 
+"classes"
+
+
 class Log:
 
     datefmt = "%H:%M:%S"
@@ -25,6 +28,9 @@ class Format(logging.Formatter):
     def format(self, record):
         record.module = record.module.upper()
         return logging.Formatter.format(self, record)
+
+
+"utils"
 
 
 def forever():
@@ -90,6 +96,9 @@ def wrapped(func):
         func()
     except (KeyboardInterrupt, EOFError):
         pass
+
+
+"interface"
 
 
 def __dir__():

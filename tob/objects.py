@@ -7,6 +7,9 @@
 import types
 
 
+"classes"
+
+
 class Reserved(Exception):
 
     pass
@@ -25,6 +28,9 @@ class Object:
 
     def __str__(self):
         return str(self.__dict__)
+
+
+"methods"
 
 
 def construct(obj, *args, **kwargs):
@@ -93,20 +99,20 @@ def values(obj):
     return res
 
 
+"default"
+
+
 class Default(Object):
 
     def __getattr__(self, key):
         return self.__dict__.get(key, "")
 
 
-class Config(Default):
-
-    pass
+"interface"
 
 
 def __dir__():
     return (
-        'Config',
         'Default',
         'Object',
         'construct',

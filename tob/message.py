@@ -39,6 +39,9 @@ class Message:
             self._thr.join(timeout)
 
 
+"interface"
+
+
 def __dir__():
     return (
         'Message',

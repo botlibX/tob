@@ -1,7 +1,7 @@
 # This file is placed in the Public Domain.
 
 
-"commands"
+"write your own commands"
 
 
 import inspect
@@ -9,6 +9,9 @@ import inspect
 
 from .brokers import getobj
 from .methods import parse
+
+
+"config"
 
 
 class Cfg:
@@ -19,6 +22,9 @@ class Cfg:
 
     def __str__(self):
         return str(self.__dict__)
+
+
+"commands"
 
 
 class Commands:
@@ -60,6 +66,9 @@ def command(evt):
         bot = getobj(evt.orig)
         bot.display(evt)
     evt.ready()
+
+
+"interface"
 
 
 def __dir__():

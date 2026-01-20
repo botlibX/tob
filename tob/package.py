@@ -13,6 +13,9 @@ from .threads import launch
 from .utility import spl
 
 
+"module directories"
+
+
 class Mods:
 
     dirs = {}
@@ -23,34 +26,8 @@ def adddir(name, path):
     Mods.dirs[name] = path
 
 
-def importer(name, pth=""):
-    "import module by path."
-    if pth and os.path.exists(pth):
-        spec = importlib.util.spec_from_file_location(name, pth)
-    else:
-        spec = importlib.util.find_spec(name)
-    if not spec or not spec.loader:
-        return None
-    mod = importlib.util.module_from_spec(spec)
-    if not mod:
-        return None
-    Mods.modules[name] = mod
-    spec.loader.exec_module(mod)
-    return mod
+"modules"
 
-
-def inits(init, ignore="", wait=False):
-    "scan named modules for commands."
-    thrs = []
-    for name, mod in getmods(ignore):
-        if name not in spl(init):
-            continue
-        if "init" in dir(mod):
-            thrs.append((name, launch(mod.init)))
-    if wait:
-        for name, thr in thrs:
-            thr.join()
-        
 
 def getmods(ignore=""):
     "loop over modules."
@@ -86,6 +63,22 @@ def listmods(ignore=""):
     return ",".join(sorted(mods))
 
 
+"runtime"
+
+
+def inits(init, ignore="", wait=False):
+    "scan named modules for commands."
+    thrs = []
+    for name, mod in getmods(ignore):
+        if name not in spl(init):
+            continue
+        if "init" in dir(mod):
+            thrs.append((name, launch(mod.init)))
+    if wait:
+        for name, thr in thrs:
+            thr.join()
+        
+
 def scanner(ignore=""):
     "scan named modules for commands."
     res = []
@@ -93,6 +86,28 @@ def scanner(ignore=""):
         scancmd(mod)
         res.append((name, mod))
     return res
+
+
+"utilities"
+
+
+def importer(name, pth=""):
+    "import module by path."
+    if pth and os.path.exists(pth):
+        spec = importlib.util.spec_from_file_location(name, pth)
+    else:
+        spec = importlib.util.find_spec(name)
+    if not spec or not spec.loader:
+        return None
+    mod = importlib.util.module_from_spec(spec)
+    if not mod:
+        return None
+    Mods.modules[name] = mod
+    spec.loader.exec_module(mod)
+    return mod
+
+
+"interface"
 
 
 def __dir__():

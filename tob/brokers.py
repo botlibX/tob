@@ -33,6 +33,9 @@ def likeobj(txt):
             yield orig
 
 
+"interface"
+
+
 def __dir__():
     return (
         'Broker',
