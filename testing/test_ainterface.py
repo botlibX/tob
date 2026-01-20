@@ -16,10 +16,13 @@ sys.path.insert(0, os.getcwd())
 
 import tob
 import tob.brokers
+import tob.caching
+import tob.command
 import tob.handler
 import tob.message
 import tob.methods
 import tob.objects
+import tob.package
 import tob.serials
 import tob.threads
 import tob.timings
@@ -31,10 +34,13 @@ from tob.objects import *
 
 PACKAGE = [
     'brokers',
+    'caching',
+    'command',
     'handler',
     'message',
     'methods',
     'objects',
+    'package',
     'serials',
     'threads',
     'timings',

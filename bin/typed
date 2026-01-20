@@ -16,16 +16,90 @@ sys.path.insert(0, os.getcwd())
 
 
 from tob.objects import Object
-from tob.serials import dump, loads
+from tob.package import importer
+from tob.serials import dumps, loads
 
 
-for name, tpe in inspect.getmembers(builtins, inspect.isclass):
-    if "_" in name:
-        continue
-    if name[0] != name[0].lower():
+import tob
+import tob.brokers
+import tob.caching
+import tob.command
+import tob.handler
+import tob.message
+import tob.methods
+import tob.objects
+import tob.package
+import tob.serials
+import tob.threads
+import tob.timings
+import tob.utility
+
+
+from tob.objects import *
+
+
+NAME = "tob"
+
+
+PACKAGE = [
+    'brokers',
+    'caching',
+    'command',
+    'handler',
+    'message',
+    'methods',
+    'objects',
+    'package',
+    'serials',
+    'threads',
+    'timings',
+    'utility'
+]
+
+
+def func(event):
+    event.reply("yo!")
+
+
+ARGS = {
+    'sleep': 60.0,
+    'func': func
+}
+
+
+def members(mod):
+    for name, tpe in inspect.getmembers(mod, inspect.isclass):
+        if "_" in name:
+            continue
+        if name[0] == name[0].lower():
+            continue
+        if issubclass(tpe, BaseException):
+            continue
+        update(tpe, {"a": "b"})
         try:
             obj = tpe()
-        except Exception as ex:
-            logging.exception(ex)
-        print(f"{tpe} {obj}")
-       
+        except TypeError:
+            arguments = inspect.signature(tpe)
+            print(dir(arguments))
+            args = []
+            for arg in list(arguments.parameters):
+                args.append(ARGS.get(arg, ""))
+            try:
+                obj = tpe(*args)
+            except TypeError:
+                print(f"missing type arguments for {tpe}{args}")
+                continue
+        txt = dumps(obj)
+        oobj = loads(txt)
+        print(name, oobj)
+
+def main():
+    for name in PACKAGE:
+        modname = f"{NAME}.{name}"
+        mod = importer(modname)
+        members(mod)
+
+
+if __name__ == "__main__":
+    main()
+    
