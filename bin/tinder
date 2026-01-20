@@ -18,7 +18,7 @@ from tob.command import Cfg, command
 from tob.message import Message
 from tob.methods import fmt, parse
 from tob.handler import Client
-from tob.package import adddir, scanner
+from tob.package import initmods, scanner
 from tob.threads import launch
 from tob.timings import elapsed
 from tob.utility import wrapped
@@ -146,7 +146,7 @@ def main():
         shutil.rmtree(Cfg.wdr)
     parse(Cfg, " ".join(sys.argv[1:]))
     setwd(Cfg.wdr)
-    adddir("modules", MODS.__path__[0])
+    initmods("modules", MODS.__path__[0])
     for name, mod in scanner():
         mod.DEBUG = True
     if "v" in Cfg.opts:

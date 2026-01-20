@@ -13,7 +13,7 @@ from .threads import launch
 from .utility import spl
 
 
-"module directories"
+"modules"
 
 
 class Mods:
@@ -22,11 +22,8 @@ class Mods:
     modules = {}
 
 
-def adddir(name, path):
+def initmods(name, path):
     Mods.dirs[name] = path
-
-
-"modules"
 
 
 def getmods(ignore=""):
@@ -43,7 +40,7 @@ def getmods(ignore=""):
             if ignore and name in spl(ignore):
                 continue
             modname = f"{pkgname}.{name}"
-            mod = Mods.modules.get(modname, None)
+            mod =  Mods.modules.get(modname, None)
             if not mod:
                 mod = importer(modname, os.path.join(path, fnm))
             if mod:
@@ -61,6 +58,25 @@ def listmods(ignore=""):
             x[:-3] not in spl(ignore)
         ])
     return ",".join(sorted(mods))
+
+
+"utilities"
+
+
+def importer(name, pth=""):
+    "import module by path."
+    if pth and os.path.exists(pth):
+        spec = importlib.util.spec_from_file_location(name, pth)
+    else:
+        spec = importlib.util.find_spec(name)
+    if not spec or not spec.loader:
+        return None
+    mod = importlib.util.module_from_spec(spec)
+    if not mod:
+        return None
+    Mods.modules[name] = mod
+    spec.loader.exec_module(mod)
+    return mod
 
 
 "runtime"
@@ -88,32 +104,13 @@ def scanner(ignore=""):
     return res
 
 
-"utilities"
-
-
-def importer(name, pth=""):
-    "import module by path."
-    if pth and os.path.exists(pth):
-        spec = importlib.util.spec_from_file_location(name, pth)
-    else:
-        spec = importlib.util.find_spec(name)
-    if not spec or not spec.loader:
-        return None
-    mod = importlib.util.module_from_spec(spec)
-    if not mod:
-        return None
-    Mods.modules[name] = mod
-    spec.loader.exec_module(mod)
-    return mod
-
-
 "interface"
 
 
 def __dir__():
     return (
         'Mods',
-        'adddir',
+        'initmods',
         'getmods',
         'importer',
         'inits',

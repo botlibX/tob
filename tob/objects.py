@@ -7,12 +7,15 @@
 import types
 
 
-"classes"
+"exception"
 
 
 class Reserved(Exception):
 
     pass
+
+
+"object"
 
 
 class Object:
@@ -28,9 +31,6 @@ class Object:
 
     def __str__(self):
         return str(self.__dict__)
-
-
-"methods"
 
 
 def construct(obj, *args, **kwargs):
@@ -63,6 +63,17 @@ def items(obj):
 
 def keys(obj):
     "object's keys."
+    if isinstance(obj, dict):
+        return obj.keys()
+    if isinstance(obj, types.MappingProxyType):
+        return obj.keys()
+    res = []
+    for key in dir(obj):
+        if key.startswith("_"):
+            continue
+        res.append(key)
+    return res
+
     if isinstance(obj, dict):
         return obj.keys()
     return obj.__dict__.keys()

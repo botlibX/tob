@@ -76,64 +76,6 @@ def write(obj, path=""):
         return path
 
 
-"workdir"
-
-
-def setwd(path):
-    "enable writing to disk."
-    Cache.workdir = path
-    skel()
-
-
-def kinds():
-    "show kind on objects in cache."
-    return os.listdir(os.path.join(Cache.workdir, "store"))
-
-
-def long(name):
-    "expand to fqn."
-    split = name.split(".")[-1].lower()
-    res = name
-    for names in kinds():
-        if split == names.split(".")[-1].lower():
-            res = names
-            break
-    return res
-
-
-def pidfile(filename):
-    "write pidfile."
-    if os.path.exists(filename):
-        os.unlink(filename)
-    path2 = pathlib.Path(filename)
-    path2.parent.mkdir(parents=True, exist_ok=True)
-    with open(filename, "w", encoding="utf-8") as fds:
-        fds.write(str(os.getpid()))
-
-
-def pidname(name):
-    "name of pidfile."
-    return os.path.join(Cache.workdir, f"{name}.pid")
-
-
-def skel():
-    "create directories."
-    if not Cache.workdir:
-        return
-    path = os.path.abspath(Cache.workdir)
-    workpath = os.path.join(path, "store")
-    pth = pathlib.Path(workpath)
-    pth.mkdir(parents=True, exist_ok=True)
-    modpath = os.path.join(path, "mods")
-    pth = pathlib.Path(modpath)
-    pth.mkdir(parents=True, exist_ok=True)
-
-
-def workdir():
-    "return workdir."
-    return Cache.workdir
-
-
 "find"
 
 
@@ -190,6 +132,64 @@ def last(obj, selector={}):
         update(obj, inp[-1])
         res = inp[0]
     return res
+
+
+"workdir"
+
+
+def setwd(path):
+    "enable writing to disk."
+    Cache.workdir = path
+    skel()
+
+
+def kinds():
+    "show kind on objects in cache."
+    return os.listdir(os.path.join(Cache.workdir, "store"))
+
+
+def long(name):
+    "expand to fqn."
+    split = name.split(".")[-1].lower()
+    res = name
+    for names in kinds():
+        if split == names.split(".")[-1].lower():
+            res = names
+            break
+    return res
+
+
+def pidfile(filename):
+    "write pidfile."
+    if os.path.exists(filename):
+        os.unlink(filename)
+    path2 = pathlib.Path(filename)
+    path2.parent.mkdir(parents=True, exist_ok=True)
+    with open(filename, "w", encoding="utf-8") as fds:
+        fds.write(str(os.getpid()))
+
+
+def pidname(name):
+    "name of pidfile."
+    return os.path.join(Cache.workdir, f"{name}.pid")
+
+
+def skel():
+    "create directories."
+    if not Cache.workdir:
+        return
+    path = os.path.abspath(Cache.workdir)
+    workpath = os.path.join(path, "store")
+    pth = pathlib.Path(workpath)
+    pth.mkdir(parents=True, exist_ok=True)
+    modpath = os.path.join(path, "mods")
+    pth = pathlib.Path(modpath)
+    pth.mkdir(parents=True, exist_ok=True)
+
+
+def workdir():
+    "return workdir."
+    return Cache.workdir
 
 
 "utility"

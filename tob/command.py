@@ -16,7 +16,6 @@ from .methods import parse
 
 class Cfg:
 
-
     def __getattr__(self, key):
         return self.__dict__.get(key, "")
 
