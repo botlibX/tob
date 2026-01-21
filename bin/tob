@@ -19,7 +19,7 @@ from tob.command import Cfg, Commands, addcmd, command
 from tob.handler import Console
 from tob.message import Message
 from tob.methods import parse
-from tob.package import initmod, inits, listmods, scanner
+from tob.package import initmods, inits, listmods, scanner
 from tob.utility import forever, level
 
 
@@ -175,10 +175,10 @@ def boot(inits=""):
     Cfg.wdr = Cfg.sets.wdr or Cfg.wdr or ""
     level(Cfg.level)
     setwd(Cfg.wdr)
-    initmod("modules", os.path.join(workdir(), "mods"))
-    initmod(MODS.__name__, MODS.__path__[0])
+    initmods("modules", os.path.join(workdir(), "mods"))
+    initmods(MODS.__name__, MODS.__path__[0])
     if "m" in Cfg.opts and os.path.exists("mods"):
-        adddir("mods", "mods")
+        initmods("mods", "mods")
     if "v" in Cfg.opts:
         banner()
     if 'a' in Cfg.opts:
